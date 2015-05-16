@@ -1,0 +1,6 @@
+bin/*
+irrlicht/*
+lib/*
+*.depend
+*.layout
+.objs/*
