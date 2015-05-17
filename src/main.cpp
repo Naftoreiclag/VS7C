@@ -1,73 +1,13 @@
 #include <irrlicht.h>
 #include "driverChoice.h"
 
+#include "ChunkNode.h"
+
 using namespace irr;
 
 #ifdef _MSC_VER
 #pragma comment(lib, "Irrlicht.lib")
 #endif
-
-// Chunk rendering
-class ChunkNode : public scene::ISceneNode {
-
-	core::aabbox3d<f32> Box;
-	video::S3DVertex Vertices[4];
-	video::SMaterial Material;
-
-public:
-
-	ChunkNode(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id)
-	: scene::ISceneNode(parent, mgr, id) {
-		Material.Lighting = false;
-
-		/*
-
-		3        2
-
-
-		0        1
-
-		*/
-
-		Vertices[0] = video::S3DVertex(core::vector3df(  0, 0,   0), core::vector3df(0, 1, 0), video::SColor(255,   0, 255,255), core::vector2df(0, 0));
-		Vertices[1] = video::S3DVertex(core::vector3df(100, 0,   0), core::vector3df(0, 1, 0), video::SColor(255, 255,   0,255), core::vector2df(1, 0));
-		Vertices[2] = video::S3DVertex(core::vector3df(100, 0, 100), core::vector3df(0, 1, 0), video::SColor(255, 255, 255,  0), core::vector2df(1, 1));
-		Vertices[3] = video::S3DVertex(core::vector3df(  0, 0, 100), core::vector3df(0, 1, 0), video::SColor(255,   0, 255,  0), core::vector2df(0, 1));
-
-		Box.reset(Vertices[0].Pos);
-		for (s32 i=1; i<4; ++i)
-			Box.addInternalPoint(Vertices[i].Pos);
-	}
-
-	virtual void OnRegisterSceneNode() {
-		if (IsVisible)
-			SceneManager->registerNodeForRendering(this);
-
-		ISceneNode::OnRegisterSceneNode();
-	}
-
-	virtual void render() {
-		u16 indices[] = {0, 1, 2, 0, 2, 3};
-		video::IVideoDriver* driver = SceneManager->getVideoDriver();
-
-		driver->setMaterial(Material);
-		driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
-		driver->drawVertexPrimitiveList(&Vertices[0], 4, &indices[0], 2, video::EVT_STANDARD, scene::EPT_TRIANGLES, video::EIT_16BIT);
-	}
-
-	virtual const core::aabbox3d<f32>& getBoundingBox() const {
-		return Box;
-	}
-
-	virtual u32 getMaterialCount() const {
-		return 1;
-	}
-
-	virtual video::SMaterial& getMaterial(u32 i) {
-		return Material;
-	}
-
-};
 
 int main() {
 
