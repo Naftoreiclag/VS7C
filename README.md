@@ -9,3 +9,11 @@ Project setup
 3. Place the /include/ and /lib/ folders into the /irrlicht/ folder.
 4. Open project with .cbp file located in /src/
 
+Code Used
+---
+- Irrlicht Engine
+- Artemis-Cpp from GAMADU.COM
+- zlib
+- libPng
+- The Independent JPEG Group
+
