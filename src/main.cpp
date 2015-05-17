@@ -1,5 +1,6 @@
 #include <irrlicht.h>
 #include "driverChoice.h"
+#include <Artemis/Artemis.h>
 
 #include "ChunkNode.h"
 
@@ -10,6 +11,11 @@ using namespace irr;
 #endif
 
 int main() {
+
+	// Artemis test
+	artemis::World world;
+	artemis::SystemManager* sm = world.getSystemManager();
+	artemis::EntityManager* em = world.getEntityManager();
 
 	// Get the preferred driver type
 	video::E_DRIVER_TYPE driverType=driverChoiceConsole();
