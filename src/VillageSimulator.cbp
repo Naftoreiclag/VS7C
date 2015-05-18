@@ -25,6 +25,7 @@
 					<Add directory="../thirdparty/irrlicht-1.8.1/lib/Linux" />
 					<Add directory="../thirdparty/Artemis-Cpp/lib" />
 					<Add directory="../thirdparty/lua-5.3_Win32_mingw4_lib/lib" />
+					<Add directory="../thirdparty/bullet3-2.83.4/lib" />
 				</Linker>
 			</Target>
 			<Target title="Windows">
@@ -42,6 +43,7 @@
 					<Add directory="../thirdparty/irrlicht-1.8.1/lib/Win32-gcc" />
 					<Add directory="../thirdparty/Artemis-Cpp/lib" />
 					<Add directory="../thirdparty/lua-5.3_Win32_mingw4_lib/lib" />
+					<Add directory="../thirdparty/bullet3-2.83.4/lib" />
 				</Linker>
 			</Target>
 		</Build>
@@ -53,6 +55,7 @@
 			<Add directory="../thirdparty/irrlicht-1.8.1/include" />
 			<Add directory="../thirdparty/Artemis-Cpp/include" />
 			<Add directory="../thirdparty/lua-5.3_Win32_mingw4_lib/include" />
+			<Add directory="../thirdparty/bullet3-2.83.4/include" />
 		</Compiler>
 		<Linker>
 			<Add library="Irrlicht" />

@@ -1,16 +1,25 @@
 #ifndef GAMESTATEMANAGER_H
 #define GAMESTATEMANAGER_H
 
+#include "irrlicht.h"
 #include <vector>
+
+class GameState;
 
 class GameStateManager
 {
 public:
 	GameStateManager();
 	virtual ~GameStateManager();
-protected:
+
+	void attachState(GameState& state);
+	void detachState(GameState& state);
+
+	void update(const irr::f32 tpf);
+
+	void stop();
 private:
-	vector<GameState*>
+	std::vector<GameState*> managedStates;
 };
 
 #endif // GAMESTATEMANAGER_H
