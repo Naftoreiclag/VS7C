@@ -21,9 +21,9 @@
 					<Add library="Xxf86vm" />
 					<Add library="Xcursor" />
 					<Add library="GL" />
-					<Add library="..\thirdparty\artemis-cpp\lib\libArtemisCpp.a" />
-					<Add directory="../thirdparty/irrlicht/lib/Linux" />
-					<Add directory="../thirdparty/artemis-cpp/lib" />
+					<Add library="..\thirdparty\Artemis-Cpp\lib\libArtemisCpp.a" />
+					<Add directory="../thirdparty/irrlicht-1.8.1/lib/Linux" />
+					<Add directory="../thirdparty/Artemis-Cpp/lib" />
 					<Add directory="../thirdparty/lua-5.3_Win32_mingw4_lib/lib" />
 				</Linker>
 			</Target>
@@ -38,9 +38,9 @@
 					<Add option="-g" />
 				</Compiler>
 				<Linker>
-					<Add library="..\thirdparty\artemis-cpp\lib\libArtemisCpp.a" />
-					<Add directory="../thirdparty/irrlicht/lib/Win32-gcc" />
-					<Add directory="../thirdparty/artemis-cpp/lib" />
+					<Add library="..\thirdparty\Artemis-Cpp\lib\libArtemisCpp.a" />
+					<Add directory="../thirdparty/irrlicht-1.8.1/lib/Win32-gcc" />
+					<Add directory="../thirdparty/Artemis-Cpp/lib" />
 					<Add directory="../thirdparty/lua-5.3_Win32_mingw4_lib/lib" />
 				</Linker>
 			</Target>
@@ -50,8 +50,8 @@
 		</VirtualTargets>
 		<Compiler>
 			<Add option="-g" />
-			<Add directory="../thirdparty/irrlicht/include" />
-			<Add directory="../thirdparty/artemis-cpp/include" />
+			<Add directory="../thirdparty/irrlicht-1.8.1/include" />
+			<Add directory="../thirdparty/Artemis-Cpp/include" />
 			<Add directory="../thirdparty/lua-5.3_Win32_mingw4_lib/include" />
 		</Compiler>
 		<Linker>
@@ -59,6 +59,10 @@
 		</Linker>
 		<Unit filename="ChunkNode.cpp" />
 		<Unit filename="ChunkNode.h" />
+		<Unit filename="GameState.cpp" />
+		<Unit filename="GameState.h" />
+		<Unit filename="GameStateManager.cpp" />
+		<Unit filename="GameStateManager.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

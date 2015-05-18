@@ -11,18 +11,17 @@ using namespace irr;
 
 class ChunkNode : public scene::ISceneNode
 {
-	public:
-		ChunkNode(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id);
-		virtual void OnRegisterSceneNode();
-		virtual void render();
-		virtual const core::aabbox3d<f32>& getBoundingBox() const;
-		virtual u32 getMaterialCount() const;
-		virtual video::SMaterial& getMaterial(u32 i);
-	protected:
-	private:
-		core::aabbox3d<f32> Box;
-		video::S3DVertex Vertices[4];
-		video::SMaterial Material;
+public:
+	ChunkNode(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id);
+	virtual void OnRegisterSceneNode();
+	virtual void render();
+	virtual const core::aabbox3d<f32>& getBoundingBox() const;
+	virtual u32 getMaterialCount() const;
+	virtual video::SMaterial& getMaterial(u32 i);
+private:
+	core::aabbox3d<f32> Box;
+	video::S3DVertex Vertices[4];
+	video::SMaterial Material;
 };
 
 #endif // CHUNKNODE_H

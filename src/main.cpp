@@ -20,9 +20,6 @@ int main() {
 	artemis::SystemManager* sm = world.getSystemManager();
 	artemis::EntityManager* em = world.getEntityManager();
 
-	// Lua test
-
-
 	// Get the preferred driver type
 	video::E_DRIVER_TYPE driverType=driverChoiceConsole();
 	if(driverType == video::EDT_COUNT) { return 1; }
@@ -52,8 +49,18 @@ int main() {
 	chunkNode->drop();
 	chunkNode = 0;
 
+	u32 then = device->getTimer()->getTime();
+
 	u32 frames = 0;
 	while(device->run()) {
+
+		// Calculate time per frame in seconds
+		const u32 now = device->getTimer()->getTime();
+        const f32 tpf = (f32)(now - then) / 1000.f;
+        then = now;
+
+
+
 		driver->beginScene(true, true, video::SColor(0, 100, 100, 100));
 
 		smgr->drawAll();
