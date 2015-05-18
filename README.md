@@ -11,7 +11,7 @@ Project setup
 
 Code Used
 ---
-- Irrlicht Engine
+- Irrlicht Engine 1.8.1
 - Artemis-Cpp from GAMADU.COM
 - zlib
 - libPng

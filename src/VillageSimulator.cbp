@@ -21,8 +21,10 @@
 					<Add library="Xxf86vm" />
 					<Add library="Xcursor" />
 					<Add library="GL" />
+					<Add library="..\thirdparty\artemis-cpp\lib\libArtemisCpp.a" />
 					<Add directory="../thirdparty/irrlicht/lib/Linux" />
-					<Add directory="../lib" />
+					<Add directory="../thirdparty/artemis-cpp/lib" />
+					<Add directory="../thirdparty/lua-5.3_Win32_mingw4_lib/lib" />
 				</Linker>
 			</Target>
 			<Target title="Windows">
@@ -39,6 +41,7 @@
 					<Add library="..\thirdparty\artemis-cpp\lib\libArtemisCpp.a" />
 					<Add directory="../thirdparty/irrlicht/lib/Win32-gcc" />
 					<Add directory="../thirdparty/artemis-cpp/lib" />
+					<Add directory="../thirdparty/lua-5.3_Win32_mingw4_lib/lib" />
 				</Linker>
 			</Target>
 		</Build>
@@ -49,6 +52,7 @@
 			<Add option="-g" />
 			<Add directory="../thirdparty/irrlicht/include" />
 			<Add directory="../thirdparty/artemis-cpp/include" />
+			<Add directory="../thirdparty/lua-5.3_Win32_mingw4_lib/include" />
 		</Compiler>
 		<Linker>
 			<Add library="Irrlicht" />

@@ -1,6 +1,9 @@
-#include <irrlicht.h>
+#include "irrlicht.h"
 #include "driverChoice.h"
-#include <Artemis/Artemis.h>
+#include "Artemis/Artemis.h"
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
 
 #include "ChunkNode.h"
 
@@ -16,6 +19,9 @@ int main() {
 	artemis::World world;
 	artemis::SystemManager* sm = world.getSystemManager();
 	artemis::EntityManager* em = world.getEntityManager();
+
+	// Lua test
+
 
 	// Get the preferred driver type
 	video::E_DRIVER_TYPE driverType=driverChoiceConsole();
