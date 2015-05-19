@@ -39,10 +39,10 @@ int main()
 	GameStateManager gsmgr;
 
 	// Initial state
-	OverworldGameState initialState(device);
-	gsmgr.attachState(initialState);
-	//initialState.drop();
-	//initialState = 0;
+	GameState* initialState = new OverworldGameState(device);
+	gsmgr.attachState(*initialState);
+	initialState->drop();
+	initialState = 0;
 
 	// Initialize tpf calculator
 	u32 then = device->getTimer()->getTime();
