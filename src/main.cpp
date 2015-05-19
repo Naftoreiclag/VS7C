@@ -58,13 +58,12 @@ int main()
 
 		// Update game state manager
 		gsmgr.update(tpf);
-		gsmgr.render();
 
 		// Clear buffers before rendering
 		driver->beginScene(true, true, video::SColor(0, 255, 255, 255));
 
-		// Send all mesh data
-		smgr->drawAll();
+		// Draw stuff
+		gsmgr.render();
 
 		// Flush
 		driver->endScene();

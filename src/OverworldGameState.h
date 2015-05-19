@@ -6,6 +6,8 @@ using namespace irr;
 
 #include "GameState.h"
 
+class ChunkNode;
+
 class OverworldGameState : public GameState
 {
 public:
@@ -22,6 +24,8 @@ public:
 private:
 	video::IVideoDriver* driver;
 	scene::ISceneManager* smgr;
+
+	ChunkNode* chunkNode;
 };
 
 #endif // OVERWORLDGAMESTATE_H

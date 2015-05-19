@@ -16,7 +16,7 @@ void OverworldGameState::init() {
 	smgr->addCameraSceneNode(0, core::vector3df(0,-40,0), core::vector3df(0,0,0));
 
 	// Make the test chunk
-	ChunkNode* chunkNode = new ChunkNode(smgr->getRootSceneNode(), smgr, 1337);
+	chunkNode = new ChunkNode(smgr->getRootSceneNode(), smgr, 1337);
 
 	// Animation
 	scene::ISceneNodeAnimator* anim = smgr->createRotationAnimator(core::vector3df(0.8f, 0, 0.8f));
@@ -26,14 +26,13 @@ void OverworldGameState::init() {
 		anim->drop();
 		anim = 0;
 	}
-	chunkNode->drop();
-	chunkNode = 0;
 }
 
 
 
 void OverworldGameState::cleanup() {
-
+	chunkNode->drop();
+	chunkNode = 0;
 }
 
 void OverworldGameState::pause()
@@ -45,11 +44,11 @@ void OverworldGameState::resume()
 {
 }
 
-void OverworldGameState::render()
-{
-
-}
-
 void OverworldGameState::update(irr::f32 tpf)
 {
+}
+
+void OverworldGameState::render() {
+	//chunkNode->render();
+	smgr->drawAll();
 }
