@@ -14,10 +14,10 @@ public:
 
 	void attachState(GameState& state);
 	void detachState(GameState& state);
+	void detachAll();
 
 	void update(const irr::f32 tpf);
-
-	void detachAll();
+	void render();
 private:
 	std::vector<GameState*> managedStates;
 };

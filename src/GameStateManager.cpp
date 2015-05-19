@@ -9,18 +9,22 @@
 #define FOR_EACH_STATE std::vector<GameState*>::iterator it = managedStates.begin(); it != managedStates.end(); ++ it
 
 
-GameStateManager::GameStateManager() {
+GameStateManager::GameStateManager()
+{
 }
 
 void GameStateManager::update(const irr::f32 tpf) {
-
 	for(FOR_EACH_STATE) {
-
 		GameState* gs = *it;
-
 		gs->update(tpf);
 	}
+}
 
+void GameStateManager::render() {
+	for(FOR_EACH_STATE) {
+		GameState* gs = *it;
+		gs->render();
+	}
 }
 
 GameStateManager::~GameStateManager() {
@@ -29,14 +33,13 @@ GameStateManager::~GameStateManager() {
 
 void GameStateManager::attachState(GameState& state) {
 	managedStates.push_back(&state);
+	state.init();
 	state.grab();
 }
 
 void GameStateManager::detachAll() {
-
 	// For each state
 	for(FOR_EACH_STATE) {
-
 		// Properly manage lifecycle
 		GameState* gs = *it;
 		gs->cleanup();

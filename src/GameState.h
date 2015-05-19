@@ -16,7 +16,7 @@ public:
 	virtual void render() = 0;
 
 protected:
-	GameState();
+	GameState(irr::IrrlichtDevice* irrlicht);
 };
 
 #endif // GAMESTATE_H

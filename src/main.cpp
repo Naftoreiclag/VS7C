@@ -27,39 +27,18 @@ int main()
 	if(driverType == video::EDT_COUNT) { return 1; }
 
 	// Create the irrlicht device
-	IrrlichtDevice *device = createDevice(driverType, core::dimension2d<u32>(640, 480), 16, false, false, false, 0);
+	IrrlichtDevice* device = createDevice(driverType, core::dimension2d<u32>(640, 480), 16, false, false, false, 0);
 	if(!device) { return 1; }
 
 	// Get the driver and manager
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
 
-
-	// Add the camera
-	smgr->addCameraSceneNode(0, core::vector3df(0,-40,0), core::vector3df(0,0,0));
-
-	// Make the test chunk
-	ChunkNode* chunkNode = new ChunkNode(smgr->getRootSceneNode(), smgr, 1337);
-
-	// Animation
-	scene::ISceneNodeAnimator* anim = smgr->createRotationAnimator(core::vector3df(0.8f, 0, 0.8f));
-
-	if(anim)
-	{
-		chunkNode->addAnimator(anim);
-		anim->drop();
-		anim = 0;
-	}
-	chunkNode->drop();
-	chunkNode = 0;
-
-	u32 then = device->getTimer()->getTime();
-
-
 	// Produce game state engine
 	GameStateManager gsmgr;
 
 	// Initialize tpf calculator
+	u32 then = device->getTimer()->getTime();
 	u32 frames = 0;
 
 	// Main loop
@@ -73,16 +52,21 @@ int main()
 
 		// Update game state manager
 		gsmgr.update(tpf);
+		gsmgr.render();
 
-		driver->beginScene(true, true, video::SColor(0, 100, 100, 100));
+		// Clear buffers before rendering
+		driver->beginScene(true, true, video::SColor(0, 255, 255, 255));
 
+		// Send all mesh data
 		smgr->drawAll();
 
+		// Flush
 		driver->endScene();
 
+		// Debug counter
 		++ frames;
-
-		if(frames >= 100) {
+		if(frames >= 100)
+		{
 			core::stringw str = L"Irrlicht Engine [";
 			str += driver->getName();
 			str += L"] FPS: ";
