@@ -6,6 +6,7 @@
 #include "lauxlib.h"
 
 #include "ChunkNode.h"
+#include "GameStateManager.h"
 
 using namespace irr;
 
@@ -13,7 +14,8 @@ using namespace irr;
 #pragma comment(lib, "Irrlicht.lib")
 #endif
 
-int main() {
+int main()
+{
 
 	// Artemis test
 	artemis::World world;
@@ -32,6 +34,7 @@ int main() {
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
 
+
 	// Add the camera
 	smgr->addCameraSceneNode(0, core::vector3df(0,-40,0), core::vector3df(0,0,0));
 
@@ -41,7 +44,8 @@ int main() {
 	// Animation
 	scene::ISceneNodeAnimator* anim = smgr->createRotationAnimator(core::vector3df(0.8f, 0, 0.8f));
 
-	if(anim) {
+	if(anim)
+	{
 		chunkNode->addAnimator(anim);
 		anim->drop();
 		anim = 0;
@@ -51,15 +55,24 @@ int main() {
 
 	u32 then = device->getTimer()->getTime();
 
+
+	// Produce game state engine
+	GameStateManager gsmgr;
+
+	// Initialize tpf calculator
 	u32 frames = 0;
-	while(device->run()) {
+
+	// Main loop
+	while(device->run())
+	{
 
 		// Calculate time per frame in seconds
 		const u32 now = device->getTimer()->getTime();
         const f32 tpf = (f32)(now - then) / 1000.f;
         then = now;
 
-
+		// Update game state manager
+		gsmgr.update(tpf);
 
 		driver->beginScene(true, true, video::SColor(0, 100, 100, 100));
 

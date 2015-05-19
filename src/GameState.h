@@ -10,10 +10,10 @@ public:
 	virtual void cleanup() = 0;
 
 	virtual void pause() = 0;
-	virtual bool isPaused() = 0;
 	virtual void resume() = 0;
 
 	virtual void update(const irr::f32 tpf) = 0;
+	virtual void render() = 0;
 
 protected:
 	GameState();

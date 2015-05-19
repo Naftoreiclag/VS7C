@@ -17,7 +17,7 @@ public:
 
 	void update(const irr::f32 tpf);
 
-	void stop();
+	void detachAll();
 private:
 	std::vector<GameState*> managedStates;
 };
