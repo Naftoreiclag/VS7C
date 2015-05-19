@@ -3,6 +3,8 @@
 #include "irrlicht.h"
 #include "ChunkNode.h"
 
+
+
 OverworldGameState::OverworldGameState(irr::IrrlichtDevice *irrlicht)
 : GameState::GameState(irrlicht) {
 	driver = irrlicht->getVideoDriver();
@@ -19,8 +21,7 @@ void OverworldGameState::init() {
 	// Animation
 	scene::ISceneNodeAnimator* anim = smgr->createRotationAnimator(core::vector3df(0.8f, 0, 0.8f));
 
-	if(anim)
-	{
+	if(anim) {
 		chunkNode->addAnimator(anim);
 		anim->drop();
 		anim = 0;

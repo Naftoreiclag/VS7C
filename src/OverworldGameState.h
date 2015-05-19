@@ -9,6 +9,8 @@ using namespace irr;
 class OverworldGameState : public GameState
 {
 public:
+	OverworldGameState(IrrlichtDevice *irrlicht);
+
 	virtual void init();
 	virtual void cleanup();
 
@@ -20,8 +22,6 @@ public:
 private:
 	video::IVideoDriver* driver;
 	scene::ISceneManager* smgr;
-protected:
-	OverworldGameState(IrrlichtDevice *irrlicht);
 };
 
 #endif // OVERWORLDGAMESTATE_H

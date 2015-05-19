@@ -7,6 +7,7 @@
 
 #include "ChunkNode.h"
 #include "GameStateManager.h"
+#include "OverworldGameState.h"
 
 using namespace irr;
 
@@ -37,6 +38,12 @@ int main()
 	// Produce game state engine
 	GameStateManager gsmgr;
 
+	// Initial state
+	OverworldGameState initialState(device);
+	gsmgr.attachState(initialState);
+	//initialState.drop();
+	//initialState = 0;
+
 	// Initialize tpf calculator
 	u32 then = device->getTimer()->getTime();
 	u32 frames = 0;
@@ -44,7 +51,6 @@ int main()
 	// Main loop
 	while(device->run())
 	{
-
 		// Calculate time per frame in seconds
 		const u32 now = device->getTimer()->getTime();
         const f32 tpf = (f32)(now - then) / 1000.f;

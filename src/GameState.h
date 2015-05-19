@@ -3,9 +3,10 @@
 
 #include "irrlicht.h"
 
-class GameState : public irr::IReferenceCounted
-{
+class GameState : public irr::IReferenceCounted {
 public:
+	GameState(irr::IrrlichtDevice* irrlicht);
+
 	virtual void init() = 0;
 	virtual void cleanup() = 0;
 
@@ -14,9 +15,6 @@ public:
 
 	virtual void update(const irr::f32 tpf) = 0;
 	virtual void render() = 0;
-
-protected:
-	GameState(irr::IrrlichtDevice* irrlicht);
 };
 
 #endif // GAMESTATE_H
