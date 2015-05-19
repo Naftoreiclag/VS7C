@@ -49,6 +49,5 @@ void OverworldGameState::update(irr::f32 tpf)
 }
 
 void OverworldGameState::render() {
-	//chunkNode->render();
 	smgr->drawAll();
 }

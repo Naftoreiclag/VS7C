@@ -28,7 +28,15 @@ int main()
 	if(driverType == video::EDT_COUNT) { return 1; }
 
 	// Create the irrlicht device
-	IrrlichtDevice* device = createDevice(driverType, core::dimension2d<u32>(640, 480), 16, false, false, false, 0);
+	SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
+	params.DriverType = driverType;
+	params.WindowSize = core::dimension2d<u32>(640, 480);
+	params.Bits = 16;
+	params.Fullscreen = false;
+	params.Stencilbuffer = false;
+	params.Vsync = false;
+	params.EventReceiver = 0;
+	IrrlichtDevice* device = createDeviceEx(params);
 	if(!device) { return 1; }
 
 	// Get the driver and manager
