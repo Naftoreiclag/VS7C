@@ -16,6 +16,13 @@ public:
 		data = new T[sizeX * sizeZ];
 	};
 
+	// Square arrays
+	Array2d(const u32 squareSize)
+	: sizeX(squareSize),
+	sizeZ(squareSize) {
+		data = new T[squareSize * squareSize];
+	};
+
 	~Array2d() {
 		delete[] data;
 	};

@@ -35,7 +35,7 @@ void OverworldGameState::init() {
 	// Make the test chunk
 	ChunkMap* test = new ChunkMap(5, 5);
 
-	//chunkNode = new ChunkNode(test->getChunk(0, 0), smgr->getRootSceneNode(), smgr, 1337);
+	chunkNode = new ChunkNode(test->getChunk(0, 0), smgr->getRootSceneNode(), smgr, 1337);
 
 	scene::IMesh* cube = smgr->getMesh("assets/unit_cube.dae");
 	scene::IMeshSceneNode* node = smgr->addMeshSceneNode(cube);

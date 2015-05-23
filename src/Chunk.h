@@ -24,20 +24,16 @@ class ChunkMap;
 
 class Chunk {
 public:
-	//Chunk(ChunkMap* parent, const u32 cx, const u32 cz);
-	Chunk();
-	/*
-	u16 heightMap[66][66];
-	u8 grass[66][66][4][4];
-	*/
+	static const u32 chunkSize = 66;
+	static const u32 grassSize = 4;
 
-	void printSomething();
+	Chunk(ChunkMap* parent, const u32 cx, const u32 cz);
+	Array2d<u16> heightMap;
+	Array2d<u8> grassMap;
 
-/*
+	const ChunkMap* parent;
 	const u32 cx;
 	const u32 cz;
-	const ChunkMap* parent;
-	*/
 };
 
 class ChunkMap {
@@ -48,6 +44,7 @@ public:
 	Chunk* getChunk(u32 cx, u32 cz);
 	u16 getHeight(u32 ax, u32 az);
 	u8 getGrass(u32 ax, u32 az);
+
 	const u32 sizeX;
 	const u32 sizeZ;
 private:
