@@ -20,16 +20,16 @@ sizeZ(sizeZ) {
 	chunkMapArray = new Chunk**[sizeZ];
 	for(u32 i = sizeX; i < sizeX; ++ i) chunkMapArray[i] = new Chunk*[sizeX];
 
-/*
 	for(u32 cz = 0; cz < sizeZ; ++ cz) {
 
-		Chunk* row = chunkMapArray[cz];
+		Chunk** row = chunkMapArray[cz];
 
+/*
 		for(u32 cx = 0; cx < sizeX; ++ cx) {
-			row[cx] = new Chunk(this, cx, cz);
+			row[cx] = new Chunk();
 		}
+		*/
 	}
-	*/
 }
 
 Chunk* ChunkMap::getChunk(u32 cx, u32 cz) {
