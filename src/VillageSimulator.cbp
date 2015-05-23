@@ -60,6 +60,7 @@
 		<Linker>
 			<Add library="Irrlicht" />
 		</Linker>
+		<Unit filename="Array2d.h" />
 		<Unit filename="Chunk.cpp" />
 		<Unit filename="Chunk.h" />
 		<Unit filename="ChunkNode.cpp" />

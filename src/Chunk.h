@@ -4,7 +4,7 @@
 #include "irrlicht.h"
 using namespace irr;
 
-#include "Foo.h"
+#include "Array2d.h"
 
 /*
 A 66x66 foot section of land. (Each is 1/10th of an acre)
@@ -51,9 +51,7 @@ public:
 	const u32 sizeX;
 	const u32 sizeZ;
 private:
-	Chunk*** chunkMapArray; // Chunk map array
-	Foo*** fooMapArray;
-
+	Array2d<Chunk*> chunkMapArray;
 };
 
 #endif // CHUNK_H
