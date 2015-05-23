@@ -35,9 +35,6 @@ public:
 		physicsMapper.get(e)->z += physicsMapper.get(e)->velZ * world->getDelta();
 
 	}
-	virtual bool checkProcessing() {
-	return false;
-	}
 
 };
 

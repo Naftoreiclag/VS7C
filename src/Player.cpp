@@ -10,5 +10,4 @@ Player::Player(artemis::Entity* const entity, irr::scene::ISceneNode* const scen
 
 Player::~Player()
 {
-	//dtor
 }

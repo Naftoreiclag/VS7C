@@ -50,10 +50,8 @@ void OverworldGameState::init() {
 	scene::IMeshSceneNode* node = smgr->addMeshSceneNode(cube);
     node->setMaterialFlag(video::EMF_LIGHTING, false);
 
-	foo = &(entityMgr->create());
-	foo->addComponent(new PhysicsComponent());
-	foo->refresh();
-	//player = new Player(foo, chunkNode);
+	artemis::Entity* foo = &(entityMgr->create());
+	player = new Player(foo, chunkNode);
 }
 
 
@@ -78,10 +76,7 @@ void OverworldGameState::update(irr::f32 tpf) {
 
 	physSys->process();
 
-	PhysicsComponent* comp = (PhysicsComponent*) foo->getComponent<PhysicsComponent>();
-
-	std::cout << comp->x << std::endl;
-
+	std::cout << player->physics->x << std::endl;
 }
 
 
