@@ -26,6 +26,9 @@ public:
 	Chunk();
 	u16 heightMap[66][66];
 	u8 grass[66][66][4][4];
+
+	void printSomething();
+
 	const u32 cx;
 	const u32 cz;
 	const ChunkMap* parent;
@@ -42,7 +45,7 @@ public:
 	const u32 sizeX;
 	const u32 sizeZ;
 private:
-	Chunk*** chunkMapArray; // Chunk map array
+	Chunk** chunkMapArray; // Chunk map array
 };
 
 #endif // CHUNK_H

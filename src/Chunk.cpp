@@ -16,14 +16,21 @@ cz(0) {
 	std::cout << "hello" << std::endl;
 }
 
+void Chunk::printSomething() {
+
+	std::cout << "something" << std::endl;
+
+}
 ChunkMap::ChunkMap(const u32 sizeX, const u32 sizeZ)
 : sizeX(sizeX),
 sizeZ(sizeZ) {
-	chunkMapArray = new Chunk**[sizeZ];
-	for(u32 i = sizeX; i < sizeX; ++ i) chunkMapArray[i] = new Chunk*[sizeX];
+	chunkMapArray = new Chunk*[sizeZ];
+	for(u32 i = sizeX; i < sizeX; ++ i) chunkMapArray[i] = new Chunk[sizeX];
 
 	std::cout << "aaaaa" << std::endl;
-	chunkMapArray[0][0] = new Chunk();
+
+	chunkMapArray[0][0].printSomething();
+	//chunkMapArray[0][0] = new Chunk();
 
 /*
 	for(u32 cz = 0; cz < sizeZ; ++ cz) {
