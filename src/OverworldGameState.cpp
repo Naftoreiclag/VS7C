@@ -3,6 +3,7 @@
 #include "irrlicht.h"
 #include "ChunkNode.h"
 #include "Chunk.h"
+#include <iostream>;
 
 using namespace irr;
 
@@ -17,6 +18,9 @@ OverworldGameState::OverworldGameState(irr::IrrlichtDevice *irrlicht)
 }
 
 void OverworldGameState::init() {
+
+	PhysicsSystem* physSys = (PhysicsSystem*) systemMgr->setSystem(new PhysicsSystem());
+
 
 	systemMgr->initializeAll();
 
@@ -66,8 +70,14 @@ void OverworldGameState::resume()
 {
 }
 
-void OverworldGameState::update(irr::f32 tpf)
-{
+void OverworldGameState::update(irr::f32 tpf) {
+    entityWorld.loopStart();
+    entityWorld.setDelta(tpf);
+
+	physSys->process();
+
+	std::cout << player->physics.x << std::endl;
+
 }
 
 void OverworldGameState::render() {

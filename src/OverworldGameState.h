@@ -29,8 +29,9 @@ private:
 	irr::scene::ICameraSceneNode* cam;
 	irr::IrrlichtDevice* device;
 	artemis::World entityWorld;
-	artemis::SystemManager* systemMgr;
 	artemis::EntityManager* entityMgr;
+	artemis::SystemManager* systemMgr;
+	PhysicsSystem* physSys;
 
 	ChunkNode* chunkNode;
 	Player* player;
