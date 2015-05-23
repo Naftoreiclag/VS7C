@@ -16,4 +16,6 @@ Code Used
 - zlib
 - libPng
 - The Independent JPEG Group
+- Open Dynamics Engine
+- Lua 5.3
 
