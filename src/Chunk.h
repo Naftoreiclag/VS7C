@@ -42,7 +42,7 @@ public:
 	const u32 sizeX;
 	const u32 sizeZ;
 private:
-	Chunk** chunkMapArray; // Chunk map array
+	Chunk*** chunkMapArray; // Chunk map array
 };
 
 #endif // CHUNK_H

@@ -17,8 +17,8 @@ cz(0) {
 ChunkMap::ChunkMap(const u32 sizeX, const u32 sizeZ)
 : sizeX(sizeX),
 sizeZ(sizeZ) {
-	chunkMapArray = new Chunk*[sizeZ];
-	for(u32 i = sizeX; i < sizeX; ++ i) chunkMapArray[i] = new Chunk[sizeX];
+	chunkMapArray = new Chunk**[sizeZ];
+	for(u32 i = sizeX; i < sizeX; ++ i) chunkMapArray[i] = new Chunk*[sizeX];
 
 /*
 	for(u32 cz = 0; cz < sizeZ; ++ cz) {
