@@ -24,13 +24,13 @@ int main()
 	// Create the irrlicht device
 	SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
 	params.DriverType = driverType;
-	params.WindowSize = core::dimension2d<u32>(640, 480);
+	params.WindowSize = core::dimension2d<u32>(1280, 720);
 	params.Bits = 16;
 	params.Fullscreen = false;
 	params.Stencilbuffer = false;
 	params.Vsync = false;
 	params.EventReceiver = 0; // Pointer to an event receiver
-	params.AntiAlias = 4; // "Multisampling"
+	params.AntiAlias = 0; // "Multisampling"
 	IrrlichtDevice* device = createDeviceEx(params);
 	if(!device) { return 1; }
 

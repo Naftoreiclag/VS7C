@@ -27,16 +27,16 @@ void OverworldGameState::init() {
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
 
 	// Add the camera
-	smgr->addCameraSceneNodeMaya();
+	scene::ICameraSceneNode* cam = smgr->addCameraSceneNode();
+	cam->setPosition(core::vector3df(0, 0, -10));
 
 	// Make the test chunk
 	chunkNode = new ChunkNode(smgr->getRootSceneNode(), smgr, 1337);
 
-	scene::IAnimatedMesh* mesh = smgr->getMesh("example_media/sydney.md2");
-    scene::IAnimatedMeshSceneNode* node = smgr->addAnimatedMeshSceneNode( mesh );
+	scene::IMesh* cube = smgr->getMesh("assets/unit_cube.dae");
+	scene::IMeshSceneNode* node = smgr->addMeshSceneNode(cube);
     node->setMaterialFlag(video::EMF_LIGHTING, false);
-	node->setMD2Animation(scene::EMAT_STAND);
-	node->setMaterialTexture(0, driver->getTexture("example_media/sydney.bmp") );
+
 }
 
 
