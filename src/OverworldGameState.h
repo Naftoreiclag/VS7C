@@ -3,8 +3,7 @@
 
 #include "irrlicht.h"
 #include "Artemis/Artemis.h"
-
-#include "Player.h"
+#include "PhysicsComponent.h"
 
 #include "GameState.h"
 
@@ -32,9 +31,10 @@ private:
 	artemis::EntityManager* entityMgr;
 	artemis::SystemManager* systemMgr;
 	PhysicsSystem* physSys;
+	artemis::Entity* foo;
 
 	ChunkNode* chunkNode;
-	Player* player;
+	//Player* player;
 };
 
 #endif // OVERWORLDGAMESTATE_H

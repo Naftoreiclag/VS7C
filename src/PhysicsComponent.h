@@ -3,6 +3,7 @@
 
 #include "Artemis/Artemis.h"
 #include "irrlicht.h"
+#include <iostream>
 
 class PhysicsComponent: public artemis::Component
 {
@@ -21,13 +22,21 @@ public:
 		addComponentType<PhysicsComponent>();
 
 	}
+
+	void sayHello() {
+		std::cout << "hello" << std::endl;
+	}
 	virtual void initialize() {
 		physicsMapper.init(*world);
 	}
 	virtual void processEntity(artemis::Entity& e) {
+		std::cout << "processing" << std::endl;
 		physicsMapper.get(e)->x += physicsMapper.get(e)->velX * world->getDelta();
 		physicsMapper.get(e)->z += physicsMapper.get(e)->velZ * world->getDelta();
 
+	}
+	virtual bool checkProcessing() {
+	return false;
 	}
 
 };

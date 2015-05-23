@@ -19,7 +19,7 @@ OverworldGameState::OverworldGameState(irr::IrrlichtDevice *irrlicht)
 
 void OverworldGameState::init() {
 
-	PhysicsSystem* physSys = (PhysicsSystem*) systemMgr->setSystem(new PhysicsSystem());
+	physSys = (PhysicsSystem*) systemMgr->setSystem(new PhysicsSystem());
 
 
 	systemMgr->initializeAll();
@@ -50,8 +50,10 @@ void OverworldGameState::init() {
 	scene::IMeshSceneNode* node = smgr->addMeshSceneNode(cube);
     node->setMaterialFlag(video::EMF_LIGHTING, false);
 
-	artemis::Entity& foo = entityMgr->create();
-	player = new Player(&foo, chunkNode);
+	foo = &(entityMgr->create());
+	foo->addComponent(new PhysicsComponent());
+	foo->refresh();
+	//player = new Player(foo, chunkNode);
 }
 
 
@@ -74,11 +76,14 @@ void OverworldGameState::update(irr::f32 tpf) {
     entityWorld.loopStart();
     entityWorld.setDelta(tpf);
 
-	//physSys->process();
+	physSys->process();
 
-	std::cout << player->physics.x << std::endl;
+	PhysicsComponent* comp = (PhysicsComponent*) foo->getComponent<PhysicsComponent>();
+
+	std::cout << comp->x << std::endl;
 
 }
+
 
 void OverworldGameState::render() {
 	smgr->drawAll();

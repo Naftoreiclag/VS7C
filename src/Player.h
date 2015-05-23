@@ -9,7 +9,7 @@ public:
 	Player(artemis::Entity* const entity, irr::scene::ISceneNode* const sceneNode);
 	virtual ~Player();
 
-	PhysicsComponent physics;
+	PhysicsComponent* physics;
 };
 
 #endif // PLAYER_H

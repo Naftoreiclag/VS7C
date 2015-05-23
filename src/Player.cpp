@@ -3,7 +3,8 @@
 
 Player::Player(artemis::Entity* const entity, irr::scene::ISceneNode* const sceneNode)
 : GameObject::GameObject(entity, sceneNode) {
-	entity->addComponent(&physics);
+	physics = new PhysicsComponent();
+	entity->addComponent(physics);
 	entity->refresh();
 }
 
