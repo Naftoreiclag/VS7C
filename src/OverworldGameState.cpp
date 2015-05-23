@@ -3,7 +3,7 @@
 #include "irrlicht.h"
 #include "ChunkNode.h"
 #include "Chunk.h"
-#include <iostream>;
+#include <iostream>
 
 using namespace irr;
 
@@ -51,7 +51,7 @@ void OverworldGameState::init() {
     node->setMaterialFlag(video::EMF_LIGHTING, false);
 
 	artemis::Entity* foo = &(entityMgr->create());
-	player = new Player(foo, chunkNode);
+	player = new Player(foo, node);
 }
 
 
