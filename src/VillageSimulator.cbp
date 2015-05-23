@@ -60,6 +60,8 @@
 		<Linker>
 			<Add library="Irrlicht" />
 		</Linker>
+		<Unit filename="Chunk.cpp" />
+		<Unit filename="Chunk.h" />
 		<Unit filename="ChunkNode.cpp" />
 		<Unit filename="ChunkNode.h" />
 		<Unit filename="GameState.cpp" />

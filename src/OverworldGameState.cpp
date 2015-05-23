@@ -2,6 +2,7 @@
 
 #include "irrlicht.h"
 #include "ChunkNode.h"
+#include "Chunk.h"
 
 using namespace irr;
 
@@ -27,11 +28,14 @@ void OverworldGameState::init() {
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
 
 	// Add the camera
-	scene::ICameraSceneNode* cam = smgr->addCameraSceneNode();
-	cam->setPosition(core::vector3df(0, 0, -10));
+	cam = smgr->addCameraSceneNodeMaya();
+	cam->setPosition(core::vector3df(0, 2, -4));
+	cam->setTarget(core::vector3df(0, 0, 0));
 
 	// Make the test chunk
-	chunkNode = new ChunkNode(smgr->getRootSceneNode(), smgr, 1337);
+	ChunkMap* test = new ChunkMap(5, 5);
+
+	//chunkNode = new ChunkNode(test->getChunk(0, 0), smgr->getRootSceneNode(), smgr, 1337);
 
 	scene::IMesh* cube = smgr->getMesh("assets/unit_cube.dae");
 	scene::IMeshSceneNode* node = smgr->addMeshSceneNode(cube);

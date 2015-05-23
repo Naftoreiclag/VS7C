@@ -9,16 +9,21 @@ using namespace irr;
 #pragma comment(lib, "Irrlicht.lib")
 #endif
 
+class Chunk;
+
 class ChunkNode : public scene::ISceneNode
 {
 public:
-	ChunkNode(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id);
+	ChunkNode(Chunk* const data, scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id);
 	virtual void OnRegisterSceneNode();
 	virtual void render();
 	virtual const core::aabbox3d<f32>& getBoundingBox() const;
 	virtual u32 getMaterialCount() const;
 	virtual video::SMaterial& getMaterial(u32 i);
+
+	Chunk* const chunkData;
 private:
+
 	core::aabbox3d<f32> Box;
 	video::S3DVertex Vertices[4];
 	video::SMaterial Material;

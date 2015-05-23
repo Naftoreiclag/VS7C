@@ -1,9 +1,12 @@
 #include "ChunkNode.h"
+#include "Chunk.h"
 
 using namespace irr;
 
-ChunkNode::ChunkNode(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id)
-: scene::ISceneNode(parent, mgr, id) {
+ChunkNode::ChunkNode(Chunk* const data, scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id)
+: scene::ISceneNode(parent, mgr, id),
+chunkData(data)
+{
 	Material.Lighting = false;
 
 	/*

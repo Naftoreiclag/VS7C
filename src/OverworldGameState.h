@@ -24,6 +24,7 @@ public:
 private:
 	video::IVideoDriver* driver;
 	scene::ISceneManager* smgr;
+	scene::ICameraSceneNode* cam;
 	IrrlichtDevice* device;
 
 	ChunkNode* chunkNode;
