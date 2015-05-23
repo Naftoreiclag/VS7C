@@ -12,7 +12,7 @@ A 66x66 foot section of land. (Each is 1/10th of an acre)
 Heightmap vertical step is 4 inches. (1/3rd foot)
 Horizontal steps are 1 foot each.
 
-"Grass" layer grid is 3x3 inches (1/4th foot)
+"Grass" layer grid is 6x6 inches (1/2th foot)
 00TTTHHH
 T = type (nothing, grass, snow)
 H = height (1,2,3,4,5,6,7,8 inches deep)
@@ -25,7 +25,7 @@ class ChunkMap;
 class Chunk {
 public:
 	static const u32 chunkSize = 66;
-	static const u32 grassSize = 4;
+	static const u32 grassSize = 2;
 
 	Chunk(ChunkMap* parent, const u32 cx, const u32 cz);
 	Array2d<u16> heightMap;

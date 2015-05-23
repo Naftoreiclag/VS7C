@@ -67,12 +67,18 @@
 		<Unit filename="ChunkNode.h" />
 		<Unit filename="Foo.cpp" />
 		<Unit filename="Foo.h" />
+		<Unit filename="GameObject.cpp" />
+		<Unit filename="GameObject.h" />
 		<Unit filename="GameState.cpp" />
 		<Unit filename="GameState.h" />
 		<Unit filename="GameStateManager.cpp" />
 		<Unit filename="GameStateManager.h" />
 		<Unit filename="OverworldGameState.cpp" />
 		<Unit filename="OverworldGameState.h" />
+		<Unit filename="PhysicsComponent.cpp" />
+		<Unit filename="PhysicsComponent.h" />
+		<Unit filename="Player.cpp" />
+		<Unit filename="Player.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

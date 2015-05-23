@@ -19,9 +19,9 @@ chunkData(data)
 	*/
 
 	Vertices[0] = video::S3DVertex(core::vector3df(  0, 0,   0), core::vector3df(0, 1, 0), video::SColor(255,   0, 255,255), core::vector2df(0, 0));
-	Vertices[1] = video::S3DVertex(core::vector3df(  0, 0, 100), core::vector3df(0, 1, 0), video::SColor(255,   0, 255,  0), core::vector2df(0, 1));
-	Vertices[2] = video::S3DVertex(core::vector3df(100, 0, 100), core::vector3df(0, 1, 0), video::SColor(255, 255, 255,  0), core::vector2df(1, 1));
-	Vertices[3] = video::S3DVertex(core::vector3df(100, 0,   0), core::vector3df(0, 1, 0), video::SColor(255, 255,   0,255), core::vector2df(1, 0));
+	Vertices[1] = video::S3DVertex(core::vector3df(  0, 0, Chunk::chunkSize), core::vector3df(0, 1, 0), video::SColor(255,   0, 255,  0), core::vector2df(0, 1));
+	Vertices[2] = video::S3DVertex(core::vector3df(Chunk::chunkSize, 0, Chunk::chunkSize), core::vector3df(0, 1, 0), video::SColor(255, 255, 255,  0), core::vector2df(1, 1));
+	Vertices[3] = video::S3DVertex(core::vector3df(Chunk::chunkSize, 0,   0), core::vector3df(0, 1, 0), video::SColor(255, 255,   0,255), core::vector2df(1, 0));
 
 	Box.reset(Vertices[0].Pos);
 	for (s32 i=1; i<4; ++i)

@@ -2,7 +2,9 @@
 #define OVERWORLDGAMESTATE_H
 
 #include "irrlicht.h"
-using namespace irr;
+#include "Artemis/Artemis.h"
+
+#include "Player.h"
 
 #include "GameState.h"
 
@@ -11,7 +13,7 @@ class ChunkNode;
 class OverworldGameState : public GameState
 {
 public:
-	OverworldGameState(IrrlichtDevice *irrlicht);
+	OverworldGameState(irr::IrrlichtDevice *irrlicht);
 
 	virtual void init();
 	virtual void cleanup();
@@ -19,15 +21,19 @@ public:
 	virtual void pause();
 	virtual void resume();
 
-	virtual void update(const f32 tpf);
+	virtual void update(const irr::f32 tpf);
 	virtual void render();
 private:
-	video::IVideoDriver* driver;
-	scene::ISceneManager* smgr;
-	scene::ICameraSceneNode* cam;
-	IrrlichtDevice* device;
+	irr::video::IVideoDriver* driver;
+	irr::scene::ISceneManager* smgr;
+	irr::scene::ICameraSceneNode* cam;
+	irr::IrrlichtDevice* device;
+	artemis::World entityWorld;
+	artemis::SystemManager* systemMgr;
+	artemis::EntityManager* entityMgr;
 
 	ChunkNode* chunkNode;
+	Player* player;
 };
 
 #endif // OVERWORLDGAMESTATE_H

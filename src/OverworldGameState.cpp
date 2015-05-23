@@ -11,9 +11,14 @@ OverworldGameState::OverworldGameState(irr::IrrlichtDevice *irrlicht)
 	device = irrlicht;
 	driver = irrlicht->getVideoDriver();
 	smgr = irrlicht->getSceneManager();
+
+	systemMgr = entityWorld.getSystemManager();
+	entityMgr = entityWorld.getEntityManager();
 }
 
 void OverworldGameState::init() {
+
+	systemMgr->initializeAll();
 
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
 
@@ -28,7 +33,7 @@ void OverworldGameState::init() {
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
 
 	// Add the camera
-	cam = smgr->addCameraSceneNodeMaya();
+	cam = smgr->addCameraSceneNode();
 	cam->setPosition(core::vector3df(0, 2, -4));
 	cam->setTarget(core::vector3df(0, 0, 0));
 
@@ -41,6 +46,8 @@ void OverworldGameState::init() {
 	scene::IMeshSceneNode* node = smgr->addMeshSceneNode(cube);
     node->setMaterialFlag(video::EMF_LIGHTING, false);
 
+	artemis::Entity& foo = entityMgr->create();
+	player = new Player(&foo, chunkNode);
 }
 
 
