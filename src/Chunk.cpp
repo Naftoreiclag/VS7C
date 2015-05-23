@@ -31,33 +31,18 @@ ChunkMap::ChunkMap(const u32 sizeX, const u32 sizeZ)
 : sizeX(sizeX),
 sizeZ(sizeZ) {
 
-	chunkMapArray = new Chunk**[5];
-	for(u32 i = 5; i < 5; ++ i) {chunkMapArray[i] = new Chunk*[5];}
+	fooMapArray = new Foo**[5];
+	for(u32 i = 5; i < 5; ++ i) {fooMapArray[i] = new Foo*[5];}
 
 	std::cout << "aaaaa" << std::endl;
 
-	chunkMapArray[1][1] = new Chunk();
-	std::cout << "bbbbb" << std::endl;
-	chunkMapArray[1][1]->printSomething();
-
-
-/*
-	fooMapArray = new Foo**[7];
-	for(int i = 0; i < 7; ++ i) {
-
-	}
-	*/
-
-/*
-	for(u32 cz = 0; cz < sizeZ; ++ cz) {
-
-		Chunk** row = chunkMapArray[cz];
-
-		for(u32 cx = 0; cx < sizeX; ++ cx) {
-			row[cx] = new Chunk();
+	for(u32 cz = 0; cz < 5; ++ cz) {
+		for(u32 cx = 0; cx < 5; ++ cx) {
+			fooMapArray[cx][cz] = new Foo(cx * 100 + cz);
+			std::cout << fooMapArray[cx][cz]->getBar() << std::endl;
 		}
 	}
-	*/
+	std::cout << "abbbbbb" << std::endl;
 }
 
 Chunk* ChunkMap::getChunk(u32 cx, u32 cz) {
