@@ -1,6 +1,6 @@
 #include "Chunk.h"
 #include <iostream>
-
+/*
 Chunk::Chunk(ChunkMap* parent, const u32 cx, const u32 cz)
 : parent(parent),
 cx(cx),
@@ -15,22 +15,38 @@ cx(0),
 cz(0) {
 	std::cout << "hello" << std::endl;
 }
+*/
+
+Chunk::Chunk() {
+}
 
 void Chunk::printSomething() {
 
 	std::cout << "something" << std::endl;
 
 }
+
+
 ChunkMap::ChunkMap(const u32 sizeX, const u32 sizeZ)
 : sizeX(sizeX),
 sizeZ(sizeZ) {
-	chunkMapArray = new Chunk*[sizeZ];
-	for(u32 i = sizeX; i < sizeX; ++ i) chunkMapArray[i] = new Chunk[sizeX];
+
+	chunkMapArray = new Chunk**[5];
+	for(u32 i = 5; i < 5; ++ i) {chunkMapArray[i] = new Chunk*[5];}
 
 	std::cout << "aaaaa" << std::endl;
 
-	chunkMapArray[0][0].printSomething();
-	//chunkMapArray[0][0] = new Chunk();
+	chunkMapArray[1][1] = new Chunk();
+	std::cout << "bbbbb" << std::endl;
+	chunkMapArray[1][1]->printSomething();
+
+
+/*
+	fooMapArray = new Foo**[7];
+	for(int i = 0; i < 7; ++ i) {
+
+	}
+	*/
 
 /*
 	for(u32 cz = 0; cz < sizeZ; ++ cz) {

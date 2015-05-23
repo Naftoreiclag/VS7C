@@ -4,6 +4,8 @@
 #include "irrlicht.h"
 using namespace irr;
 
+#include "Foo.h"
+
 /*
 A 66x66 foot section of land. (Each is 1/10th of an acre)
 
@@ -22,16 +24,20 @@ class ChunkMap;
 
 class Chunk {
 public:
-	Chunk(ChunkMap* parent, const u32 cx, const u32 cz);
+	//Chunk(ChunkMap* parent, const u32 cx, const u32 cz);
 	Chunk();
+	/*
 	u16 heightMap[66][66];
 	u8 grass[66][66][4][4];
+	*/
 
 	void printSomething();
 
+/*
 	const u32 cx;
 	const u32 cz;
 	const ChunkMap* parent;
+	*/
 };
 
 class ChunkMap {
@@ -45,7 +51,9 @@ public:
 	const u32 sizeX;
 	const u32 sizeZ;
 private:
-	Chunk** chunkMapArray; // Chunk map array
+	Chunk*** chunkMapArray; // Chunk map array
+	Foo*** fooMapArray;
+
 };
 
 #endif // CHUNK_H
