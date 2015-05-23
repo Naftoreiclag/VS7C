@@ -32,16 +32,6 @@ void OverworldGameState::init() {
 	// Make the test chunk
 	chunkNode = new ChunkNode(smgr->getRootSceneNode(), smgr, 1337);
 
-	// Animation
-	/*
-	scene::ISceneNodeAnimator* anim = smgr->createRotationAnimator(core::vector3df(0.8f, 0, 0.8f));
-
-	if(anim) {
-		chunkNode->addAnimator(anim);
-		anim->drop();
-		anim = 0;
-	}*/
-
 	scene::IAnimatedMesh* mesh = smgr->getMesh("example_media/sydney.md2");
     scene::IAnimatedMeshSceneNode* node = smgr->addAnimatedMeshSceneNode( mesh );
     node->setMaterialFlag(video::EMF_LIGHTING, false);

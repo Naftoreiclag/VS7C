@@ -5,3 +5,4 @@ lib/*
 *.layout
 .objs/*
 *ReleaseSingleLib*
+*example_*
