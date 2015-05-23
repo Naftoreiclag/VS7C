@@ -74,7 +74,7 @@ void OverworldGameState::update(irr::f32 tpf) {
     entityWorld.loopStart();
     entityWorld.setDelta(tpf);
 
-	physSys->process();
+	//physSys->process();
 
 	std::cout << player->physics.x << std::endl;
 
