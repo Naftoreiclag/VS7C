@@ -5,6 +5,8 @@
 #include "Artemis/Artemis.h"
 #include "Player.h"
 
+#include "ode/ode.h"
+
 #include "GameState.h"
 
 class ChunkNode;

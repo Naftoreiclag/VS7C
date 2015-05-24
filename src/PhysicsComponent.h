@@ -5,11 +5,13 @@
 #include "irrlicht.h"
 #include <iostream>
 #include "SceneNodeComponent.h"
+#include "ode/ode.h"
 
 class PhysicsComponent : public artemis::Component
 {
 public:
 	irr::f32 velX, velZ, x, z;
+	dBodyID body;
 
 	PhysicsComponent();
 };
