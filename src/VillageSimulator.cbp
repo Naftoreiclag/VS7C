@@ -51,14 +51,13 @@
 			<Add directory="../thirdparty/Artemis-Cpp/include" />
 			<Add directory="../thirdparty/lua-5.3_Win32_mingw4_lib/include" />
 			<Add directory="../thirdparty/ode-0.13/include" />
-			<Add directory="../thirdparty/lua-5.3_Win32_mingw4_lib/include" />
 		</Compiler>
 		<Linker>
 			<Add library="Irrlicht" />
-			<Add library="../thirdparty/Artemis-Cpp/lib/libArtemisCpp.a" />
-			<Add library="../thirdparty/lua-5.3_Win32_mingw4_lib/lib/liblua53.a" />
+			<Add library="..\thirdparty\Artemis-Cpp\lib\libArtemisCpp.a" />
+			<Add library="..\thirdparty\lua-5.3_Win32_mingw4_lib\lib\liblua53.a" />
+			<Add library="..\thirdparty\ode-0.13\lib\ReleaseSingleDLL\libode_single.a" />
 			<Add directory="../thirdparty/lua-5.3_Win32_mingw4_lib/lib" />
-			<Add directory="../thirdparty/ode-0.13/lib/ReleaseSingleDLL" />
 		</Linker>
 		<Unit filename="Array2d.h" />
 		<Unit filename="Chunk.cpp" />

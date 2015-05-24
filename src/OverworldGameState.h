@@ -32,6 +32,8 @@ private:
 	artemis::World entityWorld;
 	artemis::EntityManager* entityMgr;
 	artemis::SystemManager* systemMgr;
+	dWorldID physWorld;
+
 	PhysicsSystem* physSys;
 	artemis::Entity* foo;
 
