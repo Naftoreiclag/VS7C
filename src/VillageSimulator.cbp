@@ -22,11 +22,7 @@
 					<Add library="Xxf86vm" />
 					<Add library="Xcursor" />
 					<Add library="GL" />
-					<Add library="..\thirdparty\Artemis-Cpp\lib\libArtemisCpp.a" />
 					<Add directory="../thirdparty/irrlicht-1.8.1/lib/Linux" />
-					<Add directory="../thirdparty/Artemis-Cpp/lib" />
-					<Add directory="../thirdparty/lua-5.3_Win32_mingw4_lib/lib" />
-					<Add directory="../thirdparty/ode-0.13/lib/ReleaseSingleDLL" />
 				</Linker>
 			</Target>
 			<Target title="Windows">
@@ -41,11 +37,7 @@
 					<Add option="-g" />
 				</Compiler>
 				<Linker>
-					<Add library="..\thirdparty\Artemis-Cpp\lib\libArtemisCpp.a" />
 					<Add directory="../thirdparty/irrlicht-1.8.1/lib/Win32-gcc" />
-					<Add directory="../thirdparty/Artemis-Cpp/lib" />
-					<Add directory="../thirdparty/lua-5.3_Win32_mingw4_lib/lib" />
-					<Add directory="../thirdparty/ode-0.13/lib/ReleaseSingleDLL" />
 				</Linker>
 			</Target>
 		</Build>
@@ -59,9 +51,14 @@
 			<Add directory="../thirdparty/Artemis-Cpp/include" />
 			<Add directory="../thirdparty/lua-5.3_Win32_mingw4_lib/include" />
 			<Add directory="../thirdparty/ode-0.13/include" />
+			<Add directory="../thirdparty/lua-5.3_Win32_mingw4_lib/include" />
 		</Compiler>
 		<Linker>
 			<Add library="Irrlicht" />
+			<Add library="../thirdparty/Artemis-Cpp/lib/libArtemisCpp.a" />
+			<Add library="../thirdparty/lua-5.3_Win32_mingw4_lib/lib/liblua53.a" />
+			<Add directory="../thirdparty/lua-5.3_Win32_mingw4_lib/lib" />
+			<Add directory="../thirdparty/ode-0.13/lib/ReleaseSingleDLL" />
 		</Linker>
 		<Unit filename="Array2d.h" />
 		<Unit filename="Chunk.cpp" />
