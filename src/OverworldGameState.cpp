@@ -76,7 +76,8 @@ void OverworldGameState::update(irr::f32 tpf) {
 
 	physSys->process();
 
-	std::cout << player->physics->x << std::endl;
+	cam->setPosition(core::vector3df(player->physics->x, 2, player->physics->z -4));
+	cam->setTarget(core::vector3df(player->physics->x, 0, player->physics->z));
 }
 
 
