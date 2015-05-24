@@ -1,6 +1,5 @@
 #include "OverworldGameState.h"
 
-#include "ode/ode.h"
 #include "irrlicht.h"
 #include "ChunkNode.h"
 #include "Chunk.h"
@@ -19,8 +18,6 @@ OverworldGameState::OverworldGameState(irr::IrrlichtDevice *irrlicht)
 }
 
 void OverworldGameState::init() {
-	physWorld = dWorldCreate();
-	dWorldSetGravity(physWorld, 0, 9.8, 0);
 
 	physSys = (PhysicsSystem*) systemMgr->setSystem(new PhysicsSystem());
 
@@ -60,7 +57,6 @@ void OverworldGameState::init() {
 
 
 void OverworldGameState::cleanup() {
-	dWorldDestroy(physWorld);
 
 	chunkNode->drop();
 	chunkNode = 0;
@@ -79,7 +75,8 @@ void OverworldGameState::update(irr::f32 tpf) {
     entityWorld.loopStart();
     entityWorld.setDelta(tpf);
 
-	//dWorldStep(physWorld, 0.05);
+
+	std::cout << "about to calc step" << std::endl;
 
 	physSys->process();
 

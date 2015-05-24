@@ -5,7 +5,6 @@
 #include "Artemis/Artemis.h"
 #include "Player.h"
 
-#include "ode/ode.h"
 
 #include "GameState.h"
 
@@ -32,7 +31,6 @@ private:
 	artemis::World entityWorld;
 	artemis::EntityManager* entityMgr;
 	artemis::SystemManager* systemMgr;
-	dWorldID physWorld;
 
 	PhysicsSystem* physSys;
 	artemis::Entity* foo;
