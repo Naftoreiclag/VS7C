@@ -3,6 +3,7 @@
 
 #include "irrlicht.h"
 #include "Artemis/Artemis.h"
+#include "btBulletDynamicsCommon.h"
 #include "Player.h"
 
 
