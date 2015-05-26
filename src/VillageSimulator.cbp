@@ -50,23 +50,23 @@
 			<Add directory="../thirdparty/irrlicht-1.8.1/include" />
 			<Add directory="../thirdparty/Artemis-Cpp/include" />
 			<Add directory="../thirdparty/lua-5.3_Win32_mingw4_lib/include" />
-			<Add directory="../thirdparty/bullet3-2.83.4/include" />
+			<Add directory="../thirdparty/bullet3-2.83.4/src" />
 		</Compiler>
 		<Linker>
 			<Add library="Irrlicht" />
 			<Add library="..\thirdparty\Artemis-Cpp\lib\libArtemisCpp.a" />
 			<Add library="..\thirdparty\lua-5.3_Win32_mingw4_lib\lib\liblua53.a" />
 			<Add library="..\thirdparty\ode-0.13\lib\ReleaseSingleDLL\libode_single.a" />
-			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBulletDynamics.a" />
-			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBulletCollision.a" />
-			<Add library="..\thirdparty\bullet3-2.83.4\lib\libLinearMath.a" />
-			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBullet2FileLoader.a" />
-			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBullet3Collision.a" />
-			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBullet3Common.a" />
-			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBullet3Dynamics.a" />
-			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBullet3Geometry.a" />
-			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBullet3OpenCL_clew.a" />
-			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBulletSoftBody.a" />
+			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBulletDynamics.dll.a" />
+			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBulletCollision.dll.a" />
+			<Add library="..\thirdparty\bullet3-2.83.4\lib\libLinearMath.dll.a" />
+			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBullet2FileLoader.dll.a" />
+			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBullet3Collision.dll.a" />
+			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBullet3Common.dll.a" />
+			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBullet3Dynamics.dll.a" />
+			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBullet3Geometry.dll.a" />
+			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBullet3OpenCL_clew.dll.a" />
+			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBulletSoftBody.dll.a" />
 			<Add directory="../thirdparty/bullet3-2.83.4/lib" />
 		</Linker>
 		<Unit filename="Array2d.h" />

@@ -33,6 +33,10 @@ private:
 	artemis::EntityManager* entityMgr;
 	artemis::SystemManager* systemMgr;
 
+	btBroadphaseInterface* broadphase;
+	btDefaultCollisionConfiguration* collisionConfiguration;
+	btCollisionDispatcher* dispatcher;
+
 	PhysicsSystem* physSys;
 	artemis::Entity* foo;
 
