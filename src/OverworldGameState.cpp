@@ -19,7 +19,23 @@ OverworldGameState::OverworldGameState(irr::IrrlichtDevice *irrlicht)
 
 void OverworldGameState::init() {
 
+	//
+	broadphase = new btDbvtBroadphase;
+	collisionConfiguration = new btDefaultCollisionConfiguration;
+	dispatcher = new btCollisionDispatcher(collisionConfiguration);
+	solver = new btSequentialImpulseConstraintSolver;
+
+	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
+
+	btCollisionShape* boxCollisionShape = new btBoxShape(btVector3(1.0f, 1.0f, 1.0f));
+	btDefaultMotionState* motionstate = new btDefaultMotionState();
+	btRigidBody::btRigidBodyConstructionInfo rigidBodyInfo(0, motionstate, boxCollisionShape, btVector3(0, 0, 0));
+	btRigidBody* rigidBody = new btRigidBody(rigidBodInfo);
+
+	dynamicsWorld->addRigidBody(rigidBody);
+
 	physSys = (PhysicsSystem*) systemMgr->setSystem(new PhysicsSystem());
+
 
 
 	systemMgr->initializeAll();
@@ -48,7 +64,7 @@ void OverworldGameState::init() {
 
 	scene::IMesh* cube = smgr->getMesh("assets/unit_cube.dae");
 	scene::IMeshSceneNode* node = smgr->addMeshSceneNode(cube);
-    node->setMaterialFlag(video::EMF_LIGHTING, false);
+	node->setMaterialFlag(video::EMF_LIGHTING, false);
 
 	artemis::Entity* foo = &(entityMgr->create());
 	player = new Player(foo, node);
@@ -60,6 +76,12 @@ void OverworldGameState::cleanup() {
 
 	chunkNode->drop();
 	chunkNode = 0;
+
+	delete dynamicsWorld;
+	delete solver;
+	delete dispatcher;
+	delete collisionConfiguration;
+	delete broadphase;
 }
 
 void OverworldGameState::pause()
@@ -72,8 +94,8 @@ void OverworldGameState::resume()
 }
 
 void OverworldGameState::update(irr::f32 tpf) {
-    entityWorld.loopStart();
-    entityWorld.setDelta(tpf);
+	entityWorld.loopStart();
+	entityWorld.setDelta(tpf);
 
 
 	std::cout << "about to calc step" << std::endl;

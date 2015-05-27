@@ -36,6 +36,9 @@ private:
 	btBroadphaseInterface* broadphase;
 	btDefaultCollisionConfiguration* collisionConfiguration;
 	btCollisionDispatcher* dispatcher;
+	btSequentialImpulseConstraintSolver* solver;
+
+	btDiscreteDynamicsWorld* dynamicsWorld;
 
 	PhysicsSystem* physSys;
 	artemis::Entity* foo;
