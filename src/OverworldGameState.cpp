@@ -28,9 +28,7 @@ void OverworldGameState::init() {
 	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
 
 	btCollisionShape* boxCollisionShape = new btBoxShape(btVector3(1.0f, 1.0f, 1.0f));
-	btDefaultMotionState* motionstate = new btDefaultMotionState();
-	btRigidBody::btRigidBodyConstructionInfo rigidBodyInfo(0, motionstate, boxCollisionShape, btVector3(0, 0, 0));
-	btRigidBody* rigidBody = new btRigidBody(rigidBodInfo);
+	btRigidBody* rigidBody = new btRigidBody(0, new btDefaultMotionState(), boxCollisionShape, btVector3(0, 0, 0));
 
 	dynamicsWorld->addRigidBody(rigidBody);
 
@@ -98,7 +96,10 @@ void OverworldGameState::update(irr::f32 tpf) {
 	entityWorld.setDelta(tpf);
 
 
+
 	std::cout << "about to calc step" << std::endl;
+
+	dynamicsWorld->stepSimulation(tpf, 6);
 
 	physSys->process();
 
