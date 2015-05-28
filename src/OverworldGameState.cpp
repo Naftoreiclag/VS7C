@@ -101,7 +101,7 @@ void OverworldGameState::update(irr::f32 tpf) {
 	//cam->setTarget(core::vector3df(player->physics->x, 0, player->physics->z));
 
 	cam->setPosition(cubeNode->getAbsolutePosition() + core::vector3df(0, 2, -4));
-	cam->setPosition(cubeNode->getAbsolutePosition());
+	cam->setTarget(cubeNode->getAbsolutePosition());
 }
 
 
