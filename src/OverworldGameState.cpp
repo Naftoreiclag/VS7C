@@ -95,11 +95,7 @@ void OverworldGameState::update(irr::f32 tpf) {
 	entityWorld.loopStart();
 	entityWorld.setDelta(tpf);
 
-
-
-	std::cout << "about to calc step" << std::endl;
-
-	dynamicsWorld->stepSimulation(tpf, 6);
+	dynamicsWorld->stepSimulation(tpf, 6, 1/60);
 
 	physSys->process();
 
