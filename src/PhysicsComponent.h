@@ -3,13 +3,35 @@
 
 #include "Artemis/Artemis.h"
 #include "irrlicht.h"
-#include <iostream>
 #include "SceneNodeComponent.h"
+#include "btBulletDynamicsCommon.h"
+
+class SceneNodeMotionState : public btMotionState {
+protected:
+	btTransform initialLoc;
+	irr::scene::ISceneNode* sceneNode;
+public:
+	SceneNodeMotionState(const btTransform &initialLoc, irr::scene::ISceneNode* sceneNode)
+	: sceneNode(sceneNode),
+	initialLoc(initialLoc) {
+	}
+
+	virtual void getWorldTransform(btTransform &worldTransform) const {
+		worldTransform = initialLoc;
+	}
+
+	virtual void setWorldTransform(const btTransform &worldTransform) {
+		btQuaternion rotation = worldTransform.getRotation();
+		btVector3 location = worldTransform.getOrigin();
+		sceneNode->setPosition(irr::core::vector3df(location.x(), location.y(), location.z()));
+	}
+
+};
 
 class PhysicsComponent : public artemis::Component
 {
 public:
-	irr::f32 velX, velZ, x, z;
+	btMotionState* motionState;
 
 	PhysicsComponent();
 };
@@ -32,11 +54,6 @@ public:
 	virtual void processEntity(artemis::Entity& e) {
 		PhysicsComponent* phys = physicsMapper.get(e);
 		SceneNodeComponent* scene = sceneNodeMapper.get(e);
-		phys->x += phys->velX * world->getDelta();
-		phys->z += phys->velZ * world->getDelta();
-
-		scene->sceneNode->setPosition(irr::core::vector3df(phys->x, 0, phys->z));
-
 	}
 
 };

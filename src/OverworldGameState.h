@@ -33,6 +33,8 @@ private:
 	artemis::EntityManager* entityMgr;
 	artemis::SystemManager* systemMgr;
 
+	irr::scene::IMeshSceneNode* cubeNode;
+
 	btBroadphaseInterface* broadphase;
 	btDefaultCollisionConfiguration* collisionConfiguration;
 	btCollisionDispatcher* dispatcher;
@@ -40,7 +42,7 @@ private:
 
 	btDiscreteDynamicsWorld* dynamicsWorld;
 
-	PhysicsSystem* physSys;
+	//PhysicsSystem* physSys;
 	artemis::Entity* foo;
 
 	ChunkNode* chunkNode;

@@ -32,9 +32,7 @@ void OverworldGameState::init() {
 
 	dynamicsWorld->addRigidBody(rigidBody);
 
-	physSys = (PhysicsSystem*) systemMgr->setSystem(new PhysicsSystem());
-
-
+	//physSys = (PhysicsSystem*) systemMgr->setSystem(new PhysicsSystem());
 
 	systemMgr->initializeAll();
 
@@ -61,11 +59,11 @@ void OverworldGameState::init() {
 	chunkNode = new ChunkNode(test->getChunk(0, 0), smgr->getRootSceneNode(), smgr, 1337);
 
 	scene::IMesh* cube = smgr->getMesh("assets/unit_cube.dae");
-	scene::IMeshSceneNode* node = smgr->addMeshSceneNode(cube);
-	node->setMaterialFlag(video::EMF_LIGHTING, false);
+	cubeNode = smgr->addMeshSceneNode(cube);
+	cubeNode->setMaterialFlag(video::EMF_LIGHTING, false);
 
 	artemis::Entity* foo = &(entityMgr->create());
-	player = new Player(foo, node);
+	player = new Player(foo, cubeNode);
 }
 
 
@@ -97,10 +95,13 @@ void OverworldGameState::update(irr::f32 tpf) {
 
 	dynamicsWorld->stepSimulation(tpf, 6, 1/60);
 
-	physSys->process();
+	//physSys->process();
 
-	cam->setPosition(core::vector3df(player->physics->x, 2, player->physics->z -4));
-	cam->setTarget(core::vector3df(player->physics->x, 0, player->physics->z));
+	//cam->setPosition(core::vector3df(player->physics->x, 2, player->physics->z -4));
+	//cam->setTarget(core::vector3df(player->physics->x, 0, player->physics->z));
+
+	cam->setPosition(cubeNode->getAbsolutePosition() + core::vector3df(0, 2, -4));
+	cam->setPosition(cubeNode->getAbsolutePosition());
 }
 
 
