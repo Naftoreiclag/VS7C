@@ -27,7 +27,7 @@ void OverworldGameState::init() {
 
 	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
 
-	dynamicsWorld->setGravity(btVector3(1, 0, 0));
+	dynamicsWorld->setGravity(btVector3(1, 1, 1));
 	//physSys = (PhysicsSystem*) systemMgr->setSystem(new PhysicsSystem());
 
 	systemMgr->initializeAll();
@@ -66,7 +66,7 @@ void OverworldGameState::init() {
 	trans.setOrigin(btVector3(0, 1, 0));
 	motion = new btDefaultMotionState(trans);
 	btCollisionShape* boxCollisionShape = new btBoxShape(btVector3(1.0f, 1.0f, 1.0f));
-	btRigidBody* rigidBody = new btRigidBody(0, motion, boxCollisionShape, btVector3(0, 0, 0));
+	btRigidBody* rigidBody = new btRigidBody(1, motion, boxCollisionShape, btVector3(0, 0, 0));
 
 	dynamicsWorld->addRigidBody(rigidBody);
 }
@@ -98,11 +98,13 @@ void OverworldGameState::update(irr::f32 tpf) {
 	entityWorld.loopStart();
 	entityWorld.setDelta(tpf);
 
-	dynamicsWorld->stepSimulation(tpf, 6, 1/60);
+	dynamicsWorld->stepSimulation(tpf, 6);
 
 	btTransform cubey;
 	motion->getWorldTransform(cubey);
 	btVector3 lock = cubey.getOrigin();
+
+	std::cout << lock.x() << ", " << lock.y() << ", " << lock.z() << std::endl;
 	cubeNode->setPosition(irr::core::vector3df(lock.x(), lock.y(), lock.z()));
 	//physSys->process();
 
