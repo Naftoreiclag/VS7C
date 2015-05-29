@@ -6,7 +6,7 @@
 #include "SceneNodeComponent.h"
 #include "btBulletDynamicsCommon.h"
 
-#include <iostream>
+#include "ReiMath.h"
 
 class SceneNodeMotionState : public btMotionState {
 protected:
@@ -20,19 +20,14 @@ public:
 
 	virtual void getWorldTransform(btTransform &worldTransform) const {
 		worldTransform = initialLoc;
-
-		std::cout << "getWorld" << std::endl;
 	}
 
 	virtual void setWorldTransform(const btTransform &worldTransform) {
-
-		std::cout << "setWorld" << std::endl;
-
 		btQuaternion rotation = worldTransform.getRotation();
+		sceneNode->setRotation(reim::bulletToIrr(reim::quaternionToEuler(rotation)));
+
 		btVector3 location = worldTransform.getOrigin();
 		sceneNode->setPosition(irr::core::vector3df(location.x(), location.y(), location.z()));
-
-		//initialLoc = worldTransform;
 	}
 
 };

@@ -99,19 +99,8 @@ void OverworldGameState::update(irr::f32 tpf) {
 	entityWorld.setDelta(tpf);
 
 	dynamicsWorld->stepSimulation(tpf, 6);
-	/*
-	btTransform cubey;
-	motion->getWorldTransform(cubey);
-	btVector3 lock = cubey.getOrigin();
-
-	std::cout << lock.x() << ", " << lock.y() << ", " << lock.z() << std::endl;
-	cubeNode->setPosition(irr::core::vector3df(lock.x(), lock.y(), lock.z()));
-	*/
 
 	//physSys->process();
-
-	//cam->setPosition(core::vector3df(player->physics->x, 2, player->physics->z -4));
-	//cam->setTarget(core::vector3df(player->physics->x, 0, player->physics->z));
 
 	cam->setPosition(cubeNode->getAbsolutePosition() + core::vector3df(0, 2, -4));
 	cam->setTarget(cubeNode->getAbsolutePosition());
