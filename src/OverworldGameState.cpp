@@ -54,11 +54,8 @@ void OverworldGameState::init() {
 	chunkNode = new ChunkNode(test->getChunk(0, 0), smgr->getRootSceneNode(), smgr, 1337);
 
 	// Phys test floor
-	btTransform potato;
-	potato.setIdentity();
-	potato.setOrigin(btVector3(0, 0, 0));
 	btStaticPlaneShape* planeShape = new btStaticPlaneShape(btVector3(0, 1, 0), 0);
-	btRigidBody* planeRigid = new btRigidBody(0, new btDefaultMotionState(potato), planeShape);
+	btRigidBody* planeRigid = new btRigidBody(0, new btDefaultMotionState(), planeShape);
 
 	dynamicsWorld->addRigidBody(planeRigid);
 
@@ -73,7 +70,7 @@ void OverworldGameState::init() {
 	trans.setIdentity();
 	trans.setOrigin(btVector3(0, 10, 0));
 	motion = new SceneNodeMotionState(trans, cubeNode);
-	btCollisionShape* boxCollisionShape = new btBoxShape(btVector3(1.0f, 1.0f, 1.0f));
+	btCollisionShape* boxCollisionShape = new btBoxShape(btVector3(0.5f, 0.5f, 0.5f));
 	btRigidBody* rigidBody = new btRigidBody(1, motion, boxCollisionShape);
 
 	dynamicsWorld->addRigidBody(rigidBody);
