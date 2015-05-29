@@ -7,6 +7,8 @@
 #include "irrlicht.h"
 
 namespace reim {
+
+
     btVector3 quaternionToEuler(const btQuaternion &rot);
 
     irr::core::vector3df bulletToIrr(const btVector3 vec);
