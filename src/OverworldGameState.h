@@ -40,11 +40,11 @@ private:
 	btCollisionDispatcher* dispatcher;
 	btSequentialImpulseConstraintSolver* solver;
 
-	SceneNodeMotionState* motion;
+	//SceneNodeMotionState* motion;
 
 	btDiscreteDynamicsWorld* dynamicsWorld;
 
-	//PhysicsSystem* physSys;
+	PhysicsSystem* physSys;
 	artemis::Entity* foo;
 
 	ChunkNode* chunkNode;

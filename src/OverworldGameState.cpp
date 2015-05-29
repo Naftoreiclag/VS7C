@@ -27,8 +27,8 @@ void OverworldGameState::init() {
 
 	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
 
-	dynamicsWorld->setGravity(btVector3(0, -1, 0));
-	//physSys = (PhysicsSystem*) systemMgr->setSystem(new PhysicsSystem());
+	dynamicsWorld->setGravity(btVector3(0, -3, 0));
+	physSys = (PhysicsSystem*) systemMgr->setSystem(new PhysicsSystem());
 
 	systemMgr->initializeAll();
 
@@ -55,7 +55,7 @@ void OverworldGameState::init() {
 
 	// Phys test floor
 	btStaticPlaneShape* planeShape = new btStaticPlaneShape(btVector3(0, 1, 0), 0);
-	btRigidBody* planeRigid = new btRigidBody(0, new btDefaultMotionState(), planeShape);
+	btRigidBody* planeRigid = new btRigidBody(0, 0, planeShape);
 
 	dynamicsWorld->addRigidBody(planeRigid);
 
@@ -63,6 +63,7 @@ void OverworldGameState::init() {
 	cubeNode = smgr->addMeshSceneNode(cube);
 	cubeNode->setMaterialFlag(video::EMF_LIGHTING, false);
 
+	/*
 	artemis::Entity* foo = &(entityMgr->create());
 	player = new Player(foo, cubeNode);
 
@@ -74,6 +75,16 @@ void OverworldGameState::init() {
 	btRigidBody* rigidBody = new btRigidBody(1, motion, boxCollisionShape);
 
 	dynamicsWorld->addRigidBody(rigidBody);
+	*/
+
+	artemis::Entity* box = &(entityMgr->create());
+	box->addComponent(new SceneNodeComponent(cubeNode));
+	btTransform trans;
+	trans.setIdentity();
+	trans.setOrigin(btVector3(0, 10, 0));
+	btCollisionShape* boxCollisionShape = new btBoxShape(btVector3(0.5f, 0.5f, 0.5f));
+	box->addComponent(new PhysicsComponent(dynamicsWorld, 1, boxCollisionShape, trans));
+	box->refresh();
 }
 
 
@@ -105,7 +116,7 @@ void OverworldGameState::update(irr::f32 tpf) {
 
 	dynamicsWorld->stepSimulation(tpf, 6);
 
-	//physSys->process();
+	physSys->process();
 
 	cam->setPosition(cubeNode->getAbsolutePosition() + core::vector3df(0, 2, -4));
 	cam->setTarget(cubeNode->getAbsolutePosition());
