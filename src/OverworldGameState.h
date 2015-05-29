@@ -40,6 +40,8 @@ private:
 	btCollisionDispatcher* dispatcher;
 	btSequentialImpulseConstraintSolver* solver;
 
+	artemis::Entity& entityThing(btVector3 aaa);
+
 	btDiscreteDynamicsWorld* dynamicsWorld;
 
 	PhysicsSystem* physSys;

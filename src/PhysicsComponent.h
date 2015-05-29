@@ -23,9 +23,7 @@ private:
 		PhysicsComponent* const sendTo;
 	public:
 		BulletCallback(const btTransform &initialLoc, PhysicsComponent* const sendTo);
-
 		virtual void getWorldTransform(btTransform &worldTransform) const;
-
 		virtual void setWorldTransform(const btTransform &worldTransform);
 	};
 
