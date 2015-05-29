@@ -40,8 +40,6 @@ private:
 	btCollisionDispatcher* dispatcher;
 	btSequentialImpulseConstraintSolver* solver;
 
-	//SceneNodeMotionState* motion;
-
 	btDiscreteDynamicsWorld* dynamicsWorld;
 
 	PhysicsSystem* physSys;

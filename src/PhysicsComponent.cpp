@@ -1,5 +1,7 @@
 #include "PhysicsComponent.h"
 
+#include "ReiMath.h"
+
 PhysicsComponent::BulletCallback::BulletCallback(const btTransform &initialLoc, PhysicsComponent* const sendTo)
 : sendTo(sendTo),
 initialLoc(initialLoc) {
@@ -18,8 +20,7 @@ void PhysicsComponent::BulletCallback::setWorldTransform(const btTransform &worl
 PhysicsComponent::PhysicsComponent(btDynamicsWorld* const world, btScalar mass, btCollisionShape* collisionShape, const btTransform &initialLoc)
 : artemis::Component(),
 world(world) {
-	motionState = new BulletCallback(initialLoc, this);
-
+	motionState = new BulletCallback(initialLoc, this); // OK to use this in constructor here
 	rigidBody = new btRigidBody(mass, motionState, collisionShape);
 	world->addRigidBody(rigidBody);
 }

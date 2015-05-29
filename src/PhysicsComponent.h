@@ -6,15 +6,17 @@
 #include "SceneNodeComponent.h"
 #include "btBulletDynamicsCommon.h"
 
-#include "ReiMath.h"
-
+// Component that adds physics data to an entity
 class PhysicsComponent : public artemis::Component {
+private:
+	bool needsAttencion; // Tells PhysicsSystem that the data is worth looking at (i.e. it changed)
+	friend class PhysicsSystem;
 public:
-	bool needsAttencion;
 	btQuaternion rotation;
 	btVector3 location;
 
 private:
+	// Utilizes the bullet calling stuff, relays information to the PhysicsComponent
 	class BulletCallback : public btMotionState {
 	protected:
 		btTransform initialLoc;
@@ -36,6 +38,7 @@ public:
 	~PhysicsComponent();
 };
 
+// The associated system that manages all entities using PhysicsComponent
 class PhysicsSystem : public artemis::EntityProcessingSystem {
 private:
 	artemis::ComponentMapper<PhysicsComponent> physicsMapper;
