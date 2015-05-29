@@ -8,32 +8,6 @@
 
 #include "ReiMath.h"
 
-/*
-class SceneNodeMotionState : public btMotionState {
-protected:
-	btTransform initialLoc;
-	irr::scene::ISceneNode* sceneNode;
-public:
-	SceneNodeMotionState(const btTransform &initialLoc, irr::scene::ISceneNode* sceneNode)
-	: sceneNode(sceneNode),
-	initialLoc(initialLoc) {
-	}
-
-	virtual void getWorldTransform(btTransform &worldTransform) const {
-		worldTransform = initialLoc;
-	}
-
-	virtual void setWorldTransform(const btTransform &worldTransform) {
-		btQuaternion rotation = worldTransform.getRotation();
-		sceneNode->setRotation(reim::bulletToIrr(reim::quaternionToEuler(rotation)));
-
-		btVector3 location = worldTransform.getOrigin();
-		sceneNode->setPosition(irr::core::vector3df(location.x(), location.y(), location.z()));
-	}
-
-};
-*/
-
 class PhysicsComponent : public artemis::Component
 {
 public:
