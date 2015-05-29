@@ -47,6 +47,7 @@ void OverworldGameState::init() {
 
 	entityThing(btVector3(3, 3, 3));
 	entityThing(btVector3(3.7, 6, 3.7));
+	entityThing(btVector3(4.1, 10, 4.1));
 
 	// Cool skybox
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);

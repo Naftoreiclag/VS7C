@@ -21,7 +21,9 @@ PhysicsComponent::PhysicsComponent(btDynamicsWorld* const world, btScalar mass, 
 : artemis::Component(),
 world(world) {
 	motionState = new BulletCallback(initialLoc, this); // OK to use this in constructor here
-	rigidBody = new btRigidBody(mass, motionState, collisionShape);
+	btVector3 inertia(0, 0, 0);
+	collisionShape->calculateLocalInertia(mass, inertia);
+	rigidBody = new btRigidBody(mass, motionState, collisionShape, inertia);
 	world->addRigidBody(rigidBody);
 }
 
