@@ -25,16 +25,22 @@ void OverworldGameState::init() {
 	dispatcher = new btCollisionDispatcher(collisionConfiguration);
 	solver = new btSequentialImpulseConstraintSolver;
 	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
-	dynamicsWorld->setGravity(btVector3(0, -32.1522, 0));
+	dynamicsWorld->setGravity(btVector3(0, -32.1522, 0)); // Earth gravity
 
 	// Initalize all artemis systems
 	physSys = (PhysicsSystem*) systemMgr->setSystem(new PhysicsSystem());
 	systemMgr->initializeAll();
 
+
 	// Add the camera
 	cam = smgr->addCameraSceneNode();
 	cam->setPosition(core::vector3df(0, 2, -4));
 	cam->setTarget(core::vector3df(0, 0, 0));
+
+	// Light?
+	irr::scene::ILightSceneNode* light = smgr->addLightSceneNode();
+	light->setPosition(irr::core::vector3df(0, 1, 0));
+	light->setLightType(irr::video::ELT_DIRECTIONAL);
 
 	// Make the test chunk
 	ChunkMap* test = new ChunkMap(5, 5);
@@ -68,7 +74,7 @@ artemis::Entity& OverworldGameState::entityThing(btVector3 origin) {
 	// SceneNode
 	scene::IMesh* cube = smgr->getMesh("assets/unit_cube.dae");
 	cubeNode = smgr->addMeshSceneNode(cube);
-	cubeNode->setMaterialFlag(video::EMF_LIGHTING, false);
+	cubeNode->setMaterialFlag(video::EMF_LIGHTING, true);
 	box.addComponent(new SceneNodeComponent(cubeNode));
 
 	// Physics
