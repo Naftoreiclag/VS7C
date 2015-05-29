@@ -8,53 +8,32 @@
 
 #include "ReiMath.h"
 
-class PhysicsComponent : public artemis::Component
-{
+class PhysicsComponent : public artemis::Component {
 public:
 	bool needsAttencion;
 	btQuaternion rotation;
 	btVector3 location;
+
 private:
-	class PhysicsComponentMotionState : public btMotionState {
+	class BulletCallback : public btMotionState {
 	protected:
 		btTransform initialLoc;
 		PhysicsComponent* const sendTo;
 	public:
-		PhysicsComponentMotionState(const btTransform &initialLoc, PhysicsComponent* const sendTo)
-		: sendTo(sendTo),
-		initialLoc(initialLoc) {
-		}
+		BulletCallback(const btTransform &initialLoc, PhysicsComponent* const sendTo);
 
-		virtual void getWorldTransform(btTransform &worldTransform) const {
-			worldTransform = initialLoc;
-		}
+		virtual void getWorldTransform(btTransform &worldTransform) const;
 
-		virtual void setWorldTransform(const btTransform &worldTransform) {
-			sendTo->rotation = worldTransform.getRotation();
-			sendTo->location = worldTransform.getOrigin();
-			sendTo->needsAttencion = true;
-		}
+		virtual void setWorldTransform(const btTransform &worldTransform);
 	};
+
 public:
-	PhysicsComponentMotionState* motionState;
+	BulletCallback* motionState;
 	btRigidBody* rigidBody;
 	btDynamicsWorld* const world;
 
-	PhysicsComponent(btDynamicsWorld* const world, btScalar mass, btCollisionShape* collisionShape, const btTransform &initialLoc)
-	: artemis::Component(),
-	world(world) {
-		motionState = new PhysicsComponentMotionState(initialLoc, this);
-
-		rigidBody = new btRigidBody(mass, motionState, collisionShape);
-		world->addRigidBody(rigidBody);
-	}
-
-	~PhysicsComponent() {
-		world->removeRigidBody(rigidBody);
-
-		delete motionState; // might be deleted by rigid body, doubt it tho
-		delete rigidBody;
-	}
+	PhysicsComponent(btDynamicsWorld* const world, btScalar mass, btCollisionShape* collisionShape, const btTransform &initialLoc);
+	~PhysicsComponent();
 };
 
 class PhysicsSystem : public artemis::EntityProcessingSystem {
@@ -63,25 +42,9 @@ private:
 	artemis::ComponentMapper<SceneNodeComponent> sceneNodeMapper;
 
 public:
-	PhysicsSystem() {
-		addComponentType<PhysicsComponent>();
-		addComponentType<SceneNodeComponent>();
-	}
-
-	virtual void initialize() {
-		physicsMapper.init(*world);
-		sceneNodeMapper.init(*world);
-	}
-	virtual void processEntity(artemis::Entity& e) {
-
-		PhysicsComponent* phys = physicsMapper.get(e);
-		//if(phys->needsAttencion)
-		SceneNodeComponent* scene = sceneNodeMapper.get(e);
-
-		scene->sceneNode->setRotation(reim::bulletToIrr(reim::quaternionToEuler(phys->rotation)));
-		scene->sceneNode->setPosition(reim::bulletToIrr(phys->location));
-	}
-
+	PhysicsSystem();
+	virtual void initialize();
+	virtual void processEntity(artemis::Entity& e);
 };
 
 #endif // PHYSICSCOMPONENT_H
