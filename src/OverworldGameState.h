@@ -33,22 +33,20 @@ private:
 	artemis::EntityManager* entityMgr;
 	artemis::SystemManager* systemMgr;
 
-	irr::scene::IMeshSceneNode* cubeNode;
-
 	btBroadphaseInterface* broadphase;
 	btDefaultCollisionConfiguration* collisionConfiguration;
 	btCollisionDispatcher* dispatcher;
 	btSequentialImpulseConstraintSolver* solver;
 
 	artemis::Entity& entityThing(btVector3 aaa);
+	artemis::Entity& makePlayer(btVector3 aaa);
 
 	btDiscreteDynamicsWorld* dynamicsWorld;
 
 	PhysicsSystem* physSys;
-	artemis::Entity* foo;
+	artemis::Entity* playerEnt;
 
 	ChunkNode* chunkNode;
-	Player* player;
 };
 
 #endif // OVERWORLDGAMESTATE_H

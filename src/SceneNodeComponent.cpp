@@ -7,5 +7,6 @@ SceneNodeComponent::SceneNodeComponent(irr::scene::ISceneNode* sceneNode)
 }
 
 SceneNodeComponent::~SceneNodeComponent() {
+	sceneNode->remove();
 	sceneNode->drop();
 }

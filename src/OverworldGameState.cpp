@@ -52,10 +52,13 @@ void OverworldGameState::init() {
 	btRigidBody* planeRigid = new btRigidBody(0, 0, planeShape);
 	dynamicsWorld->addRigidBody(planeRigid);
 
+/*
 	entityThing(btVector3(3, 3, 3));
-	artemis::Entity& egg = entityThing(btVector3(3.7, 6, 3.7));
+	entityThing(btVector3(3.7, 6, 3.7));
 	entityThing(btVector3(4.1, 10, 4.1));
-	entityMgr->remove(egg);
+	*/
+
+	playerEnt = &makePlayer(btVector3(5, 5, 5));
 
 	// Cool skybox
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
@@ -69,32 +72,25 @@ void OverworldGameState::init() {
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
 }
 
-/*
-artemis::Entity& OverworldGameState::makePlayer(artemis::EntityManager entityMgr) {
+artemis::Entity& OverworldGameState::makePlayer(btVector3 origin) {
 	// Make
 	artemis::Entity& entity = entityMgr->create();
 
 	// SceneNode
-	irr::scene::IMesh* cube = smgr->getMesh("assets/unit_cube.dae");
-	irr::scene::IMeshSceneNode* cubeNode = smgr->addMeshSceneNode(cube);
-	entity.addComponent(new SceneNodeComponent(cubeNode));
-	cube->drop();
-	cube = 0;
-	cubeNode->drop();
-	cubeNode = 0;
+	scene::IMesh* cube = smgr->getMesh("assets/unit_cube.dae");
+	entity.addComponent(new SceneNodeComponent(smgr->addMeshSceneNode(cube)));
+	// Do not drop resources or node, believing that Irrlicht handles that
 
 	// Physics
 	btTransform trans;
 	trans.setIdentity();
 	trans.setOrigin(origin);
-	btCollisionShape* boxCollisionShape = new btBoxShape(btVector3(0.5f, 0.5f, 0.5f));
-	entity.addComponent(new PhysicsComponent(dynamicsWorld, 1, boxCollisionShape, trans));
+	entity.addComponent(new PhysicsComponent(dynamicsWorld, 1, new btBoxShape(btVector3(0.5f, 0.5f, 0.5f)), trans));
 
 	// Finalize and return
 	entity.refresh();
 	return entity;
 }
-*/
 
 artemis::Entity& OverworldGameState::entityThing(btVector3 origin) {
 	// Box entity
@@ -102,8 +98,8 @@ artemis::Entity& OverworldGameState::entityThing(btVector3 origin) {
 
 	// SceneNode
 	scene::IMesh* cube = smgr->getMesh("assets/unit_cube.dae");
-	cubeNode = smgr->addMeshSceneNode(cube);
-	box.addComponent(new SceneNodeComponent(cubeNode));
+	box.addComponent(new SceneNodeComponent(smgr->addMeshSceneNode(cube)));
+	// Do not drop resources or node, believing that Irrlicht handles that
 
 	// Physics
 	btTransform trans;
@@ -149,8 +145,10 @@ void OverworldGameState::update(irr::f32 tpf) {
 
 	physSys->process();
 
-	cam->setPosition(cubeNode->getAbsolutePosition() + core::vector3df(0, 2, -4));
-	cam->setTarget(cubeNode->getAbsolutePosition());
+	SceneNodeComponent* comp = (SceneNodeComponent*) playerEnt->getComponent<SceneNodeComponent>();
+
+	cam->setPosition(comp->sceneNode->getAbsolutePosition() + core::vector3df(0, 2, -4));
+	cam->setTarget(comp->sceneNode->getAbsolutePosition());
 }
 
 
