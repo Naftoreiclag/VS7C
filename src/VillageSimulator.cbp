@@ -74,6 +74,8 @@
 		<Unit filename="Chunk.h" />
 		<Unit filename="ChunkNode.cpp" />
 		<Unit filename="ChunkNode.h" />
+		<Unit filename="EntityThingy.cpp" />
+		<Unit filename="EntityThingy.h" />
 		<Unit filename="Foo.cpp" />
 		<Unit filename="Foo.h" />
 		<Unit filename="GameObject.cpp" />

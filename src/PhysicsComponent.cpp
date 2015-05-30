@@ -19,6 +19,7 @@ void PhysicsComponent::BulletCallback::setWorldTransform(const btTransform &worl
 
 PhysicsComponent::PhysicsComponent(btDynamicsWorld* const world, btScalar mass, btCollisionShape* collisionShape, const btTransform &initialLoc)
 : artemis::Component(),
+collisionShape(collisionShape),
 world(world) {
 	motionState = new BulletCallback(initialLoc, this); // OK to use this in constructor here
 	btVector3 inertia(0, 0, 0);
@@ -30,7 +31,8 @@ world(world) {
 PhysicsComponent::~PhysicsComponent() {
 	world->removeRigidBody(rigidBody);
 
-	delete motionState; // might be deleted by rigid body, doubt it tho
+	delete collisionShape; // Deletes the shape. If you want to have a re-usable shape, then use shared_ptr<btCollisionShape>
+	delete motionState; // Not deleted by rigid body.
 	delete rigidBody;
 }
 

@@ -39,8 +39,9 @@ void OverworldGameState::init() {
 
 	// Light?
 	irr::scene::ILightSceneNode* light = smgr->addLightSceneNode();
-	light->setPosition(irr::core::vector3df(0, 1, 0));
 	light->setLightType(irr::video::ELT_DIRECTIONAL);
+	light->setPosition(irr::core::vector3df(0, 1, 0));
+	smgr->setAmbientLight(irr::video::SColor(1, 1, 1, 0));
 
 	// Make the test chunk
 	ChunkMap* test = new ChunkMap(5, 5);
@@ -52,8 +53,9 @@ void OverworldGameState::init() {
 	dynamicsWorld->addRigidBody(planeRigid);
 
 	entityThing(btVector3(3, 3, 3));
-	entityThing(btVector3(3.7, 6, 3.7));
+	artemis::Entity& egg = entityThing(btVector3(3.7, 6, 3.7));
 	entityThing(btVector3(4.1, 10, 4.1));
+	entityMgr->remove(egg);
 
 	// Cool skybox
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
@@ -67,6 +69,33 @@ void OverworldGameState::init() {
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
 }
 
+/*
+artemis::Entity& OverworldGameState::makePlayer(artemis::EntityManager entityMgr) {
+	// Make
+	artemis::Entity& entity = entityMgr->create();
+
+	// SceneNode
+	irr::scene::IMesh* cube = smgr->getMesh("assets/unit_cube.dae");
+	irr::scene::IMeshSceneNode* cubeNode = smgr->addMeshSceneNode(cube);
+	entity.addComponent(new SceneNodeComponent(cubeNode));
+	cube->drop();
+	cube = 0;
+	cubeNode->drop();
+	cubeNode = 0;
+
+	// Physics
+	btTransform trans;
+	trans.setIdentity();
+	trans.setOrigin(origin);
+	btCollisionShape* boxCollisionShape = new btBoxShape(btVector3(0.5f, 0.5f, 0.5f));
+	entity.addComponent(new PhysicsComponent(dynamicsWorld, 1, boxCollisionShape, trans));
+
+	// Finalize and return
+	entity.refresh();
+	return entity;
+}
+*/
+
 artemis::Entity& OverworldGameState::entityThing(btVector3 origin) {
 	// Box entity
 	artemis::Entity& box = entityMgr->create();
@@ -74,15 +103,13 @@ artemis::Entity& OverworldGameState::entityThing(btVector3 origin) {
 	// SceneNode
 	scene::IMesh* cube = smgr->getMesh("assets/unit_cube.dae");
 	cubeNode = smgr->addMeshSceneNode(cube);
-	cubeNode->setMaterialFlag(video::EMF_LIGHTING, true);
 	box.addComponent(new SceneNodeComponent(cubeNode));
 
 	// Physics
 	btTransform trans;
 	trans.setIdentity();
 	trans.setOrigin(origin);
-	btCollisionShape* boxCollisionShape = new btBoxShape(btVector3(0.5f, 0.5f, 0.5f));
-	box.addComponent(new PhysicsComponent(dynamicsWorld, 1, boxCollisionShape, trans));
+	box.addComponent(new PhysicsComponent(dynamicsWorld, 1, new btBoxShape(btVector3(0.5f, 0.5f, 0.5f)), trans));
 
 	// Finalize box entity
 	box.refresh();

@@ -7,6 +7,7 @@
 class SceneNodeComponent : public artemis::Component {
 public:
 	SceneNodeComponent(irr::scene::ISceneNode* sceneNode);
+	~SceneNodeComponent();
 	irr::scene::ISceneNode* const sceneNode;
 };
 

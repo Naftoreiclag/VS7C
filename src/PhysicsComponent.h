@@ -7,9 +7,11 @@
 #include "btBulletDynamicsCommon.h"
 
 // Component that adds physics data to an entity
+// Physics shaps are deleted. Use shared_ptr<btCollisionShape> to have reusable shapes.
 class PhysicsComponent : public artemis::Component {
 private:
 	bool needsAttencion; // Tells PhysicsSystem that the data is worth looking at (i.e. it changed)
+	btCollisionShape* collisionShape; // For deletion
 	friend class PhysicsSystem;
 public:
 	btQuaternion rotation;
