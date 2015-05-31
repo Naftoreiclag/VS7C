@@ -6,8 +6,7 @@
 
 class GameState;
 
-class GameStateManager
-{
+class GameStateManager {
 public:
 	GameStateManager();
 	virtual ~GameStateManager();

@@ -12,6 +12,7 @@ OverworldGameState::OverworldGameState(irr::IrrlichtDevice *irrlicht)
 	device = irrlicht;
 	driver = irrlicht->getVideoDriver();
 	smgr = irrlicht->getSceneManager();
+	inputMgr = (InputManager*) irrlicht->getEventReceiver();
 
 	systemMgr = entityWorld.getSystemManager();
 	entityMgr = entityWorld.getEntityManager();
@@ -52,11 +53,11 @@ void OverworldGameState::init() {
 	btRigidBody* planeRigid = new btRigidBody(0, 0, planeShape);
 	dynamicsWorld->addRigidBody(planeRigid);
 
-/*
 	entityThing(btVector3(3, 3, 3));
 	entityThing(btVector3(3.7, 6, 3.7));
 	entityThing(btVector3(4.1, 10, 4.1));
-	*/
+	entityThing(btVector3(6, 6, 6));
+
 
 	playerEnt = &makePlayer(btVector3(5, 5, 5));
 
@@ -85,7 +86,7 @@ artemis::Entity& OverworldGameState::makePlayer(btVector3 origin) {
 	btTransform trans;
 	trans.setIdentity();
 	trans.setOrigin(origin);
-	entity.addComponent(new PhysicsComponent(dynamicsWorld, 1, new btBoxShape(btVector3(0.5f, 0.5f, 0.5f)), trans));
+	entity.addComponent(new PhysicsComponent(dynamicsWorld, 8, new btBoxShape(btVector3(0.5f, 0.5f, 0.5f)), trans));
 
 	// Finalize and return
 	entity.refresh();
@@ -105,7 +106,7 @@ artemis::Entity& OverworldGameState::entityThing(btVector3 origin) {
 	btTransform trans;
 	trans.setIdentity();
 	trans.setOrigin(origin);
-	box.addComponent(new PhysicsComponent(dynamicsWorld, 1, new btBoxShape(btVector3(0.5f, 0.5f, 0.5f)), trans));
+	box.addComponent(new PhysicsComponent(dynamicsWorld, 8, new btBoxShape(btVector3(0.5f, 0.5f, 0.5f)), trans));
 
 	// Finalize box entity
 	box.refresh();

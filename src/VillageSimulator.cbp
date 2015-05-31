@@ -51,12 +51,12 @@
 			<Add directory="../thirdparty/Artemis-Cpp/include" />
 			<Add directory="../thirdparty/lua-5.3_Win32_mingw4_lib/include" />
 			<Add directory="../thirdparty/bullet3-2.83.4/src" />
+			<Add directory="../thirdparty/SFML-2.3/include" />
 		</Compiler>
 		<Linker>
 			<Add library="Irrlicht" />
 			<Add library="..\thirdparty\Artemis-Cpp\lib\libArtemisCpp.a" />
 			<Add library="..\thirdparty\lua-5.3_Win32_mingw4_lib\lib\liblua53.a" />
-			<Add library="..\thirdparty\ode-0.13\lib\ReleaseSingleDLL\libode_single.a" />
 			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBulletDynamics.dll.a" />
 			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBulletCollision.dll.a" />
 			<Add library="..\thirdparty\bullet3-2.83.4\lib\libLinearMath.dll.a" />
@@ -67,7 +67,12 @@
 			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBullet3Geometry.dll.a" />
 			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBullet3OpenCL_clew.dll.a" />
 			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBulletSoftBody.dll.a" />
+			<Add library="sfml-system-s" />
+			<Add library="sfml-network-s" />
+			<Add library="sfml-audio-s" />
+			<Add library="sfml-window-s" />
 			<Add directory="../thirdparty/bullet3-2.83.4/lib" />
+			<Add directory="../thirdparty/SFML-2.3/lib" />
 		</Linker>
 		<Unit filename="Array2d.h" />
 		<Unit filename="Chunk.cpp" />
@@ -84,6 +89,8 @@
 		<Unit filename="GameState.h" />
 		<Unit filename="GameStateManager.cpp" />
 		<Unit filename="GameStateManager.h" />
+		<Unit filename="InputManager.cpp" />
+		<Unit filename="InputManager.h" />
 		<Unit filename="OverworldGameState.cpp" />
 		<Unit filename="OverworldGameState.h" />
 		<Unit filename="PhysicsComponent.cpp" />

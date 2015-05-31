@@ -10,6 +10,7 @@
 #include "GameState.h"
 
 class ChunkNode;
+class InputManager;
 
 class OverworldGameState : public GameState
 {
@@ -29,6 +30,7 @@ private:
 	irr::scene::ISceneManager* smgr;
 	irr::scene::ICameraSceneNode* cam;
 	irr::IrrlichtDevice* device;
+	InputManager* inputMgr;
 	artemis::World entityWorld;
 	artemis::EntityManager* entityMgr;
 	artemis::SystemManager* systemMgr;

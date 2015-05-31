@@ -8,6 +8,7 @@
 #include "ChunkNode.h"
 #include "GameStateManager.h"
 #include "OverworldGameState.h"
+#include "InputManager.h"
 
 using namespace irr;
 
@@ -19,7 +20,10 @@ int main()
 {
 	// Get the preferred driver type
 	video::E_DRIVER_TYPE driverType=driverChoiceConsole();
-	if(driverType == video::EDT_COUNT) { return 1; }
+	if(driverType == video::EDT_COUNT) { return 1;
+
+	// Create input manager
+	InputManager inputManager;
 
 	// Create the irrlicht device
 	SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
@@ -29,7 +33,7 @@ int main()
 	params.Fullscreen = false;
 	params.Stencilbuffer = false;
 	params.Vsync = false;
-	params.EventReceiver = 0; // Pointer to an event receiver
+	params.EventReceiver = &inputManager;
 	params.AntiAlias = 4; // "Multisampling"
 	IrrlichtDevice* device = createDeviceEx(params);
 	if(!device) { return 1; }
@@ -52,8 +56,7 @@ int main()
 	u32 frames = 0;
 
 	// Main loop
-	while(device->run())
-	{
+	while(device->run()) {
 		// Calculate time per frame in seconds
 		const u32 now = device->getTimer()->getTime();
         const f32 tpf = (f32)(now - then) / 1000.f;
@@ -73,8 +76,7 @@ int main()
 
 		// Debug counter
 		++ frames;
-		if(frames >= 100)
-		{
+		if(frames >= 100) {
 			core::stringw str = L"Irrlicht Engine [";
 			str += driver->getName();
 			str += L"] FPS: ";
@@ -85,6 +87,6 @@ int main()
 		}
 	}
 
-	device->drop();
+	device->drop(); device = 0;
 	return 0;
 }
