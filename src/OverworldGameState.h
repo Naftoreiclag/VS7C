@@ -6,6 +6,7 @@
 #include "btBulletDynamicsCommon.h"
 #include "Player.h"
 
+#include "CharacterPhysicsComponent.h"
 
 #include "GameState.h"
 
@@ -31,9 +32,13 @@ private:
 	irr::scene::ICameraSceneNode* cam;
 	irr::IrrlichtDevice* device;
 	InputManager* inputMgr;
+
 	artemis::World entityWorld;
 	artemis::EntityManager* entityMgr;
 	artemis::SystemManager* systemMgr;
+
+	PhysicsSystem* physSys;
+	CharacterPhysicsSystem* charPhysSys;
 
 	btBroadphaseInterface* broadphase;
 	btDefaultCollisionConfiguration* collisionConfiguration;
@@ -45,7 +50,6 @@ private:
 
 	btDiscreteDynamicsWorld* dynamicsWorld;
 
-	PhysicsSystem* physSys;
 	artemis::Entity* playerEnt;
 
 	ChunkNode* chunkNode;

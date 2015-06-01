@@ -4,6 +4,7 @@
 #include "ChunkNode.h"
 #include "Chunk.h"
 #include <iostream>
+#include "InputManager.h"
 
 using namespace irr;
 
@@ -30,6 +31,7 @@ void OverworldGameState::init() {
 
 	// Initalize all artemis systems
 	physSys = (PhysicsSystem*) systemMgr->setSystem(new PhysicsSystem());
+	charPhysSys = (CharacterPhysicsSystem*) systemMgr->setSystem(new CharacterPhysicsSystem());
 	systemMgr->initializeAll();
 
 
@@ -57,6 +59,8 @@ void OverworldGameState::init() {
 	entityThing(btVector3(3.7, 6, 3.7));
 	entityThing(btVector3(4.1, 10, 4.1));
 	entityThing(btVector3(6, 6, 6));
+	entityThing(btVector3(8, 6, 6));
+	entityThing(btVector3(6, 6, 8));
 
 
 	playerEnt = &makePlayer(btVector3(5, 5, 5));
@@ -86,7 +90,11 @@ artemis::Entity& OverworldGameState::makePlayer(btVector3 origin) {
 	btTransform trans;
 	trans.setIdentity();
 	trans.setOrigin(origin);
-	entity.addComponent(new PhysicsComponent(dynamicsWorld, 8, new btBoxShape(btVector3(0.5f, 0.5f, 0.5f)), trans));
+	PhysicsComponent* comp = new PhysicsComponent(dynamicsWorld, 1, new btBoxShape(btVector3(0.5f, 0.5f, 0.5f)), trans);
+	comp->rigidBody->setActivationState(DISABLE_DEACTIVATION);
+	entity.addComponent(comp);
+	entity.addComponent(new CharacterPhysicsComponent());
+
 
 	// Finalize and return
 	entity.refresh();
@@ -142,8 +150,16 @@ void OverworldGameState::update(irr::f32 tpf) {
 	entityWorld.loopStart();
 	entityWorld.setDelta(tpf);
 
-	dynamicsWorld->stepSimulation(tpf, 6);
+	if(inputMgr->isKeyDown(irr::KEY_SPACE)) {
 
+		PhysicsComponent* phys = (PhysicsComponent*) playerEnt->getComponent<PhysicsComponent>();
+
+		phys->rigidBody->applyForce(btVector3(200, 0, 0), btVector3(0,0,0));
+		//phys->rigidBody->setLinearVelocity(btVector3(1, 0, 0));
+		//std::cout<< "swag" << std::endl;
+	}
+	charPhysSys->process();
+	dynamicsWorld->stepSimulation(tpf, 6);
 	physSys->process();
 
 	SceneNodeComponent* comp = (SceneNodeComponent*) playerEnt->getComponent<SceneNodeComponent>();

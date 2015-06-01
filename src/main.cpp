@@ -20,7 +20,7 @@ int main()
 {
 	// Get the preferred driver type
 	video::E_DRIVER_TYPE driverType=driverChoiceConsole();
-	if(driverType == video::EDT_COUNT) { return 1;
+	if(driverType == video::EDT_COUNT) { return 1; }
 
 	// Create input manager
 	InputManager inputManager;

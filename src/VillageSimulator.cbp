@@ -70,11 +70,12 @@
 			<Add library="sfml-system-s" />
 			<Add library="sfml-network-s" />
 			<Add library="sfml-audio-s" />
-			<Add library="sfml-window-s" />
 			<Add directory="../thirdparty/bullet3-2.83.4/lib" />
 			<Add directory="../thirdparty/SFML-2.3/lib" />
 		</Linker>
 		<Unit filename="Array2d.h" />
+		<Unit filename="CharacterPhysicsComponent.cpp" />
+		<Unit filename="CharacterPhysicsComponent.h" />
 		<Unit filename="Chunk.cpp" />
 		<Unit filename="Chunk.h" />
 		<Unit filename="ChunkNode.cpp" />
