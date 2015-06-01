@@ -7,7 +7,7 @@ ChunkNode::ChunkNode(Chunk* const data, scene::ISceneNode* parent, scene::IScene
 : scene::ISceneNode(parent, mgr, id),
 chunkData(data)
 {
-	Material.Lighting = false;
+	// Material.Lighting = false;
 
 	/*
 

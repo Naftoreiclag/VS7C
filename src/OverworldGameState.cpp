@@ -40,11 +40,17 @@ void OverworldGameState::init() {
 	cam->setPosition(core::vector3df(0, 2, -4));
 	cam->setTarget(core::vector3df(0, 0, 0));
 
-	// Light?
-	irr::scene::ILightSceneNode* light = smgr->addLightSceneNode();
-	light->setLightType(irr::video::ELT_DIRECTIONAL);
-	light->setPosition(irr::core::vector3df(0, 1, 0));
-	smgr->setAmbientLight(irr::video::SColor(1, 1, 1, 0));
+
+	irr::scene::ILightSceneNode* nlight = smgr->addLightSceneNode(0, irr::core::vector3df(0, 4, 0), irr::video::SColor(1, 1, 1, 1), 10000.0f);
+	irr::video::SLight light;
+	light.Type = irr::video::ELT_DIRECTIONAL;
+	light.Direction = irr::core::vector3df(100, 100, 0);
+	light.AmbientColor = irr::video::SColorf(0.3f, 0.3f, 0.3f, 1);
+	light.SpecularColor= irr::video::SColorf(1.0f, 1.0f, 1.0f, 1);
+	light.DiffuseColor = irr::video::SColorf(1.0f, 1.0f, 1.0f, 1);
+	light.CastShadows = false;
+	nlight->setLightData(light);
+
 
 	// Make the test chunk
 	ChunkMap* test = new ChunkMap(5, 5);
@@ -83,7 +89,8 @@ artemis::Entity& OverworldGameState::makePlayer(btVector3 origin) {
 
 	// SceneNode
 	scene::IMesh* cube = smgr->getMesh("assets/unit_cube.dae");
-	entity.addComponent(new SceneNodeComponent(smgr->addMeshSceneNode(cube)));
+	scene::IMeshSceneNode* sceneNode = smgr->addMeshSceneNode(cube);
+	entity.addComponent(new SceneNodeComponent(sceneNode));
 	// Do not drop resources or node, believing that Irrlicht handles that
 
 	// Physics
@@ -106,15 +113,18 @@ artemis::Entity& OverworldGameState::entityThing(btVector3 origin) {
 	artemis::Entity& box = entityMgr->create();
 
 	// SceneNode
-	scene::IMesh* cube = smgr->getMesh("assets/unit_cube.dae");
-	box.addComponent(new SceneNodeComponent(smgr->addMeshSceneNode(cube)));
+	scene::IMesh* cube = smgr->getMesh("assets/unit_sphere.dae");
+	scene::IMeshSceneNode* sceneNode = smgr->addMeshSceneNode(cube);
+	sceneNode->getMaterial(0).ColorMaterial = irr::video::ECM_NONE;
+	sceneNode->getMaterial(0).GouraudShading = true;
+	box.addComponent(new SceneNodeComponent(sceneNode));
 	// Do not drop resources or node, believing that Irrlicht handles that
 
 	// Physics
 	btTransform trans;
 	trans.setIdentity();
 	trans.setOrigin(origin);
-	box.addComponent(new PhysicsComponent(dynamicsWorld, 8, new btBoxShape(btVector3(0.5f, 0.5f, 0.5f)), trans));
+	box.addComponent(new PhysicsComponent(dynamicsWorld, 8, new btSphereShape(0.5), trans));
 
 	// Finalize box entity
 	box.refresh();
