@@ -52,7 +52,7 @@ private:
 
 	artemis::Entity* playerEnt;
 
-	ChunkNode* chunkNode;
+	irr::scene::IMeshSceneNode* chunkNode;
 };
 
 #endif // OVERWORLDGAMESTATE_H

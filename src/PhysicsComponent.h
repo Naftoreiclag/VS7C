@@ -16,6 +16,7 @@ private:
 public:
 	btQuaternion rotation;
 	btVector3 location;
+	btVector3 velocity;
 
 private:
 	// Utilizes the bullet calling stuff, relays information to the PhysicsComponent

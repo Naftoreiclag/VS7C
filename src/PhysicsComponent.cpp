@@ -14,6 +14,7 @@ void PhysicsComponent::BulletCallback::getWorldTransform(btTransform &worldTrans
 void PhysicsComponent::BulletCallback::setWorldTransform(const btTransform &worldTransform) {
 	sendTo->rotation = worldTransform.getRotation();
 	sendTo->location = worldTransform.getOrigin();
+	sendTo->velocity = sendTo->rigidBody->getLinearVelocity();
 	sendTo->needsAttencion = true;
 }
 

@@ -26,6 +26,7 @@ chunkData(data)
 	Box.reset(Vertices[0].Pos);
 	for (s32 i=1; i<4; ++i)
 		Box.addInternalPoint(Vertices[i].Pos);
+
 }
 
 void ChunkNode::OnRegisterSceneNode() {

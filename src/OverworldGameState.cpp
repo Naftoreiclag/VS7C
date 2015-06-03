@@ -36,12 +36,13 @@ void OverworldGameState::init() {
 
 
 	// Add the camera
-	cam = smgr->addCameraSceneNodeMaya();
+	cam = smgr->addCameraSceneNode();
 	cam->setPosition(core::vector3df(0, 2, -4));
 	cam->setTarget(core::vector3df(0, 0, 0));
 
 
-	irr::scene::ILightSceneNode* dlight = smgr->addLightSceneNode(0, irr::core::vector3df(0, 0, 1), irr::video::SColor(1, 1, 1, 1), 10000.0f);
+	irr::scene::ISceneNode* empt = smgr->addEmptySceneNode();
+	irr::scene::ILightSceneNode* dlight = smgr->addLightSceneNode(empt, irr::core::vector3df(0, 0, 1), irr::video::SColor(1, 1, 1, 1), 10000.0f);
 	irr::video::SLight light;
 	light.Type = irr::video::ELT_DIRECTIONAL;
 	light.Direction = irr::core::vector3df(0, -100, 0);
@@ -51,11 +52,18 @@ void OverworldGameState::init() {
 	light.CastShadows = false;
 	dlight->setLightData(light);
 
+	// ???
+	smgr->setShadowColor(video::SColor(149, 0, 0, 0));
 
 
 	// Make the test chunk
-	ChunkMap* test = new ChunkMap(5, 5);
-	chunkNode = new ChunkNode(test->getChunk(0, 0), smgr->getRootSceneNode(), smgr, 1337);
+	//ChunkMap* test = new ChunkMap(5, 5);
+	//chunkNode = new ChunkNode(test->getChunk(0, 0), smgr->getRootSceneNode(), smgr, 1337);
+	//
+
+	chunkNode = smgr->addCubeSceneNode(100);
+	chunkNode->setPosition(irr::core::vector3df(0, -50, 0));
+	chunkNode->addShadowVolumeSceneNode();
 
 	// Phys test floor
 	btStaticPlaneShape* planeShape = new btStaticPlaneShape(btVector3(0, 1, 0), 0);
@@ -63,8 +71,8 @@ void OverworldGameState::init() {
 	dynamicsWorld->addRigidBody(planeRigid);
 
 	artemis::Entity& entity = entityThing(btVector3(3, 3, 3));
-	SceneNodeComponent* snc = (SceneNodeComponent*) entity.getComponent<SceneNodeComponent>();
-	dlight->setParent(snc->sceneNode);
+	//SceneNodeComponent* snc = (SceneNodeComponent*) entity.getComponent<SceneNodeComponent>();
+	//dlight->setParent(snc->sceneNode);
 	entityThing(btVector3(3.7, 6, 3.7));
 	entityThing(btVector3(4.1, 10, 4.1));
 	entityThing(btVector3(6, 6, 6));
@@ -91,8 +99,9 @@ artemis::Entity& OverworldGameState::makePlayer(btVector3 origin) {
 	artemis::Entity& entity = entityMgr->create();
 
 	// SceneNode
-	scene::IMesh* cube = smgr->getMesh("assets/unit_cube.dae");
-	scene::IMeshSceneNode* sceneNode = smgr->addMeshSceneNode(cube);
+	scene::IMeshSceneNode* sceneNode = smgr->addCubeSceneNode(1);
+	sceneNode->getMaterial(0).GouraudShading = false;
+	sceneNode->addShadowVolumeSceneNode();
 	entity.addComponent(new SceneNodeComponent(sceneNode));
 	// Do not drop resources or node, believing that Irrlicht handles that
 
@@ -103,7 +112,7 @@ artemis::Entity& OverworldGameState::makePlayer(btVector3 origin) {
 	PhysicsComponent* comp = new PhysicsComponent(dynamicsWorld, 1, new btBoxShape(btVector3(0.5f, 0.5f, 0.5f)), trans);
 	comp->rigidBody->setActivationState(DISABLE_DEACTIVATION);
 	entity.addComponent(comp);
-	entity.addComponent(new CharacterPhysicsComponent());
+	entity.addComponent(new CharacterPhysicsComponent(dynamicsWorld, btVector3(0, 0, 0), btVector3(0, -1.5, 0), 80, 10));
 
 
 	// Finalize and return
@@ -116,11 +125,10 @@ artemis::Entity& OverworldGameState::entityThing(btVector3 origin) {
 	artemis::Entity& box = entityMgr->create();
 
 	// SceneNode
-	scene::IMesh* cube = smgr->getMesh("assets/unit_sphere.dae");
-	scene::IMeshSceneNode* sceneNode = smgr->addMeshSceneNode(cube);
-	sceneNode->getMaterial(0).ColorMaterial = irr::video::ECM_NONE;
-	sceneNode->getMaterial(0).AmbientColor = irr::video::SColor(1, 1, 1, 1);
+	//scene::IMesh* cube = smgr->getMesh("assets/unit_sphere.dae");
+	scene::IMeshSceneNode* sceneNode = smgr->addSphereSceneNode(0.5f);
 	sceneNode->getMaterial(0).GouraudShading = true;
+	sceneNode->addShadowVolumeSceneNode();
 	box.addComponent(new SceneNodeComponent(sceneNode));
 	// Do not drop resources or node, believing that Irrlicht handles that
 
@@ -168,7 +176,7 @@ void OverworldGameState::update(irr::f32 tpf) {
 
 		PhysicsComponent* phys = (PhysicsComponent*) playerEnt->getComponent<PhysicsComponent>();
 
-		phys->rigidBody->applyForce(btVector3(200, 0, 0), btVector3(0,0,0));
+		phys->rigidBody->applyForce(btVector3(0, 100, 0), btVector3(0,0,0));
 		//phys->rigidBody->setLinearVelocity(btVector3(1, 0, 0));
 		//std::cout<< "swag" << std::endl;
 	}
@@ -178,8 +186,8 @@ void OverworldGameState::update(irr::f32 tpf) {
 
 	SceneNodeComponent* comp = (SceneNodeComponent*) playerEnt->getComponent<SceneNodeComponent>();
 
-	//cam->setPosition(comp->sceneNode->getAbsolutePosition() + core::vector3df(0, 2, -4));
-	//cam->setTarget(comp->sceneNode->getAbsolutePosition());
+	cam->setPosition(comp->sceneNode->getAbsolutePosition() + core::vector3df(0, 2, -4));
+	cam->setTarget(comp->sceneNode->getAbsolutePosition());
 }
 
 

@@ -31,7 +31,7 @@ int main()
 	params.WindowSize = core::dimension2d<u32>(1280, 720);
 	params.Bits = 16;
 	params.Fullscreen = false;
-	params.Stencilbuffer = false;
+	params.Stencilbuffer = true;
 	params.Vsync = false;
 	params.EventReceiver = &inputManager;
 	params.AntiAlias = 4; // "Multisampling"

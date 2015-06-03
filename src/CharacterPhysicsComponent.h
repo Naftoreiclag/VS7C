@@ -3,17 +3,21 @@
 
 #include "irrlicht.h"
 #include "Artemis/Artemis.h"
+#include "btBulletDynamicsCommon.h"
 
 class PhysicsComponent;
 
 class CharacterPhysicsComponent : public artemis::Component {
-	public:
-		irr::f32 legHeight;
+public:
+	const btVector3 legStart;
+	const btVector3 legEnd;
+	btDynamicsWorld* const world;
+	const btVector3 spring;
+	const btScalar springStiffness;
+	const btScalar springDamping;
 
-		CharacterPhysicsComponent();
-		~CharacterPhysicsComponent();
-	protected:
-	private:
+	CharacterPhysicsComponent(btDynamicsWorld* const world, const btVector3& legStart, const btVector3& legEnd, const btScalar springStiffness, const btScalar springDamping);
+	~CharacterPhysicsComponent();
 };
 
 class CharacterPhysicsSystem : public artemis::EntityProcessingSystem {
