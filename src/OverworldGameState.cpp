@@ -36,20 +36,21 @@ void OverworldGameState::init() {
 
 
 	// Add the camera
-	cam = smgr->addCameraSceneNode();
+	cam = smgr->addCameraSceneNodeMaya();
 	cam->setPosition(core::vector3df(0, 2, -4));
 	cam->setTarget(core::vector3df(0, 0, 0));
 
 
-	irr::scene::ILightSceneNode* nlight = smgr->addLightSceneNode(0, irr::core::vector3df(0, 4, 0), irr::video::SColor(1, 1, 1, 1), 10000.0f);
+	irr::scene::ILightSceneNode* dlight = smgr->addLightSceneNode(0, irr::core::vector3df(0, 0, 1), irr::video::SColor(1, 1, 1, 1), 10000.0f);
 	irr::video::SLight light;
 	light.Type = irr::video::ELT_DIRECTIONAL;
-	light.Direction = irr::core::vector3df(100, 100, 0);
-	light.AmbientColor = irr::video::SColorf(0.3f, 0.3f, 0.3f, 1);
+	light.Direction = irr::core::vector3df(0, -100, 0);
+	light.AmbientColor = irr::video::SColorf(0.3f, 0.3f, 0.6f, 1);
 	light.SpecularColor= irr::video::SColorf(1.0f, 1.0f, 1.0f, 1);
 	light.DiffuseColor = irr::video::SColorf(1.0f, 1.0f, 1.0f, 1);
 	light.CastShadows = false;
-	nlight->setLightData(light);
+	dlight->setLightData(light);
+
 
 
 	// Make the test chunk
@@ -61,7 +62,9 @@ void OverworldGameState::init() {
 	btRigidBody* planeRigid = new btRigidBody(0, 0, planeShape);
 	dynamicsWorld->addRigidBody(planeRigid);
 
-	entityThing(btVector3(3, 3, 3));
+	artemis::Entity& entity = entityThing(btVector3(3, 3, 3));
+	SceneNodeComponent* snc = (SceneNodeComponent*) entity.getComponent<SceneNodeComponent>();
+	dlight->setParent(snc->sceneNode);
 	entityThing(btVector3(3.7, 6, 3.7));
 	entityThing(btVector3(4.1, 10, 4.1));
 	entityThing(btVector3(6, 6, 6));
@@ -116,6 +119,7 @@ artemis::Entity& OverworldGameState::entityThing(btVector3 origin) {
 	scene::IMesh* cube = smgr->getMesh("assets/unit_sphere.dae");
 	scene::IMeshSceneNode* sceneNode = smgr->addMeshSceneNode(cube);
 	sceneNode->getMaterial(0).ColorMaterial = irr::video::ECM_NONE;
+	sceneNode->getMaterial(0).AmbientColor = irr::video::SColor(1, 1, 1, 1);
 	sceneNode->getMaterial(0).GouraudShading = true;
 	box.addComponent(new SceneNodeComponent(sceneNode));
 	// Do not drop resources or node, believing that Irrlicht handles that
@@ -174,8 +178,8 @@ void OverworldGameState::update(irr::f32 tpf) {
 
 	SceneNodeComponent* comp = (SceneNodeComponent*) playerEnt->getComponent<SceneNodeComponent>();
 
-	cam->setPosition(comp->sceneNode->getAbsolutePosition() + core::vector3df(0, 2, -4));
-	cam->setTarget(comp->sceneNode->getAbsolutePosition());
+	//cam->setPosition(comp->sceneNode->getAbsolutePosition() + core::vector3df(0, 2, -4));
+	//cam->setTarget(comp->sceneNode->getAbsolutePosition());
 }
 
 
