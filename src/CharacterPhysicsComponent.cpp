@@ -10,7 +10,8 @@ legEnd(legEnd),
 legStart(legStart),
 spring(legEnd - legStart),
 springStiffness(springStiffness),
-springDamping(springDamping) {
+springDamping(springDamping),
+normalizedSpring(spring.normalized()) {
 }
 
 CharacterPhysicsComponent::~CharacterPhysicsComponent()
@@ -52,7 +53,8 @@ void CharacterPhysicsSystem::processEntity(artemis::Entity& e) {
 
 		// Calculate and apply Hooke's law with damping
 		btVector3 compression = charPhys->spring - newLength;
-		btVector3 force = -(compression * charPhys->springStiffness) - (phys->velocity * charPhys->springDamping);
+		btVector3 energyLoss = charPhys->normalizedSpring * phys->velocity.dot(charPhys->normalizedSpring);
+		btVector3 force = -(compression * charPhys->springStiffness) - (energyLoss * charPhys->springDamping);
 		phys->rigidBody->applyForce(force, btVector3(0, 0, 0));
 
 	}

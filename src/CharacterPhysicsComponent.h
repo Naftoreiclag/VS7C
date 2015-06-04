@@ -13,6 +13,7 @@ public:
 	const btVector3 legEnd;
 	btDynamicsWorld* const world;
 	const btVector3 spring;
+	const btVector3 normalizedSpring;
 	const btScalar springStiffness;
 	const btScalar springDamping;
 
