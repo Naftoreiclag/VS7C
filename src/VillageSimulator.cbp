@@ -5,6 +5,7 @@
 		<Option title="Village Simulator 7C" />
 		<Option pch_mode="0" />
 		<Option compiler="gcc" />
+		<Option virtualFolders="Components\;" />
 		<Build>
 			<Target title="Linux">
 				<Option platforms="Unix;" />
@@ -74,8 +75,18 @@
 			<Add directory="../thirdparty/SFML-2.3/lib" />
 		</Linker>
 		<Unit filename="Array2d.h" />
-		<Unit filename="CharacterPhysicsComponent.cpp" />
-		<Unit filename="CharacterPhysicsComponent.h" />
+		<Unit filename="CharacterComponent.cpp">
+			<Option virtualFolder="Components/" />
+		</Unit>
+		<Unit filename="CharacterComponent.h">
+			<Option virtualFolder="Components/" />
+		</Unit>
+		<Unit filename="CharacterPhysicsComponent.cpp">
+			<Option virtualFolder="Components/" />
+		</Unit>
+		<Unit filename="CharacterPhysicsComponent.h">
+			<Option virtualFolder="Components/" />
+		</Unit>
 		<Unit filename="Chunk.cpp" />
 		<Unit filename="Chunk.h" />
 		<Unit filename="ChunkNode.cpp" />
@@ -92,16 +103,30 @@
 		<Unit filename="GameStateManager.h" />
 		<Unit filename="InputManager.cpp" />
 		<Unit filename="InputManager.h" />
+		<Unit filename="InteractionComponent.cpp">
+			<Option virtualFolder="Components/" />
+		</Unit>
+		<Unit filename="InteractionComponent.h">
+			<Option virtualFolder="Components/" />
+		</Unit>
 		<Unit filename="OverworldGameState.cpp" />
 		<Unit filename="OverworldGameState.h" />
-		<Unit filename="PhysicsComponent.cpp" />
-		<Unit filename="PhysicsComponent.h" />
+		<Unit filename="PhysicsComponent.cpp">
+			<Option virtualFolder="Components/" />
+		</Unit>
+		<Unit filename="PhysicsComponent.h">
+			<Option virtualFolder="Components/" />
+		</Unit>
 		<Unit filename="Player.cpp" />
 		<Unit filename="Player.h" />
 		<Unit filename="ReiMath.cpp" />
 		<Unit filename="ReiMath.h" />
-		<Unit filename="SceneNodeComponent.cpp" />
-		<Unit filename="SceneNodeComponent.h" />
+		<Unit filename="SceneNodeComponent.cpp">
+			<Option virtualFolder="Components/" />
+		</Unit>
+		<Unit filename="SceneNodeComponent.h">
+			<Option virtualFolder="Components/" />
+		</Unit>
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

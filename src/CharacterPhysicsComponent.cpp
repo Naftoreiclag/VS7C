@@ -1,7 +1,7 @@
 #include "CharacterPhysicsComponent.h"
 #include "PhysicsComponent.h"
 
-#include <iostream>;
+#include <iostream>
 
 CharacterPhysicsComponent::CharacterPhysicsComponent(
 	btDynamicsWorld* const world,
@@ -64,6 +64,7 @@ void CharacterPhysicsSystem::processEntity(artemis::Entity& e) {
 		btVector3 energyLoss = charPhys->normalizedSpring * phys->velocity.dot(charPhys->normalizedSpring);
 		btVector3 hooke = -(compression * charPhys->springStiffness) - (energyLoss * charPhys->springDamping);
 		phys->rigidBody->applyForce(hooke, btVector3(0, 0, 0));
+
 
 		// Useful
 		charPhys->feetTouchingGround = true;

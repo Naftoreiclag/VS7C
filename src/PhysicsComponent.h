@@ -33,10 +33,20 @@ private:
 public:
 	BulletCallback* motionState;
 	btRigidBody* rigidBody;
-	const btScalar mass;
 	btDynamicsWorld* const world;
 
-	PhysicsComponent(btDynamicsWorld* const world, const btScalar mass, btCollisionShape* collisionShape, const btTransform &initialLoc);
+	const btScalar mass;
+	const bool isStatic; // mass == 0
+    const signed short int collisionGroup;
+    const signed short int collidesWith;
+
+	PhysicsComponent(
+		btDynamicsWorld* const world,
+		const btScalar mass,
+		btCollisionShape* collisionShape,
+		const btTransform &initialLoc,
+		const signed short int collisionGroup = 0xF,
+		const signed short int collidesWith = 0xF);
 	~PhysicsComponent();
 };
 

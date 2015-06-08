@@ -174,30 +174,36 @@ void OverworldGameState::update(irr::f32 tpf) {
 
 	PhysicsComponent* phys = (PhysicsComponent*) playerEnt->getComponent<PhysicsComponent>();
 
-
 	irr::core::vector2df targetVel(0, 0);
+	bool mov = false;
 	if(inputMgr->isKeyDown(irr::KEY_KEY_W)) {
 		//phys->rigidBody->applyForce(btVector3(0, 0, 10), btVector3(0,0,0));
 		targetVel.Y = 1;
+		mov = true;
 	}
 	if(inputMgr->isKeyDown(irr::KEY_KEY_S)) {
 		//phys->rigidBody->applyForce(btVector3(0, 0, -10), btVector3(0,0,0));
 		targetVel.Y = -1;
+		mov = true;
 	}
 	if(inputMgr->isKeyDown(irr::KEY_KEY_A)) {
 		//phys->rigidBody->applyForce(btVector3(-10, 0, 0), btVector3(0,0,0));
 		targetVel.X = -1;
+		mov = true;
 	}
 	if(inputMgr->isKeyDown(irr::KEY_KEY_D)) {
 		//phys->rigidBody->applyForce(btVector3(10, 0, 0), btVector3(0,0,0));
 		targetVel.X = 1;
+		mov = true;
 	}
-	targetVel.normalize();
-	targetVel *= 5;
-	targetVel -= irr::core::vector2df(phys->velocity.x(), phys->velocity.z());
-	targetVel *= phys->mass;
+	if(mov) {
+		targetVel.normalize();
+		targetVel *= 5;
+		targetVel -= irr::core::vector2df(phys->velocity.x(), phys->velocity.z());
+		targetVel *= phys->mass;
 
-	phys->rigidBody->applyCentralImpulse(btVector3(targetVel.X, 0, targetVel.Y));
+		phys->rigidBody->applyCentralImpulse(btVector3(targetVel.X, 0, targetVel.Y));
+	}
 
 	charPhysSys->process();
 	dynamicsWorld->stepSimulation(tpf, 6);
