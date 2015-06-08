@@ -28,7 +28,7 @@ PhysicsComponent::PhysicsComponent(
 : artemis::Component(),
 collisionShape(collisionShape),
 mass(mass),
-isStatic(false),
+isStatic(mass == 0),
 world(world),
 collisionGroup(collisionGroup),
 collidesWith(collidesWith) {
@@ -36,7 +36,7 @@ collidesWith(collidesWith) {
 	btVector3 inertia(0, 0, 0);
 	collisionShape->calculateLocalInertia(mass, inertia);
 	rigidBody = new btRigidBody(mass, motionState, collisionShape, inertia);
-	world->addRigidBody(rigidBody);
+	world->addRigidBody(rigidBody, collisionGroup, collidesWith);
 }
 
 PhysicsComponent::~PhysicsComponent() {
