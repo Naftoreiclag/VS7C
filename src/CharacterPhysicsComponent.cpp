@@ -21,7 +21,8 @@ springDamping(springDamping),
 normalizedSpring(spring.normalized()),
 feetTouchingGround(false),
 footFriction(footFriction),
-upVector(upVector) {
+upVector(upVector),
+targetVelocityRelativeToGround(btVector3(0, 0, 0)) {
 }
 
 CharacterPhysicsComponent::~CharacterPhysicsComponent()
@@ -71,5 +72,10 @@ void CharacterPhysicsSystem::processEntity(artemis::Entity& e) {
 	} else {
 		charPhys->feetTouchingGround = false;
 	}
+
+	// thingy
+	btVector3 impulse = charPhys->targetVelocityRelativeToGround - phys->velocity;
+	impulse.setY(0);
+	phys->rigidBody->applyImpulse(impulse * phys->mass, btVector3(0, 0, 0));
 }
 

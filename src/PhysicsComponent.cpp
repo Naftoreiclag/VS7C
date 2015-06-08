@@ -22,7 +22,7 @@ PhysicsComponent::PhysicsComponent(
 		btDynamicsWorld* const world,
 		const btScalar mass,
 		btCollisionShape* collisionShape,
-		const btTransform &initialLoc,
+		const btTransform& initialLoc,
 		const signed short int collisionGroup,
 		const signed short int collidesWith)
 : artemis::Component(),
@@ -31,7 +31,10 @@ mass(mass),
 isStatic(mass == 0),
 world(world),
 collisionGroup(collisionGroup),
-collidesWith(collidesWith) {
+collidesWith(collidesWith),
+rotation(initialLoc.getRotation()),
+location(initialLoc.getOrigin()),
+velocity(btVector3(0, 0, 0)) {
 	motionState = new BulletCallback(initialLoc, this); // OK to use "this" in constructor here
 	btVector3 inertia(0, 0, 0);
 	collisionShape->calculateLocalInertia(mass, inertia);

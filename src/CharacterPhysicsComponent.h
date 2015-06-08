@@ -9,6 +9,8 @@ class PhysicsComponent;
 
 class CharacterPhysicsComponent : public artemis::Component {
 public:
+	btVector3 targetVelocityRelativeToGround;
+
 	bool feetTouchingGround;
 	const btScalar footFriction;
 

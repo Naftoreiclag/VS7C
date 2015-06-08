@@ -173,41 +173,33 @@ void OverworldGameState::update(irr::f32 tpf) {
 	entityWorld.setDelta(tpf);
 
 	PhysicsComponent* phys = (PhysicsComponent*) playerEnt->getComponent<PhysicsComponent>();
+	CharacterPhysicsComponent* charPhys = (CharacterPhysicsComponent*) playerEnt->getComponent<CharacterPhysicsComponent>();
 
-	irr::core::vector2df targetVel(0, 0);
-	bool mov = false;
+	charPhys->targetVelocityRelativeToGround.setZero();
 	if(inputMgr->isKeyDown(irr::KEY_KEY_W)) {
-		//phys->rigidBody->applyForce(btVector3(0, 0, 10), btVector3(0,0,0));
-		targetVel.Y = 1;
-		mov = true;
+		charPhys->targetVelocityRelativeToGround.setZ(1);
 	}
 	if(inputMgr->isKeyDown(irr::KEY_KEY_S)) {
-		//phys->rigidBody->applyForce(btVector3(0, 0, -10), btVector3(0,0,0));
-		targetVel.Y = -1;
-		mov = true;
+		charPhys->targetVelocityRelativeToGround.setZ(-1);
 	}
 	if(inputMgr->isKeyDown(irr::KEY_KEY_A)) {
-		//phys->rigidBody->applyForce(btVector3(-10, 0, 0), btVector3(0,0,0));
-		targetVel.X = -1;
-		mov = true;
+		charPhys->targetVelocityRelativeToGround.setX(-1);
 	}
 	if(inputMgr->isKeyDown(irr::KEY_KEY_D)) {
-		//phys->rigidBody->applyForce(btVector3(10, 0, 0), btVector3(0,0,0));
-		targetVel.X = 1;
-		mov = true;
+		charPhys->targetVelocityRelativeToGround.setX(1);
 	}
-	if(mov) {
-		targetVel.normalize();
-		targetVel *= 5;
-		targetVel -= irr::core::vector2df(phys->velocity.x(), phys->velocity.z());
-		targetVel *= phys->mass;
-
-		phys->rigidBody->applyCentralImpulse(btVector3(targetVel.X, 0, targetVel.Y));
+	if(!charPhys->targetVelocityRelativeToGround.isZero()) {
+		charPhys->targetVelocityRelativeToGround.normalize();
 	}
+	charPhys->targetVelocityRelativeToGround *= 5;
 
 	charPhysSys->process();
 	dynamicsWorld->stepSimulation(tpf, 6);
 	physSys->process();
+
+	std::cout << phys->location.x() << ",\t";
+	std::cout << phys->location.y() << ",\t";
+	std::cout << phys->location.z() << std::endl;
 
 	SceneNodeComponent* comp = (SceneNodeComponent*) playerEnt->getComponent<SceneNodeComponent>();
 
