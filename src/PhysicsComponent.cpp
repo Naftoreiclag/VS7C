@@ -18,9 +18,10 @@ void PhysicsComponent::BulletCallback::setWorldTransform(const btTransform &worl
 	sendTo->needsAttencion = true;
 }
 
-PhysicsComponent::PhysicsComponent(btDynamicsWorld* const world, btScalar mass, btCollisionShape* collisionShape, const btTransform &initialLoc)
+PhysicsComponent::PhysicsComponent(btDynamicsWorld* const world, const btScalar mass, btCollisionShape* collisionShape, const btTransform &initialLoc)
 : artemis::Component(),
 collisionShape(collisionShape),
+mass(mass),
 world(world) {
 	motionState = new BulletCallback(initialLoc, this); // OK to use this in constructor here
 	btVector3 inertia(0, 0, 0);

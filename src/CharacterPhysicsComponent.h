@@ -9,6 +9,11 @@ class PhysicsComponent;
 
 class CharacterPhysicsComponent : public artemis::Component {
 public:
+	bool feetTouchingGround;
+	const btScalar footFriction;
+
+	const btVector3 upVector;
+
 	const btVector3 legStart;
 	const btVector3 legEnd;
 	btDynamicsWorld* const world;
@@ -17,7 +22,14 @@ public:
 	const btScalar springStiffness;
 	const btScalar springDamping;
 
-	CharacterPhysicsComponent(btDynamicsWorld* const world, const btVector3& legStart, const btVector3& legEnd, const btScalar springStiffness, const btScalar springDamping);
+	CharacterPhysicsComponent(
+		btDynamicsWorld* const world,
+		const btVector3& legStart,
+		const btVector3& legEnd,
+		const btScalar springStiffness,
+		const btScalar springDamping,
+		const btScalar footFriction,
+		const btVector3& upVector = btVector3(0, 1, 0));
 	~CharacterPhysicsComponent();
 };
 

@@ -62,6 +62,7 @@ void OverworldGameState::init() {
 	//
 
 	chunkNode = smgr->addCubeSceneNode(100);
+	chunkNode->getMaterial(0).setTexture(0, driver->getTexture("assets/grass.png"));
 	chunkNode->setPosition(irr::core::vector3df(0, -50, 0));
 	chunkNode->addShadowVolumeSceneNode();
 
@@ -112,8 +113,7 @@ artemis::Entity& OverworldGameState::makePlayer(btVector3 origin) {
 	PhysicsComponent* comp = new PhysicsComponent(dynamicsWorld, 1, new btBoxShape(btVector3(0.5f, 0.5f, 0.5f)), trans);
 	comp->rigidBody->setActivationState(DISABLE_DEACTIVATION);
 	entity.addComponent(comp);
-	entity.addComponent(new CharacterPhysicsComponent(dynamicsWorld, btVector3(0, 0, 0), btVector3(0, -1.5, 0), 80, 10));
-
+	entity.addComponent(new CharacterPhysicsComponent(dynamicsWorld, btVector3(0, 0, 0), btVector3(0, -1.5, 0), 80, 10, 10));
 
 	// Finalize and return
 	entity.refresh();
@@ -172,14 +172,33 @@ void OverworldGameState::update(irr::f32 tpf) {
 	entityWorld.loopStart();
 	entityWorld.setDelta(tpf);
 
-	if(inputMgr->isKeyDown(irr::KEY_SPACE)) {
+	PhysicsComponent* phys = (PhysicsComponent*) playerEnt->getComponent<PhysicsComponent>();
 
-		PhysicsComponent* phys = (PhysicsComponent*) playerEnt->getComponent<PhysicsComponent>();
 
-		phys->rigidBody->applyForce(btVector3(0, 100, 0), btVector3(0,0,0));
-		//phys->rigidBody->setLinearVelocity(btVector3(1, 0, 0));
-		//std::cout<< "swag" << std::endl;
+	irr::core::vector2df targetVel(0, 0);
+	if(inputMgr->isKeyDown(irr::KEY_KEY_W)) {
+		//phys->rigidBody->applyForce(btVector3(0, 0, 10), btVector3(0,0,0));
+		targetVel.Y = 1;
 	}
+	if(inputMgr->isKeyDown(irr::KEY_KEY_S)) {
+		//phys->rigidBody->applyForce(btVector3(0, 0, -10), btVector3(0,0,0));
+		targetVel.Y = -1;
+	}
+	if(inputMgr->isKeyDown(irr::KEY_KEY_A)) {
+		//phys->rigidBody->applyForce(btVector3(-10, 0, 0), btVector3(0,0,0));
+		targetVel.X = -1;
+	}
+	if(inputMgr->isKeyDown(irr::KEY_KEY_D)) {
+		//phys->rigidBody->applyForce(btVector3(10, 0, 0), btVector3(0,0,0));
+		targetVel.X = 1;
+	}
+	targetVel.normalize();
+	targetVel *= 5;
+	targetVel -= irr::core::vector2df(phys->velocity.x(), phys->velocity.z());
+	targetVel *= phys->mass;
+
+	phys->rigidBody->applyCentralImpulse(btVector3(targetVel.X, 0, targetVel.Y));
+
 	charPhysSys->process();
 	dynamicsWorld->stepSimulation(tpf, 6);
 	physSys->process();

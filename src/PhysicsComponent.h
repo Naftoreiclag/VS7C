@@ -33,9 +33,10 @@ private:
 public:
 	BulletCallback* motionState;
 	btRigidBody* rigidBody;
+	const btScalar mass;
 	btDynamicsWorld* const world;
 
-	PhysicsComponent(btDynamicsWorld* const world, btScalar mass, btCollisionShape* collisionShape, const btTransform &initialLoc);
+	PhysicsComponent(btDynamicsWorld* const world, const btScalar mass, btCollisionShape* collisionShape, const btTransform &initialLoc);
 	~PhysicsComponent();
 };
 
