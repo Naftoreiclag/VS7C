@@ -21,9 +21,7 @@ OverworldGameState::OverworldGameState(irr::IrrlichtDevice *irrlicht)
 }
 
 void OverworldGameState::init() {
-	std::bitset<16> x(btBroadphaseProxy::DefaultFilter);
-	std::bitset<16> y(btBroadphaseProxy::AllFilter);
-	std::cout << x << "\t" << y << std::endl;
+	std::cout << std::bitset<16>(btBroadphaseProxy::DefaultFilter) << "\t" << std::bitset<16>(btBroadphaseProxy::AllFilter) << std::endl;
 
 	// Initialize bullet physics simulation
 	broadphase = new btDbvtBroadphase;
@@ -73,7 +71,7 @@ void OverworldGameState::init() {
 	// Phys test floor
 	btStaticPlaneShape* planeShape = new btStaticPlaneShape(btVector3(0, 1, 0), 0);
 	btRigidBody* planeRigid = new btRigidBody(0, 0, planeShape);
-	dynamicsWorld->addRigidBody(planeRigid);
+	dynamicsWorld->addRigidBody(planeRigid, PhysicsComponent::COLL_ENV, PhysicsComponent::COLL_ENV | PhysicsComponent::COLL_PLAYER);
 
 	artemis::Entity& entity = entityThing(btVector3(3, 3, 3));
 	//SceneNodeComponent* snc = (SceneNodeComponent*) entity.getComponent<SceneNodeComponent>();
@@ -114,7 +112,9 @@ artemis::Entity& OverworldGameState::makePlayer(btVector3 origin) {
 	btTransform trans;
 	trans.setIdentity();
 	trans.setOrigin(origin);
-	PhysicsComponent* comp = new PhysicsComponent(dynamicsWorld, 1, new btBoxShape(btVector3(0.5f, 0.5f, 0.5f)), trans, 1 << 0, 0);
+	PhysicsComponent* comp =
+		new PhysicsComponent(dynamicsWorld, 1, new btBoxShape(btVector3(0.5f, 0.5f, 0.5f)), trans,
+							PhysicsComponent::COLL_PLAYER, PhysicsComponent::COLL_PLAYER | PhysicsComponent::COLL_ENV);
 	comp->rigidBody->setActivationState(DISABLE_DEACTIVATION);
 	entity.addComponent(comp);
 	entity.addComponent(new CharacterPhysicsComponent(dynamicsWorld, btVector3(0, 0, 0), btVector3(0, -1.5, 0), 80, 10, 10, 10, btVector3(0, -32.1522, 0)));
@@ -140,7 +140,8 @@ artemis::Entity& OverworldGameState::entityThing(btVector3 origin) {
 	btTransform trans;
 	trans.setIdentity();
 	trans.setOrigin(origin);
-	box.addComponent(new PhysicsComponent(dynamicsWorld, 8, new btSphereShape(0.5), trans));
+	box.addComponent(new PhysicsComponent(dynamicsWorld, 8, new btSphereShape(0.5), trans,
+							PhysicsComponent::COLL_ENV, PhysicsComponent::COLL_ENV));
 
 	// Finalize box entity
 	box.refresh();

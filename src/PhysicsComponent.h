@@ -9,6 +9,11 @@
 // Component that adds physics data to an entity
 // Physics shaps are deleted. Use shared_ptr<btCollisionShape> to have reusable shapes.
 class PhysicsComponent : public artemis::Component {
+public:
+	static signed short int const COLL_PLAYER = 1 << 0;
+	static signed short int const COLL_ENV = 1 << 1;
+
+
 private:
 	bool needsAttencion; // Tells PhysicsSystem that the data is worth looking at (i.e. it changed)
 	btCollisionShape* collisionShape; // For deletion

@@ -2,6 +2,7 @@
 #include "PhysicsComponent.h"
 
 #include <iostream>
+#include <bitset>
 
 CharacterPhysicsComponent::CharacterPhysicsComponent(
 	btDynamicsWorld* const world,
@@ -75,15 +76,21 @@ void CharacterPhysicsSystem::processEntity(artemis::Entity& e) {
             	const btBroadphaseProxy* broadPhase = other->getBroadphaseHandle();
             	short signed int otherGroup = broadPhase->m_collisionFilterGroup;
             	short signed int otherMask = broadPhase->m_collisionFilterMask;
+
+            	std::cout << "otherGroup = " << std::bitset<16>(otherGroup) << std::endl;
+            	std::cout << "otherMask = " << std::bitset<16>(otherMask) << std::endl;
+            	std::cout << "phys->collisionGroup = " << std::bitset<16>(phys->collisionGroup) << std::endl;
+            	std::cout << "phys->collidesWith = " << std::bitset<16>(phys->collidesWith) << std::endl;
+
             	if(
 					((otherGroup & phys->collidesWith) != 0) // If we collide with other
 					&& ((phys->collisionGroup & otherMask) != 0)) { // and if other collides with us
-					}
+
 
 					closestHitFraction = rayCallback.m_hitFractions.at(i);
 					hasHit = true;
 					hit = rayCallback.m_hitPointWorld.at(i);
-
+				}
             }
 		}
 	}
