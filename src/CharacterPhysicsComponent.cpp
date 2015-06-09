@@ -56,11 +56,32 @@ void CharacterPhysicsSystem::processEntity(artemis::Entity& e) {
 	// Since rays only register a hit if they hit a face on the "outside," we can project the rays from the inside of the character body
 	btVector3 absLegStart = charPhys->legStart + phys->location;
 	btVector3 absLegEnd = charPhys->legEnd + phys->location;
-	btCollisionWorld::ClosestRayResultCallback rayCallback(absLegStart, absLegEnd);
+	btCollisionWorld::AllHitsRayResultCallback rayCallback(absLegStart, absLegEnd);
 	charPhys->world->rayTest(absLegStart, absLegEnd, rayCallback);
+	// Determine if the spring has actually collided with anything, since some objects do not collide with anything
+	bool hasHit = false;
+	btVector3 hit;
 	if(rayCallback.hasHit()) {
-		btVector3 hit = rayCallback.m_hitPointWorld;
+		// We cannot rely on the order of rayCallback.m_collisionObjects, so we have to compare the distances manually
+		btScalar closestHitFraction(1337); // All fractions are < 1 so this is effectively infinite
+		for(int i = rayCallback.m_collisionObjects.size() - 1; i >= 0; -- i) {
 
+			// If this result is closer than the closest valid result
+            if(rayCallback.m_hitFractions.at(i) <= closestHitFraction) {
+            	// Get the object colliding with
+            	const btCollisionObject* other = rayCallback.m_collisionObjects.at(i);
+
+            	// If this result is valid
+            	if(other->checkCollideWith(phys->rigidBody)) {
+					closestHitFraction = rayCallback.m_hitFractions.at(i);
+					hasHit = true;
+					hit = rayCallback.m_hitPointWorld.at(i);
+            	}
+            }
+		}
+	}
+
+	if(hasHit) {
 		// The new length of the virtual spring
 		btVector3 newLength = hit - absLegStart;
 

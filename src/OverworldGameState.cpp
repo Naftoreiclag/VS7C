@@ -197,9 +197,11 @@ void OverworldGameState::update(irr::f32 tpf) {
 	physSys->process();
 	charPhysSys->process();
 
+/*
 	std::cout << phys->location.x() << ",\t";
 	std::cout << phys->location.y() << ",\t";
 	std::cout << phys->location.z() << std::endl;
+	*/
 
 	SceneNodeComponent* comp = (SceneNodeComponent*) playerEnt->getComponent<SceneNodeComponent>();
 
