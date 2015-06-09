@@ -40,6 +40,8 @@ private:
 	PhysicsSystem* physSys;
 	CharacterPhysicsSystem* charPhysSys;
 
+
+
 	btBroadphaseInterface* broadphase;
 	btDefaultCollisionConfiguration* collisionConfiguration;
 	btCollisionDispatcher* dispatcher;

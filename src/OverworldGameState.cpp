@@ -113,7 +113,7 @@ artemis::Entity& OverworldGameState::makePlayer(btVector3 origin) {
 	PhysicsComponent* comp = new PhysicsComponent(dynamicsWorld, 1, new btBoxShape(btVector3(0.5f, 0.5f, 0.5f)), trans, 1 << 0, 0);
 	comp->rigidBody->setActivationState(DISABLE_DEACTIVATION);
 	entity.addComponent(comp);
-	entity.addComponent(new CharacterPhysicsComponent(dynamicsWorld, btVector3(0, 0, 0), btVector3(0, -1.5, 0), 80, 10, 10));
+	entity.addComponent(new CharacterPhysicsComponent(dynamicsWorld, btVector3(0, 0, 0), btVector3(0, -1.5, 0), 80, 10, 10, 10, btVector3(0, -32.1522, 0)));
 
 	// Finalize and return
 	entity.refresh();
@@ -193,15 +193,18 @@ void OverworldGameState::update(irr::f32 tpf) {
 	}
 	charPhys->targetVelocityRelativeToGround *= 5;
 
-	charPhysSys->process();
 	dynamicsWorld->stepSimulation(tpf, 6);
 	physSys->process();
+	charPhysSys->process();
 
 	std::cout << phys->location.x() << ",\t";
 	std::cout << phys->location.y() << ",\t";
 	std::cout << phys->location.z() << std::endl;
 
 	SceneNodeComponent* comp = (SceneNodeComponent*) playerEnt->getComponent<SceneNodeComponent>();
+
+	// Camera stuff
+
 
 	cam->setPosition(comp->sceneNode->getAbsolutePosition() + core::vector3df(0, 2, -4));
 	cam->setTarget(comp->sceneNode->getAbsolutePosition());

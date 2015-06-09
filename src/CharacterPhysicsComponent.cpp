@@ -9,7 +9,9 @@ CharacterPhysicsComponent::CharacterPhysicsComponent(
 	const btVector3& legEnd,
 	const btScalar springStiffness,
 	const btScalar springDamping,
-	const btScalar footFriction,
+	const btScalar footAccel,
+	const btScalar footDecel,
+	const btVector3& expectedGravityForce,
 	const btVector3& upVector)
 : artemis::Component(),
 world(world),
@@ -20,8 +22,11 @@ springStiffness(springStiffness),
 springDamping(springDamping),
 normalizedSpring(spring.normalized()),
 feetTouchingGround(false),
-footFriction(footFriction),
+footAccel(footAccel),
+footDecel(footDecel),
+expectedGravityForce(expectedGravityForce),
 upVector(upVector),
+expectedSpringCompression(expectedGravityForce / springStiffness),
 targetVelocityRelativeToGround(btVector3(0, 0, 0)) {
 }
 
@@ -55,17 +60,17 @@ void CharacterPhysicsSystem::processEntity(artemis::Entity& e) {
 	charPhys->world->rayTest(absLegStart, absLegEnd, rayCallback);
 	if(rayCallback.hasHit()) {
 		btVector3 hit = rayCallback.m_hitPointWorld;
-		//std::cout << (phys->location.y() - 0.5) + 100 << std::endl;
 
 		// The new length of the virtual spring
 		btVector3 newLength = hit - absLegStart;
 
 		// Calculate and apply Hooke's law with damping
-		btVector3 compression = charPhys->spring - newLength;
-		btVector3 energyLoss = charPhys->normalizedSpring * phys->velocity.dot(charPhys->normalizedSpring);
-		btVector3 hooke = -(compression * charPhys->springStiffness) - (energyLoss * charPhys->springDamping);
+		btVector3 compression = charPhys->spring - newLength; // how much the spring is "compressed"
+		btVector3 energyLoss = charPhys->normalizedSpring * phys->velocity.dot(charPhys->normalizedSpring); // get the body's velocity in terms of the springs' compression
+		btVector3 hooke = // Hooke's law
+		-(compression * charPhys->springStiffness) // The force the spring exerts due to compression is compression multiplied by the spring's stiffness
+		-(energyLoss * charPhys->springDamping); // Reduce the force due to damping
 		phys->rigidBody->applyForce(hooke, btVector3(0, 0, 0));
-
 
 		// Useful
 		charPhys->feetTouchingGround = true;
@@ -77,5 +82,9 @@ void CharacterPhysicsSystem::processEntity(artemis::Entity& e) {
 	btVector3 impulse = charPhys->targetVelocityRelativeToGround - phys->velocity;
 	impulse.setY(0);
 	phys->rigidBody->applyImpulse(impulse * phys->mass, btVector3(0, 0, 0));
+
+	// The location should be relative to the position the body should be at rest given the amount we expect the spring to compress and the length of the spring
+	phys->location += -charPhys->expectedSpringCompression;
+	phys->location += charPhys->spring;
 }
 

@@ -34,7 +34,7 @@ int main()
 	params.Stencilbuffer = true;
 	params.Vsync = false;
 	params.EventReceiver = &inputManager;
-	params.AntiAlias = 4; // "Multisampling"
+	params.AntiAlias = 0; // "Multisampling"
 	IrrlichtDevice* device = createDeviceEx(params);
 	if(!device) { return 1; }
 
