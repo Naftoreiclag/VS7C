@@ -5,6 +5,7 @@
 #include "Chunk.h"
 #include <iostream>
 #include "InputManager.h"
+#include <bitset>
 
 using namespace irr;
 
@@ -20,6 +21,9 @@ OverworldGameState::OverworldGameState(irr::IrrlichtDevice *irrlicht)
 }
 
 void OverworldGameState::init() {
+	std::bitset<16> x(btBroadphaseProxy::DefaultFilter);
+	std::bitset<16> y(btBroadphaseProxy::AllFilter);
+	std::cout << x << "\t" << y << std::endl;
 
 	// Initialize bullet physics simulation
 	broadphase = new btDbvtBroadphase;
@@ -196,6 +200,7 @@ void OverworldGameState::update(irr::f32 tpf) {
 	dynamicsWorld->stepSimulation(tpf, 6);
 	physSys->process();
 	charPhysSys->process();
+
 
 /*
 	std::cout << phys->location.x() << ",\t";

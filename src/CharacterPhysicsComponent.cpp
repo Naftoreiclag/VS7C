@@ -72,11 +72,18 @@ void CharacterPhysicsSystem::processEntity(artemis::Entity& e) {
             	const btCollisionObject* other = rayCallback.m_collisionObjects.at(i);
 
             	// If this result is valid
-            	if(other->checkCollideWith(phys->rigidBody)) {
+            	const btBroadphaseProxy* broadPhase = other->getBroadphaseHandle();
+            	short signed int otherGroup = broadPhase->m_collisionFilterGroup;
+            	short signed int otherMask = broadPhase->m_collisionFilterMask;
+            	if(
+					((otherGroup & phys->collidesWith) != 0) // If we collide with other
+					&& ((phys->collisionGroup & otherMask) != 0)) { // and if other collides with us
+					}
+
 					closestHitFraction = rayCallback.m_hitFractions.at(i);
 					hasHit = true;
 					hit = rayCallback.m_hitPointWorld.at(i);
-            	}
+
             }
 		}
 	}
