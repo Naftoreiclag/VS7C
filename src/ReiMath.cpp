@@ -1,6 +1,6 @@
 #include "ReiMath.h"
 
-btVector3 reim::quaternionToEuler(const btQuaternion &rot) {
+btVector3 reim::quaternionToEuler(const btQuaternion& rot) {
 	btScalar x = rot.getX();
 	btScalar y = rot.getY();
 	btScalar z = rot.getZ();
@@ -21,6 +21,12 @@ btVector3 reim::quaternionToEuler(const btQuaternion &rot) {
 	return euler;
 }
 
-irr::core::vector3df reim::bulletToIrr(const btVector3 vec) {
+irr::core::vector3df reim::bulletToIrr(const btVector3& vec) {
 	return irr::core::vector3df(vec.x(), vec.y(), vec.z());
 }
+
+btVector3 reim::irrToBullet(const irr::core::vector3df& vec) {
+	return btVector3(vec.X, vec.Y, vec.Z);
+}
+
+

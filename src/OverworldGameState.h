@@ -40,7 +40,13 @@ private:
 	PhysicsSystem* physSys;
 	CharacterPhysicsSystem* charPhysSys;
 
-
+	irr::core::position2di prevMouseLoc;
+	irr::f32 maxPitch;
+	irr::f32 minPitch;
+	irr::f32 yawSpd;
+	irr::f32 pitchSpd;
+	irr::scene::ISceneNode* yawPivot;
+	irr::scene::ISceneNode* pitchPivot;
 
 	btBroadphaseInterface* broadphase;
 	btDefaultCollisionConfiguration* collisionConfiguration;

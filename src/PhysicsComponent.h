@@ -50,8 +50,8 @@ public:
 		const btScalar mass,
 		btCollisionShape* collisionShape,
 		const btTransform &initialLoc,
-		const signed short int collisionGroup = btBroadphaseProxy::DefaultFilter, // 0000000000000001
-		const signed short int collidesWith = btBroadphaseProxy::AllFilter);      // 1111111111111111
+		const signed short int collisionGroup = 1, // 0000000000000001
+		const signed short int collidesWith = -1); // 1111111111111111
 	~PhysicsComponent();
 };
 

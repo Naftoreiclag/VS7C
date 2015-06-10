@@ -5,7 +5,7 @@
 #include "Chunk.h"
 #include <iostream>
 #include "InputManager.h"
-#include <bitset>
+#include "ReiMath.h"
 
 using namespace irr;
 
@@ -21,7 +21,6 @@ OverworldGameState::OverworldGameState(irr::IrrlichtDevice *irrlicht)
 }
 
 void OverworldGameState::init() {
-	std::cout << std::bitset<16>(btBroadphaseProxy::DefaultFilter) << "\t" << std::bitset<16>(btBroadphaseProxy::AllFilter) << std::endl;
 
 	// Initialize bullet physics simulation
 	broadphase = new btDbvtBroadphase;
@@ -38,9 +37,18 @@ void OverworldGameState::init() {
 
 
 	// Add the camera
-	cam = smgr->addCameraSceneNode();
-	cam->setPosition(core::vector3df(0, 2, -4));
-	cam->setTarget(core::vector3df(0, 0, 0));
+	device->getCursorControl()->setVisible(false);
+	yawPivot = smgr->addEmptySceneNode();
+	yawPivot->setPosition(irr::core::vector3df(0, 2, 0));
+	pitchPivot = smgr->addEmptySceneNode(yawPivot);
+	pitchPivot->setPosition(irr::core::vector3df(1, 0, 0));
+	cam = smgr->addCameraSceneNode(pitchPivot);
+	cam->setPosition(core::vector3df(0, 0, -4));
+	yawSpd = 0.1;
+	pitchSpd = 0.1;
+	maxPitch = 80;
+	minPitch = -maxPitch;
+
 
 
 	irr::scene::ISceneNode* empt = smgr->addEmptySceneNode();
@@ -83,7 +91,11 @@ void OverworldGameState::init() {
 	entityThing(btVector3(6, 6, 8));
 
 
-	playerEnt = &makePlayer(btVector3(5, 5, 5));
+	playerEnt = &makePlayer(btVector3(5, 20, 5));
+
+
+	SceneNodeComponent* playerSceneNode = (SceneNodeComponent*) playerEnt->getComponent<SceneNodeComponent>();
+	yawPivot->setParent(playerSceneNode->sceneNode);
 
 	// Cool skybox
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
@@ -95,6 +107,9 @@ void OverworldGameState::init() {
 		driver->getTexture("example_media/irrlicht2_ft.jpg"),
 		driver->getTexture("example_media/irrlicht2_bk.jpg"));
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
+
+	// Update last position
+	prevMouseLoc = inputMgr->getMouseLoc();
 }
 
 artemis::Entity& OverworldGameState::makePlayer(btVector3 origin) {
@@ -203,19 +218,23 @@ void OverworldGameState::update(irr::f32 tpf) {
 	charPhysSys->process();
 
 
-/*
-	std::cout << phys->location.x() << ",\t";
-	std::cout << phys->location.y() << ",\t";
-	std::cout << phys->location.z() << std::endl;
-	*/
 
-	SceneNodeComponent* comp = (SceneNodeComponent*) playerEnt->getComponent<SceneNodeComponent>();
+	irr::core::vector2df mouseOffset(inputMgr->getMouseLoc().X - prevMouseLoc.X, inputMgr->getMouseLoc().Y - prevMouseLoc.Y);
+	mouseOffset.X *= yawSpd;
+	mouseOffset.Y *= pitchSpd;
+	irr::f32 newYaw = yawPivot->getRotation().Y + mouseOffset.X;
+	irr::f32 newPitch = pitchPivot->getRotation().X - mouseOffset.Y;
+	newPitch = newPitch > maxPitch ? maxPitch : (newPitch < minPitch ? minPitch : newPitch); // clamp pitch
 
-	// Camera stuff
+	yawPivot->setRotation(irr::core::vector3df(0, newYaw, 0));
+	pitchPivot->setRotation(irr::core::vector3df(newPitch, 0, 0));
+	cam->setTarget(pitchPivot->getAbsolutePosition());
 
-
-	cam->setPosition(comp->sceneNode->getAbsolutePosition() + core::vector3df(0, 2, -4));
-	cam->setTarget(comp->sceneNode->getAbsolutePosition());
+	// Update last position
+	irr::s32 centerX = (irr::s32) (driver->getScreenSize().Width / 2);
+	irr::s32 centerY = (irr::s32) (driver->getScreenSize().Height / 2);
+	device->getCursorControl()->setPosition(centerX, centerY);
+	prevMouseLoc = irr::core::position2di(centerX, centerY);
 }
 
 
