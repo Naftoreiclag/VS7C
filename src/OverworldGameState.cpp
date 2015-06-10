@@ -4,6 +4,7 @@
 #include "ChunkNode.h"
 #include "Chunk.h"
 #include <iostream>
+#include <cmath>
 #include "InputManager.h"
 #include "ReiMath.h"
 
@@ -48,8 +49,6 @@ void OverworldGameState::init() {
 	pitchSpd = 0.1;
 	maxPitch = 80;
 	minPitch = -maxPitch;
-
-
 
 	irr::scene::ISceneNode* empt = smgr->addEmptySceneNode();
 	irr::scene::ILightSceneNode* dlight = smgr->addLightSceneNode(empt, irr::core::vector3df(0, 0, 1), irr::video::SColor(1, 1, 1, 1), 10000.0f);
@@ -192,32 +191,16 @@ void OverworldGameState::update(irr::f32 tpf) {
 	entityWorld.loopStart();
 	entityWorld.setDelta(tpf);
 
-	PhysicsComponent* phys = (PhysicsComponent*) playerEnt->getComponent<PhysicsComponent>();
-	CharacterPhysicsComponent* charPhys = (CharacterPhysicsComponent*) playerEnt->getComponent<CharacterPhysicsComponent>();
-
-	charPhys->targetVelocityRelativeToGround.setZero();
-	if(inputMgr->isKeyDown(irr::KEY_KEY_W)) {
-		charPhys->targetVelocityRelativeToGround.setZ(1);
-	}
-	if(inputMgr->isKeyDown(irr::KEY_KEY_S)) {
-		charPhys->targetVelocityRelativeToGround.setZ(-1);
-	}
-	if(inputMgr->isKeyDown(irr::KEY_KEY_A)) {
-		charPhys->targetVelocityRelativeToGround.setX(-1);
-	}
-	if(inputMgr->isKeyDown(irr::KEY_KEY_D)) {
-		charPhys->targetVelocityRelativeToGround.setX(1);
-	}
-	if(!charPhys->targetVelocityRelativeToGround.isZero()) {
-		charPhys->targetVelocityRelativeToGround.normalize();
-	}
-	charPhys->targetVelocityRelativeToGround *= 5;
-
 	dynamicsWorld->stepSimulation(tpf, 6);
 	physSys->process();
 	charPhysSys->process();
 
+	// Move the camera around
 
+	// Looking up is negative pitch
+	// Looking down is positive pitch
+	// Turning left is negative yaw
+	// Turning right is positive yaw
 
 	irr::core::vector2df mouseOffset(inputMgr->getMouseLoc().X - prevMouseLoc.X, inputMgr->getMouseLoc().Y - prevMouseLoc.Y);
 	mouseOffset.X *= yawSpd;
@@ -230,7 +213,32 @@ void OverworldGameState::update(irr::f32 tpf) {
 	pitchPivot->setRotation(irr::core::vector3df(newPitch, 0, 0));
 	cam->setTarget(pitchPivot->getAbsolutePosition());
 
-	// Update last position
+	// Move the player around
+
+	PhysicsComponent* phys = (PhysicsComponent*) playerEnt->getComponent<PhysicsComponent>();
+	CharacterPhysicsComponent* charPhys = (CharacterPhysicsComponent*) playerEnt->getComponent<CharacterPhysicsComponent>();
+
+	btVector3 charRight(std::cos(-newYaw * reim::degToRad), 0, std::sin(-newYaw * reim::degToRad));
+	btVector3 charForward(-charRight.z(), 0, charRight.x());
+	charPhys->targetVelocityRelativeToGround.setZero();
+	if(inputMgr->isKeyDown(irr::KEY_KEY_W)) {
+		charPhys->targetVelocityRelativeToGround += charForward;
+	}
+	if(inputMgr->isKeyDown(irr::KEY_KEY_S)) {
+		charPhys->targetVelocityRelativeToGround -= charForward;
+	}
+	if(inputMgr->isKeyDown(irr::KEY_KEY_A)) {
+		charPhys->targetVelocityRelativeToGround -= charRight;
+	}
+	if(inputMgr->isKeyDown(irr::KEY_KEY_D)) {
+		charPhys->targetVelocityRelativeToGround += charRight;
+	}
+	if(!charPhys->targetVelocityRelativeToGround.isZero()) {
+		charPhys->targetVelocityRelativeToGround.normalize();
+	}
+	charPhys->targetVelocityRelativeToGround *= 5;
+
+	// Update previous vals
 	irr::s32 centerX = (irr::s32) (driver->getScreenSize().Width / 2);
 	irr::s32 centerY = (irr::s32) (driver->getScreenSize().Height / 2);
 	device->getCursorControl()->setPosition(centerX, centerY);
