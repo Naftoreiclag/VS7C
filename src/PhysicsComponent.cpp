@@ -18,7 +18,12 @@ void PhysicsComponent::BulletCallback::setWorldTransform(const btTransform &worl
 	sendTo->needsAttencion = true;
 }
 
+PhysicsComponent::BulletEntityUserData::BulletEntityUserData(artemis::Entity* const owner)
+: owner(owner) {
+}
+
 PhysicsComponent::PhysicsComponent(
+		artemis::Entity* const owner,
 		btDynamicsWorld* const world,
 		const btScalar mass,
 		btCollisionShape* collisionShape,
@@ -26,6 +31,7 @@ PhysicsComponent::PhysicsComponent(
 		const signed short int collisionGroup,
 		const signed short int collidesWith)
 : artemis::Component(),
+userData(new BulletEntityUserData(owner)),
 collisionShape(collisionShape),
 mass(mass),
 isStatic(mass == 0),
@@ -39,6 +45,7 @@ velocity(btVector3(0, 0, 0)) {
 	btVector3 inertia(0, 0, 0);
 	collisionShape->calculateLocalInertia(mass, inertia);
 	rigidBody = new btRigidBody(mass, motionState, collisionShape, inertia);
+	rigidBody->setUserPointer(userData);
 	world->addRigidBody(rigidBody, collisionGroup, collidesWith);
 }
 
@@ -48,6 +55,7 @@ PhysicsComponent::~PhysicsComponent() {
 	delete collisionShape; // Deletes the shape. If you want to have a re-usable shape, then use shared_ptr<btCollisionShape>
 	delete motionState; // Not deleted by rigid body.
 	delete rigidBody;
+	delete userData;
 }
 
 PhysicsSystem::PhysicsSystem() {

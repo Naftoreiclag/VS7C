@@ -61,7 +61,7 @@ void CharacterPhysicsSystem::processEntity(artemis::Entity& e) {
 	btVector3 hit;
 	if(rayCallback.hasHit()) {
 		// We cannot rely on the order of rayCallback.m_collisionObjects, so we have to compare the distances manually
-		btScalar closestHitFraction(1337); // All fractions are < 1 so this is effectively infinite
+		btScalar closestHitFraction(1337); // All fractions are <= 1 so this is effectively infinite
 		for(int i = rayCallback.m_collisionObjects.size() - 1; i >= 0; -- i) {
 
 			// If this result is closer than the closest valid result

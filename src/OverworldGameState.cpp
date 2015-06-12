@@ -7,6 +7,7 @@
 #include <cmath>
 #include "InputManager.h"
 #include "ReiMath.h"
+#include "ReiBullet.h"
 
 using namespace irr;
 
@@ -36,6 +37,9 @@ void OverworldGameState::init() {
 	charPhysSys = (CharacterPhysicsSystem*) systemMgr->setSystem(new CharacterPhysicsSystem());
 	systemMgr->initializeAll();
 
+	// Load sound
+	//buffer.loadFromFile("example_media/impact.wav");
+	//sound.setBuffer(buffer);
 
 	// Add the camera
 	device->getCursorControl()->setVisible(false);
@@ -127,7 +131,7 @@ artemis::Entity& OverworldGameState::makePlayer(btVector3 origin) {
 	trans.setIdentity();
 	trans.setOrigin(origin);
 	PhysicsComponent* comp =
-		new PhysicsComponent(dynamicsWorld, 1, new btBoxShape(btVector3(0.5f, 0.5f, 0.5f)), trans,
+		new PhysicsComponent(&entity, dynamicsWorld, 1, new btBoxShape(btVector3(0.5f, 0.5f, 0.5f)), trans,
 							PhysicsComponent::COLL_PLAYER, PhysicsComponent::COLL_PLAYER | PhysicsComponent::COLL_ENV);
 	comp->rigidBody->setActivationState(DISABLE_DEACTIVATION);
 	entity.addComponent(comp);
@@ -154,8 +158,8 @@ artemis::Entity& OverworldGameState::entityThing(btVector3 origin) {
 	btTransform trans;
 	trans.setIdentity();
 	trans.setOrigin(origin);
-	box.addComponent(new PhysicsComponent(dynamicsWorld, 8, new btSphereShape(0.5), trans,
-							PhysicsComponent::COLL_ENV, PhysicsComponent::COLL_ENV));
+	box.addComponent(new PhysicsComponent(&box, dynamicsWorld, 8, new btSphereShape(0.5), trans,
+							PhysicsComponent::COLL_ENV, PhysicsComponent::COLL_ENV | PhysicsComponent::COLL_PLAYER));
 
 	// Finalize box entity
 	box.refresh();
@@ -232,6 +236,20 @@ void OverworldGameState::update(irr::f32 tpf) {
 	}
 	if(inputMgr->isKeyDown(irr::KEY_KEY_D)) {
 		charPhys->targetVelocityRelativeToGround += charRight;
+	}
+	if(inputMgr->isKeyDown(irr::KEY_KEY_Q)) {
+		// nose?
+		core::line3df picker = smgr->getSceneCollisionManager()->getRayFromScreenCoordinates(inputMgr->getMouseLoc(), cam);
+		// length of picker ray is between 2999 and 3001
+		btVector3 startPt = reim::irrToBullet(picker.start);
+		btVector3 endPt = reim::irrToBullet(picker.end);
+
+		artemis::Entity* picked = reib::entityRaycast(dynamicsWorld, startPt, endPt);
+
+		if(picked) {
+            std::cout << "picky!" << std::endl;
+		}
+
 	}
 	if(!charPhys->targetVelocityRelativeToGround.isZero()) {
 		charPhys->targetVelocityRelativeToGround.normalize();

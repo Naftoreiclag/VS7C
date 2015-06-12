@@ -12,8 +12,6 @@ class PhysicsComponent : public artemis::Component {
 public:
 	static signed short int const COLL_PLAYER = 1 << 0;
 	static signed short int const COLL_ENV = 1 << 1;
-
-
 private:
 	bool needsAttencion; // Tells PhysicsSystem that the data is worth looking at (i.e. it changed)
 	btCollisionShape* collisionShape; // For deletion
@@ -22,6 +20,15 @@ public:
 	btQuaternion rotation;
 	btVector3 location;
 	btVector3 velocity;
+
+public:
+	class BulletEntityUserData {
+	public:
+		artemis::Entity* const owner;
+	private:
+		friend class PhysicsComponent;
+		BulletEntityUserData(artemis::Entity* const owner);
+	};
 
 private:
 	// Utilizes the bullet calling stuff, relays information to the PhysicsComponent
@@ -46,6 +53,7 @@ public:
     const signed short int collidesWith;
 
 	PhysicsComponent(
+		artemis::Entity* const owner,
 		btDynamicsWorld* const world,
 		const btScalar mass,
 		btCollisionShape* collisionShape,
@@ -53,6 +61,8 @@ public:
 		const signed short int collisionGroup = 1, // 0000000000000001
 		const signed short int collidesWith = -1); // 1111111111111111
 	~PhysicsComponent();
+private:
+	BulletEntityUserData* const userData; // Only for managing deletion
 };
 
 // The associated system that manages all entities using PhysicsComponent

@@ -5,6 +5,7 @@
 #include "Artemis/Artemis.h"
 #include "btBulletDynamicsCommon.h"
 #include "Player.h"
+//#include "SFML/Audio.hpp"
 
 #include "CharacterPhysicsComponent.h"
 
@@ -47,6 +48,9 @@ private:
 	irr::f32 pitchSpd;
 	irr::scene::ISceneNode* yawPivot;
 	irr::scene::ISceneNode* pitchPivot;
+
+	//sf::SoundBuffer buffer;
+	//sf::Sound sound;
 
 	btBroadphaseInterface* broadphase;
 	btDefaultCollisionConfiguration* collisionConfiguration;

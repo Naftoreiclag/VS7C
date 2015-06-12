@@ -5,7 +5,7 @@
 		<Option title="Village Simulator 7C" />
 		<Option pch_mode="0" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="Components\;" />
+		<Option virtualFolders="Components\;GameStates\;Utility\;" />
 		<Build>
 			<Target title="Linux">
 				<Option platforms="Unix;" />
@@ -56,23 +56,25 @@
 		</Compiler>
 		<Linker>
 			<Add library="Irrlicht" />
-			<Add library="..\thirdparty\Artemis-Cpp\lib\libArtemisCpp.a" />
-			<Add library="..\thirdparty\lua-5.3_Win32_mingw4_lib\lib\liblua53.a" />
-			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBulletDynamics.dll.a" />
-			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBulletCollision.dll.a" />
-			<Add library="..\thirdparty\bullet3-2.83.4\lib\libLinearMath.dll.a" />
-			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBullet2FileLoader.dll.a" />
-			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBullet3Collision.dll.a" />
-			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBullet3Common.dll.a" />
-			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBullet3Dynamics.dll.a" />
-			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBullet3Geometry.dll.a" />
-			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBullet3OpenCL_clew.dll.a" />
-			<Add library="..\thirdparty\bullet3-2.83.4\lib\libBulletSoftBody.dll.a" />
-			<Add library="sfml-system-s" />
-			<Add library="sfml-network-s" />
-			<Add library="sfml-audio-s" />
+			<Add library="libArtemisCpp" />
+			<Add library="liblua53" />
+			<Add library="libBulletDynamics.dll.a" />
+			<Add library="libBulletCollision.dll.a" />
+			<Add library="libLinearMath.dll.a" />
+			<Add library="libBullet2FileLoader.dll.a" />
+			<Add library="libBullet3Collision.dll.a" />
+			<Add library="libBullet3Common.dll.a" />
+			<Add library="libBullet3Dynamics.dll.a" />
+			<Add library="libBullet3Geometry.dll.a" />
+			<Add library="libBullet3OpenCL_clew.dll.a" />
+			<Add library="libBulletSoftBody.dll.a" />
+			<Add library="sfml-system" />
+			<Add library="sfml-network" />
+			<Add library="sfml-audio" />
 			<Add directory="../thirdparty/bullet3-2.83.4/lib" />
 			<Add directory="../thirdparty/SFML-2.3/lib" />
+			<Add directory="../thirdparty/Artemis-Cpp/lib" />
+			<Add directory="../thirdparty/lua-5.3_Win32_mingw4_lib/lib" />
 		</Linker>
 		<Unit filename="Array2d.h" />
 		<Unit filename="CharacterComponent.cpp">
@@ -91,8 +93,6 @@
 		<Unit filename="Chunk.h" />
 		<Unit filename="ChunkNode.cpp" />
 		<Unit filename="ChunkNode.h" />
-		<Unit filename="EntityThingy.cpp" />
-		<Unit filename="EntityThingy.h" />
 		<Unit filename="Foo.cpp" />
 		<Unit filename="Foo.h" />
 		<Unit filename="GameObject.cpp" />
@@ -109,8 +109,12 @@
 		<Unit filename="InteractionComponent.h">
 			<Option virtualFolder="Components/" />
 		</Unit>
-		<Unit filename="OverworldGameState.cpp" />
-		<Unit filename="OverworldGameState.h" />
+		<Unit filename="OverworldGameState.cpp">
+			<Option virtualFolder="GameStates/" />
+		</Unit>
+		<Unit filename="OverworldGameState.h">
+			<Option virtualFolder="GameStates/" />
+		</Unit>
 		<Unit filename="PhysicsComponent.cpp">
 			<Option virtualFolder="Components/" />
 		</Unit>
@@ -119,8 +123,18 @@
 		</Unit>
 		<Unit filename="Player.cpp" />
 		<Unit filename="Player.h" />
-		<Unit filename="ReiMath.cpp" />
-		<Unit filename="ReiMath.h" />
+		<Unit filename="ReiBullet.cpp">
+			<Option virtualFolder="Utility/" />
+		</Unit>
+		<Unit filename="ReiBullet.h">
+			<Option virtualFolder="Utility/" />
+		</Unit>
+		<Unit filename="ReiMath.cpp">
+			<Option virtualFolder="Utility/" />
+		</Unit>
+		<Unit filename="ReiMath.h">
+			<Option virtualFolder="Utility/" />
+		</Unit>
 		<Unit filename="SceneNodeComponent.cpp">
 			<Option virtualFolder="Components/" />
 		</Unit>

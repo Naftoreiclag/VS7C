@@ -1,6 +1,5 @@
 #include "InteractionComponent.h"
 
-InteractionComponent::InteractionComponent()
-{
+InteractionComponent::InteractionComponent() {
 	//ctor
 }
