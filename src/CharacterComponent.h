@@ -14,6 +14,7 @@ Must also have either a PlayerComponent or SoulComponent to have any functionali
 class CharacterComponent : public artemis::Component {
 public:
 	std::string name;
+	bool sitting;
 	CharacterComponent();
 	~CharacterComponent();
 };

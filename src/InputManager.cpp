@@ -5,8 +5,84 @@ InputManager::InputManager() {
 		isKeyDownMap[i] = false;
 	}
 
-	isLMouseDownBool = false;
-	isRMouseDownBool = false;
+	for(MCODE i = 0; i < MCODE_COUNT; ++ i) {
+		isMouseDownMap[i] = false;
+	}
+}
+
+void InputManager::notifyMe(InputReceiver* receiver) {
+	// If the receiver was never notified before, initialize all the variables
+	if(!receiver->lastDataReceieved.notifiedBefore) {
+		// Ensures no analog data is sent
+		receiver->lastDataReceieved.toldMouseLoc = mouseLoc;
+
+		// All keys are up by default
+		for(irr::u32 i = 0; i < irr::KEY_KEY_CODES_COUNT; ++ i) {
+			receiver->lastDataReceieved.toldKeyPressed[i] = false;
+		}
+		for(MCODE i = 0; i < MCODE_COUNT; ++ i) {
+			receiver->lastDataReceieved.toldMousePressed[i] = false;
+		}
+
+		// We are about to notify it, but set this boolean in advance
+		receiver->lastDataReceieved.notifiedBefore = true;
+	}
+
+	// Mouse movement
+	if(receiver->lastDataReceieved.toldMouseLoc != mouseLoc) {
+		receiver->mouseMove(mouseLoc);
+		receiver->lastDataReceieved.toldMouseLoc = mouseLoc;
+	}
+
+    // Keys
+    for(irr::u32 i = 0; i < irr::KEY_KEY_CODES_COUNT; ++ i) {
+        // If the key is currently down
+        if(isKeyDownMap[i]) {
+			// If the receiver was not already notified that it is down
+			if(!receiver->lastDataReceieved.toldKeyPressed[i]) {
+				// Tell the receiver that the key has switched from being up to being down
+				receiver->keyPressed((irr::EKEY_CODE) i);
+				receiver->lastDataReceieved.toldKeyPressed[i] = true;
+			}
+			// Send the "key is down" thing
+			receiver->keyDown((irr::EKEY_CODE) i);
+        }
+
+        // The key is currently up
+        else {
+			// If the receiver was not updated that the key is now up
+			if(receiver->lastDataReceieved.toldKeyPressed[i]) {
+				// Tell the receiver that the key has switched from being down to being up
+                receiver->keyReleased((irr::EKEY_CODE) i);
+				receiver->lastDataReceieved.toldKeyPressed[i] = false;
+			}
+        }
+    }
+
+    // Mice, basically the same thing
+    for(MCODE i = 0; i < MCODE_COUNT; ++ i) {
+		// If the button is currently down
+        if(isMouseDownMap[i]) {
+			// If the receiver was not already notified that it is down
+			if(!receiver->lastDataReceieved.toldMousePressed[i]) {
+				// Tell the receiver that the button has switched from being up to being down
+				receiver->mousePressed(i);
+				receiver->lastDataReceieved.toldMousePressed[i] = true;
+			}
+			// Send the "button is down" thing
+			receiver->mouseDown(i);
+        }
+
+        // The button is currently up
+        else {
+			// If the receiver was not updated that the button is now up
+			if(receiver->lastDataReceieved.toldMousePressed[i]) {
+				// Tell the receiver that the button has switched from being down to being up
+                receiver->mouseReleased(i);
+				receiver->lastDataReceieved.toldMousePressed[i] = false;
+			}
+        }
+    }
 }
 
 bool InputManager::OnEvent(const irr::SEvent& event) {
@@ -19,16 +95,16 @@ bool InputManager::OnEvent(const irr::SEvent& event) {
 	if(event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
 		switch(event.MouseInput.Event) {
 			case irr::EMIE_LMOUSE_PRESSED_DOWN:
-				isLMouseDownBool = true;
+				isMouseDownMap[MCODE_LEFT] = true;
 			break;
 			case irr::EMIE_LMOUSE_LEFT_UP:
-				isLMouseDownBool = false;
+				isMouseDownMap[MCODE_LEFT] = false;
 			break;
 			case irr::EMIE_RMOUSE_PRESSED_DOWN:
-				isRMouseDownBool = true;
+				isMouseDownMap[MCODE_RIGHT] = true;
 			break;
 			case irr::EMIE_RMOUSE_LEFT_UP:
-				isRMouseDownBool = false;
+				isMouseDownMap[MCODE_RIGHT] = false;
 			break;
 			case irr::EMIE_MOUSE_MOVED:
 				mouseLoc.X = event.MouseInput.X;
@@ -46,12 +122,8 @@ bool InputManager::isKeyDown(irr::EKEY_CODE keyCode) const {
 	return isKeyDownMap[keyCode];
 }
 
-bool InputManager::isLMouseDown() const {
-	return isLMouseDownBool;
-}
-
-bool InputManager::isRMouseDown() const {
-	return isRMouseDownBool;
+bool InputManager::isMouseDown(MCODE buttonCode) const {
+	return isMouseDownMap[buttonCode];
 }
 
 irr::core::position2di InputManager::getMouseLoc() const {

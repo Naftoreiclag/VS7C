@@ -41,6 +41,11 @@ void OverworldGameState::init() {
 	//buffer.loadFromFile("example_media/impact.wav");
 	//sound.setBuffer(buffer);
 
+	// Calc center of screen
+	irr::s32 centerX = (irr::s32) (driver->getScreenSize().Width / 2);
+	irr::s32 centerY = (irr::s32) (driver->getScreenSize().Height / 2);
+	centerOfScreen = irr::core::position2di(centerX, centerY);
+
 	// Add the camera
 	device->getCursorControl()->setVisible(false);
 	yawPivot = smgr->addEmptySceneNode();
@@ -84,7 +89,11 @@ void OverworldGameState::init() {
 	btRigidBody* planeRigid = new btRigidBody(0, 0, planeShape);
 	dynamicsWorld->addRigidBody(planeRigid, PhysicsComponent::COLL_ENV, PhysicsComponent::COLL_ENV | PhysicsComponent::COLL_PLAYER);
 
-	playerEnt = &makePlayer(btVector3(5, 20, 5));
+	playerEnt = &makeEmptyCharEnt(btVector3(5, 20, 5));
+	playerEnt->addComponent(new PlayerComponent());
+
+	artemis::Entity& sammy = makeEmptyCharEnt(btVector3(15, 20, 5));
+    sammy.addComponent(new SoulComponent());
 
 
 	SceneNodeComponent* playerSceneNode = (SceneNodeComponent*) playerEnt->getComponent<SceneNodeComponent>();
@@ -100,14 +109,13 @@ void OverworldGameState::init() {
 		driver->getTexture("example_media/irrlicht2_ft.jpg"),
 		driver->getTexture("example_media/irrlicht2_bk.jpg"));
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
-
-	// Update last position
-	prevMouseLoc = inputMgr->getMouseLoc();
 }
 
-artemis::Entity& OverworldGameState::makePlayer(btVector3 origin) {
+artemis::Entity& OverworldGameState::makeEmptyCharEnt(btVector3 origin) {
 	// Make
 	artemis::Entity& entity = entityMgr->create();
+
+	CharacterComponent* character = new CharacterComponent();
 
 	// SceneNode
 	SceneNodeComponent* sceneNode;
@@ -142,49 +150,14 @@ artemis::Entity& OverworldGameState::makePlayer(btVector3 origin) {
 		btVector3(0, -32.1522, 0)
 	);
 
-	CharacterComponent* character = new CharacterComponent();
-	PlayerComponent* player = new PlayerComponent();
-
 	// Finalize and return
+	entity.addComponent(character);
 	entity.addComponent(sceneNode);
 	entity.addComponent(physics);
 	entity.addComponent(characterPhysics);
-	entity.addComponent(character);
-	entity.addComponent(player);
 	entity.refresh();
 	return entity;
 }
-
-// NPC
-artemis::Entity& OverworldGameState::entityThing(btVector3 origin) {
-	// Make
-	artemis::Entity& entity = entityMgr->create();
-
-	// SceneNode
-	scene::IMeshSceneNode* sceneNode = smgr->addCubeSceneNode(1);
-	sceneNode->getMaterial(0).GouraudShading = false;
-	entity.addComponent(new SceneNodeComponent(sceneNode));
-	// Do not drop resources or node, believing that Irrlicht handles that
-
-	// Physics
-	btTransform trans;
-	trans.setIdentity();
-	trans.setOrigin(origin);
-	PhysicsComponent* comp =
-		new PhysicsComponent(&entity, dynamicsWorld, 1, new btBoxShape(btVector3(0.5f, 0.5f, 0.5f)), trans,
-							PhysicsComponent::COLL_PLAYER, PhysicsComponent::COLL_PLAYER | PhysicsComponent::COLL_ENV);
-	comp->rigidBody->setActivationState(DISABLE_DEACTIVATION);
-	entity.addComponent(comp);
-
-	// Character physics
-	entity.addComponent(new CharacterPhysicsComponent(dynamicsWorld, btVector3(0, 0, 0), btVector3(0, -1.5, 0), 80, 10, 10, 10, btVector3(0, -32.1522, 0)));
-
-	// Finalize and return
-	entity.refresh();
-	return entity;
-}
-
-
 
 void OverworldGameState::cleanup() {
 
@@ -222,7 +195,7 @@ void OverworldGameState::update(irr::f32 tpf) {
 	// Turning left is negative yaw
 	// Turning right is positive yaw
 
-	irr::core::vector2df mouseOffset(inputMgr->getMouseLoc().X - prevMouseLoc.X, inputMgr->getMouseLoc().Y - prevMouseLoc.Y);
+	irr::core::vector2df mouseOffset(inputMgr->getMouseLoc().X - centerOfScreen.X, inputMgr->getMouseLoc().Y - centerOfScreen.Y);
 	mouseOffset.X *= yawSpd;
 	mouseOffset.Y *= pitchSpd;
 	irr::f32 newYaw = yawPivot->getRotation().Y + mouseOffset.X;
@@ -253,7 +226,7 @@ void OverworldGameState::update(irr::f32 tpf) {
 	if(inputMgr->isKeyDown(irr::KEY_KEY_D)) {
 		charPhys->targetVelocityRelativeToGround += charRight;
 	}
-	if(inputMgr->isKeyDown(irr::KEY_KEY_Q)) {
+	if(inputMgr->isKeyDown(irr::KEY_KEY_F)) {
 		core::line3df picker = smgr->getSceneCollisionManager()->getRayFromScreenCoordinates(inputMgr->getMouseLoc(), cam);
 		// (length of picker ray is between 2999 and 3001)
 		btVector3 startPt = reim::irrToBullet(picker.start);
@@ -271,14 +244,17 @@ void OverworldGameState::update(irr::f32 tpf) {
 	}
 	charPhys->targetVelocityRelativeToGround *= 5;
 
-	// Update previous vals
-	irr::s32 centerX = (irr::s32) (driver->getScreenSize().Width / 2);
-	irr::s32 centerY = (irr::s32) (driver->getScreenSize().Height / 2);
-	device->getCursorControl()->setPosition(centerX, centerY);
-	prevMouseLoc = irr::core::position2di(centerX, centerY);
+	device->getCursorControl()->setPosition(centerOfScreen);
 }
 
 
 void OverworldGameState::render() {
 	smgr->drawAll();
+
+	// crosshair
+	driver->draw2DRectangle(
+		irr::video::SColor(255, 255, 255, 255),
+		irr::core::rect<s32>(
+			centerOfScreen.X - 2, centerOfScreen.Y - 2,
+			centerOfScreen.X + 2, centerOfScreen.Y + 2));
 }

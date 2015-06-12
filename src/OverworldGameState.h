@@ -4,7 +4,6 @@
 #include "irrlicht.h"
 #include "Artemis/Artemis.h"
 #include "btBulletDynamicsCommon.h"
-#include "Player.h"
 
 #include "CharacterComponent.h"
 #include "CharacterPhysicsComponent.h"
@@ -49,7 +48,7 @@ private:
 	PhysicsSystem* physSys;
 	CharacterPhysicsSystem* charPhysSys;
 
-	irr::core::position2di prevMouseLoc;
+	irr::core::position2di centerOfScreen;
 	irr::f32 maxPitch;
 	irr::f32 minPitch;
 	irr::f32 yawSpd;
@@ -65,8 +64,7 @@ private:
 	btCollisionDispatcher* dispatcher;
 	btSequentialImpulseConstraintSolver* solver;
 
-	artemis::Entity& entityThing(btVector3 aaa);
-	artemis::Entity& makePlayer(btVector3 aaa);
+	artemis::Entity& makeEmptyCharEnt(btVector3 aaa);
 
 	btDiscreteDynamicsWorld* dynamicsWorld;
 
