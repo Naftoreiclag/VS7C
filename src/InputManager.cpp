@@ -129,3 +129,14 @@ bool InputManager::isMouseDown(MCODE buttonCode) const {
 irr::core::position2di InputManager::getMouseLoc() const {
 	return mouseLoc;
 }
+
+
+InputReceiver::~InputReceiver() {}
+void InputReceiver::keyPressed(irr::EKEY_CODE key) {}
+void InputReceiver::keyDown(irr::EKEY_CODE key) {}
+void InputReceiver::keyReleased(irr::EKEY_CODE key) {}
+
+void InputReceiver::mousePressed(irr::s8 button) {}
+void InputReceiver::mouseDown(irr::s8 button) {}
+void InputReceiver::mouseReleased(irr::s8 button) {}
+void InputReceiver::mouseMove(irr::core::position2di mouseLoc) {}

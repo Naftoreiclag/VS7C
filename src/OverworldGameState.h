@@ -13,15 +13,12 @@
 #include "SceneNodeComponent.h"
 #include "SoulComponent.h"
 
-//#include "SFML/Audio.hpp"
-
-
 #include "GameState.h"
+#include "InputManager.h"
 
 class ChunkNode;
-class InputManager;
 
-class OverworldGameState : public GameState
+class OverworldGameState : public GameState, public InputReceiver
 {
 public:
 	OverworldGameState(irr::IrrlichtDevice *irrlicht);

@@ -211,6 +211,8 @@ void OverworldGameState::update(irr::f32 tpf) {
 	PhysicsComponent* phys = (PhysicsComponent*) playerEnt->getComponent<PhysicsComponent>();
 	CharacterPhysicsComponent* charPhys = (CharacterPhysicsComponent*) playerEnt->getComponent<CharacterPhysicsComponent>();
 
+	inputMgr->notifyMe(this);
+
 	btVector3 charRight(std::cos(-newYaw * reim::degToRad), 0, std::sin(-newYaw * reim::degToRad));
 	btVector3 charForward(-charRight.z(), 0, charRight.x());
 	charPhys->targetVelocityRelativeToGround.setZero();
