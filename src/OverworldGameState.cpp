@@ -84,16 +84,6 @@ void OverworldGameState::init() {
 	btRigidBody* planeRigid = new btRigidBody(0, 0, planeShape);
 	dynamicsWorld->addRigidBody(planeRigid, PhysicsComponent::COLL_ENV, PhysicsComponent::COLL_ENV | PhysicsComponent::COLL_PLAYER);
 
-	artemis::Entity& entity = entityThing(btVector3(3, 3, 3));
-	//SceneNodeComponent* snc = (SceneNodeComponent*) entity.getComponent<SceneNodeComponent>();
-	//dlight->setParent(snc->sceneNode);
-	entityThing(btVector3(3.7, 6, 3.7));
-	entityThing(btVector3(4.1, 10, 4.1));
-	entityThing(btVector3(6, 6, 6));
-	entityThing(btVector3(8, 6, 6));
-	entityThing(btVector3(6, 6, 8));
-
-
 	playerEnt = &makePlayer(btVector3(5, 20, 5));
 
 
@@ -120,9 +110,59 @@ artemis::Entity& OverworldGameState::makePlayer(btVector3 origin) {
 	artemis::Entity& entity = entityMgr->create();
 
 	// SceneNode
+	SceneNodeComponent* sceneNode;
+	{
+		scene::IMeshSceneNode* node = smgr->addCubeSceneNode(1);
+		node->getMaterial(0).GouraudShading = false;
+		sceneNode = new SceneNodeComponent(node);
+		// Do not drop resources or node, believing that Irrlicht handles that
+	}
+
+	// Physics
+	PhysicsComponent* physics;
+	{
+		btTransform trans;
+		trans.setIdentity();
+		trans.setOrigin(origin);
+		physics =
+			new PhysicsComponent(&entity, dynamicsWorld, 1, new btBoxShape(btVector3(0.5f, 0.5f, 0.5f)), trans,
+								PhysicsComponent::COLL_PLAYER, PhysicsComponent::COLL_PLAYER | PhysicsComponent::COLL_ENV);
+		physics->rigidBody->setActivationState(DISABLE_DEACTIVATION);
+	}
+
+	// Character physics
+	CharacterPhysicsComponent* characterPhysics = new CharacterPhysicsComponent(
+		dynamicsWorld,
+		btVector3(0, 0, 0),
+		btVector3(0, -1.5, 0),
+		80,
+		10,
+		10,
+		10,
+		btVector3(0, -32.1522, 0)
+	);
+
+	CharacterComponent* character = new CharacterComponent();
+	PlayerComponent* player = new PlayerComponent();
+
+	// Finalize and return
+	entity.addComponent(sceneNode);
+	entity.addComponent(physics);
+	entity.addComponent(characterPhysics);
+	entity.addComponent(character);
+	entity.addComponent(player);
+	entity.refresh();
+	return entity;
+}
+
+// NPC
+artemis::Entity& OverworldGameState::entityThing(btVector3 origin) {
+	// Make
+	artemis::Entity& entity = entityMgr->create();
+
+	// SceneNode
 	scene::IMeshSceneNode* sceneNode = smgr->addCubeSceneNode(1);
 	sceneNode->getMaterial(0).GouraudShading = false;
-	sceneNode->addShadowVolumeSceneNode();
 	entity.addComponent(new SceneNodeComponent(sceneNode));
 	// Do not drop resources or node, believing that Irrlicht handles that
 
@@ -135,37 +175,13 @@ artemis::Entity& OverworldGameState::makePlayer(btVector3 origin) {
 							PhysicsComponent::COLL_PLAYER, PhysicsComponent::COLL_PLAYER | PhysicsComponent::COLL_ENV);
 	comp->rigidBody->setActivationState(DISABLE_DEACTIVATION);
 	entity.addComponent(comp);
+
+	// Character physics
 	entity.addComponent(new CharacterPhysicsComponent(dynamicsWorld, btVector3(0, 0, 0), btVector3(0, -1.5, 0), 80, 10, 10, 10, btVector3(0, -32.1522, 0)));
 
 	// Finalize and return
 	entity.refresh();
 	return entity;
-}
-
-artemis::Entity& OverworldGameState::entityThing(btVector3 origin) {
-	// Box entity
-	artemis::Entity& box = entityMgr->create();
-
-	// SceneNode
-	//scene::IMesh* cube = smgr->getMesh("assets/unit_sphere.dae");
-	scene::IMeshSceneNode* sceneNode = smgr->addSphereSceneNode(0.5f);
-	sceneNode->getMaterial(0).GouraudShading = true;
-	sceneNode->addShadowVolumeSceneNode();
-	box.addComponent(new SceneNodeComponent(sceneNode));
-	// Do not drop resources or node, believing that Irrlicht handles that
-
-	// Physics
-	btTransform trans;
-	trans.setIdentity();
-	trans.setOrigin(origin);
-	box.addComponent(new PhysicsComponent(&box, dynamicsWorld, 8, new btSphereShape(0.5), trans,
-							PhysicsComponent::COLL_ENV, PhysicsComponent::COLL_ENV | PhysicsComponent::COLL_PLAYER));
-
-	// Finalize box entity
-	box.refresh();
-
-	return box;
-
 }
 
 
@@ -238,9 +254,8 @@ void OverworldGameState::update(irr::f32 tpf) {
 		charPhys->targetVelocityRelativeToGround += charRight;
 	}
 	if(inputMgr->isKeyDown(irr::KEY_KEY_Q)) {
-		// nose?
 		core::line3df picker = smgr->getSceneCollisionManager()->getRayFromScreenCoordinates(inputMgr->getMouseLoc(), cam);
-		// length of picker ray is between 2999 and 3001
+		// (length of picker ray is between 2999 and 3001)
 		btVector3 startPt = reim::irrToBullet(picker.start);
 		btVector3 endPt = reim::irrToBullet(picker.end);
 

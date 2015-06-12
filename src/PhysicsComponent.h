@@ -6,22 +6,25 @@
 #include "SceneNodeComponent.h"
 #include "btBulletDynamicsCommon.h"
 
-// Component that adds physics data to an entity
-// Physics shaps are deleted. Use shared_ptr<btCollisionShape> to have reusable shapes.
+/*
+Adds bullet dynamics to an entity.
+Associated PhysicsSystem updates the sceneNode's orientation to match the rigid body's.
+Note: physics shapes given to this component are deleted. To add resuable shapes, use shared_ptr<> instead.
+*/
 class PhysicsComponent : public artemis::Component {
 public:
 	static signed short int const COLL_PLAYER = 1 << 0;
 	static signed short int const COLL_ENV = 1 << 1;
 private:
 	bool needsAttencion; // Tells PhysicsSystem that the data is worth looking at (i.e. it changed)
-	btCollisionShape* collisionShape; // For deletion
 	friend class PhysicsSystem;
 public:
+	// Read-only information
 	btQuaternion rotation;
 	btVector3 location;
 	btVector3 velocity;
-
 public:
+	// Added to bullet rigid bodies in order to associate them with the entity they belong to
 	class BulletEntityUserData {
 	public:
 		artemis::Entity* const owner;
@@ -29,7 +32,6 @@ public:
 		friend class PhysicsComponent;
 		BulletEntityUserData(artemis::Entity* const owner);
 	};
-
 private:
 	// Utilizes the bullet calling stuff, relays information to the PhysicsComponent
 	class BulletCallback : public btMotionState {
@@ -41,7 +43,6 @@ private:
 		virtual void getWorldTransform(btTransform &worldTransform) const;
 		virtual void setWorldTransform(const btTransform &worldTransform);
 	};
-
 public:
 	BulletCallback* motionState;
 	btRigidBody* rigidBody;
@@ -62,7 +63,8 @@ public:
 		const signed short int collidesWith = -1); // 1111111111111111
 	~PhysicsComponent();
 private:
-	BulletEntityUserData* const userData; // Only for managing deletion
+	btCollisionShape* collisionShape; // For deletion
+	BulletEntityUserData* const userData; // Also for deletion
 };
 
 // The associated system that manages all entities using PhysicsComponent

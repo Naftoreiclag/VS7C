@@ -5,9 +5,17 @@
 #include "Artemis/Artemis.h"
 #include "btBulletDynamicsCommon.h"
 #include "Player.h"
+
+#include "CharacterComponent.h"
+#include "CharacterPhysicsComponent.h"
+#include "InteractionComponent.h"
+#include "PhysicsComponent.h"
+#include "PlayerComponent.h"
+#include "SceneNodeComponent.h"
+#include "SoulComponent.h"
+
 //#include "SFML/Audio.hpp"
 
-#include "CharacterPhysicsComponent.h"
 
 #include "GameState.h"
 

@@ -7,11 +7,15 @@
 
 class PhysicsComponent;
 
-// An extension for PhysicsComponent.
-// Automates character-like physics behavior:
-//    Locks angular momentum at zero
-//    Floats the rigid body some distance above the ground
-//    Handles "walking" and "friction" by moving the character relative to the ground's velocity
+/*
+Must also be used with PhysicsComponent to have any effect,
+since this really just modifies the PhysicsComponent's rigidBody's behavior.
+
+Adds character-like physics behavior:
+- Locks angular momentum at zero
+- Floats the rigid body some distance above the ground
+- Handles "walking" and "friction" by moving the character relative to the ground's velocity
+*/
 
 class CharacterPhysicsComponent : public artemis::Component {
 public:

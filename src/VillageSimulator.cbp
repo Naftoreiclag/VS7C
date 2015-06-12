@@ -95,8 +95,6 @@
 		<Unit filename="ChunkNode.h" />
 		<Unit filename="Foo.cpp" />
 		<Unit filename="Foo.h" />
-		<Unit filename="GameObject.cpp" />
-		<Unit filename="GameObject.h" />
 		<Unit filename="GameState.cpp" />
 		<Unit filename="GameState.h" />
 		<Unit filename="GameStateManager.cpp" />
@@ -121,8 +119,12 @@
 		<Unit filename="PhysicsComponent.h">
 			<Option virtualFolder="Components/" />
 		</Unit>
-		<Unit filename="Player.cpp" />
-		<Unit filename="Player.h" />
+		<Unit filename="PlayerComponent.cpp">
+			<Option virtualFolder="Components/" />
+		</Unit>
+		<Unit filename="PlayerComponent.h">
+			<Option virtualFolder="Components/" />
+		</Unit>
 		<Unit filename="ReiBullet.cpp">
 			<Option virtualFolder="Utility/" />
 		</Unit>
@@ -139,6 +141,12 @@
 			<Option virtualFolder="Components/" />
 		</Unit>
 		<Unit filename="SceneNodeComponent.h">
+			<Option virtualFolder="Components/" />
+		</Unit>
+		<Unit filename="SoulComponent.cpp">
+			<Option virtualFolder="Components/" />
+		</Unit>
+		<Unit filename="SoulComponent.h">
 			<Option virtualFolder="Components/" />
 		</Unit>
 		<Unit filename="main.cpp" />

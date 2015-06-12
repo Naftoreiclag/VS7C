@@ -1,5 +1,6 @@
 #include "InteractionComponent.h"
 
-InteractionComponent::InteractionComponent() {
+InteractionComponent::InteractionComponent()
+: artemis::Component() {
 	//ctor
 }
