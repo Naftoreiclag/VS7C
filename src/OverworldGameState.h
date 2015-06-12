@@ -31,6 +31,8 @@ public:
 
 	virtual void update(const irr::f32 tpf);
 	virtual void render();
+
+	virtual void keyPressed(irr::EKEY_CODE key);
 private:
 	irr::video::IVideoDriver* driver;
 	irr::scene::ISceneManager* smgr;

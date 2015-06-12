@@ -249,6 +249,10 @@ void OverworldGameState::update(irr::f32 tpf) {
 	device->getCursorControl()->setPosition(centerOfScreen);
 }
 
+void OverworldGameState::keyPressed(irr::EKEY_CODE key) {
+	std::cout << key << std::endl;
+}
+
 
 void OverworldGameState::render() {
 	smgr->drawAll();
