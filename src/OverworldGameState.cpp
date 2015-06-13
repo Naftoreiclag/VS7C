@@ -250,6 +250,13 @@ void OverworldGameState::update(irr::f32 tpf) {
 }
 
 void OverworldGameState::keyPressed(irr::EKEY_CODE key) {
+
+	if(key == irr::KEY_KEY_Q) {
+
+
+		makeEmptyCharEnt(btVector3(15, 20, 5));
+
+	}
 	std::cout << key << std::endl;
 }
 

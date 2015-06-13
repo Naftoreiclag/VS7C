@@ -28,7 +28,7 @@ int main()
 	// Create the irrlicht device
 	SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
 	params.DriverType = driverType;
-	params.WindowSize = core::dimension2d<u32>(1280, 720);
+	params.WindowSize = core::dimension2d<u32>(1920, 1080);
 	params.Bits = 16;
 	params.Fullscreen = false;
 	params.Stencilbuffer = true;

@@ -25,7 +25,8 @@ footDecel(footDecel),
 expectedGravityForce(expectedGravityForce),
 upVector(upVector),
 expectedSpringCompression(expectedGravityForce / springStiffness),
-targetVelocityRelativeToGround(btVector3(0, 0, 0)) {
+targetVelocityRelativeToGround(btVector3(0, 0, 0)),
+groundVelocity(btVector3(0, 0, 0)) {
 }
 
 CharacterPhysicsComponent::~CharacterPhysicsComponent()
@@ -49,6 +50,7 @@ void CharacterPhysicsSystem::processEntity(artemis::Entity& e) {
 
 	// No turning?
 	phys->rigidBody->setAngularFactor(0);
+	phys->rigidBody->setAngularVelocity(btVector3(0, 0, 0));
 
 	// Simulate a spring under the character ("legs")
 	// Since rays only register a hit if they hit a face on the "outside," we can project the rays from the inside of the character body
@@ -59,6 +61,7 @@ void CharacterPhysicsSystem::processEntity(artemis::Entity& e) {
 	// Determine if the spring has actually collided with anything, since some objects do not collide with anything
 	bool hasHit = false;
 	btVector3 hit;
+	const btRigidBody* groundBody;
 	if(rayCallback.hasHit()) {
 		// We cannot rely on the order of rayCallback.m_collisionObjects, so we have to compare the distances manually
 		btScalar closestHitFraction(1337); // All fractions are <= 1 so this is effectively infinite
@@ -82,12 +85,27 @@ void CharacterPhysicsSystem::processEntity(artemis::Entity& e) {
 					closestHitFraction = rayCallback.m_hitFractions.at(i);
 					hasHit = true;
 					hit = rayCallback.m_hitPointWorld.at(i);
+					groundBody = static_cast<const btRigidBody*>(rayCallback.m_collisionObjects.at(i));
 				}
             }
 		}
 	}
 
 	if(hasHit) {
+		//
+		if(groundBody) {
+			charPhys->groundBody = groundBody;
+			btVector3 newGroundVelocity = groundBody->getLinearVelocity();
+
+			// If the new velocity is different
+			if(charPhys->groundVelocity != newGroundVelocity) {
+				// Instantly accelerate to new velocity
+				btVector3 impulse = newGroundVelocity - charPhys->groundVelocity;
+				impulse.setY(0);
+				phys->rigidBody->applyImpulse(impulse * phys->mass, btVector3(0, 0, 0));
+			}
+		}
+
 		// The new length of the virtual spring
 		btVector3 newLength = hit - absLegStart;
 
@@ -106,7 +124,7 @@ void CharacterPhysicsSystem::processEntity(artemis::Entity& e) {
 	}
 
 	// thingy
-	btVector3 impulse = charPhys->targetVelocityRelativeToGround - phys->velocity;
+	btVector3 impulse = (charPhys->groundVelocity + charPhys->targetVelocityRelativeToGround) - phys->velocity;
 	impulse.setY(0);
 	phys->rigidBody->applyImpulse(impulse * phys->mass, btVector3(0, 0, 0));
 

@@ -26,6 +26,7 @@ public:
 	const btVector3 upVector; // What direction is up; defines the plane that the player walks on
 	bool feetTouchingGround; // Whether or not the feet are in contact with some kind of ground
 	btVector3 groundVelocity; // Velocity of the body we are standing on
+	const btRigidBody* groundBody; // Body we last stood on
 	btVector3 targetVelocityRelativeToGround; // Adjust this value to create "walking"; any velocity parallel to upVector is ignored
 
 	const btScalar footAccel; // Rate at which the player accelerates to the targetVelocity

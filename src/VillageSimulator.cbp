@@ -46,6 +46,7 @@
 			<Add alias="All" targets="Windows;Linux;" />
 		</VirtualTargets>
 		<Compiler>
+			<Add option="-std=c++11" />
 			<Add option="-g" />
 			<Add option="-DdSINGLE" />
 			<Add directory="../thirdparty/irrlicht-1.8.1/include" />
