@@ -145,8 +145,7 @@ artemis::Entity& OverworldGameState::makeEmptyCharEnt(btVector3 origin) {
 		btVector3(0, -1.5, 0),
 		80,
 		10,
-		10,
-		10,
+		10, // foot accel
 		btVector3(0, -32.1522, 0)
 	);
 
@@ -243,6 +242,7 @@ void OverworldGameState::update(irr::f32 tpf) {
 	}
 	if(!charPhys->targetVelocityRelativeToGround.isZero()) {
 		charPhys->targetVelocityRelativeToGround.normalize();
+		charPhys->isWalking = true;
 	}
 	charPhys->targetVelocityRelativeToGround *= 5;
 

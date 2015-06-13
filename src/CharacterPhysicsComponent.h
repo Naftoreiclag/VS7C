@@ -23,15 +23,16 @@ public:
 	btDynamicsWorld* const world; // What world this exists in
 
 	// Walking-related stuff
+	// "Walking" is the force the exists iff the body's velocity relative to the ground is not equal to the target velocity
 	const btVector3 upVector; // What direction is up; defines the plane that the player walks on
 	bool feetTouchingGround; // Whether or not the feet are in contact with some kind of ground
+	bool isWalking; //
 	const btRigidBody* groundBody; // Body we last stood on (default is NULL)
 	btVector3 groundVelocity; // Velocity of groundBody (default is ZERO)
 	btVector3 targetVelocityRelativeToGround; // Adjust this value to create "walking"; any velocity parallel to upVector is ignored (default is ZERO)
 
 	btScalar footGrip; // Rate at which the player accel/decelerates to groundVelocity
 	const btScalar footAccel; // Rate at which the player accelerates to the targetVelocity
-	const btScalar footDecel; // Rate at which the player decelerates to the targetVelocity
 
 	const btVector3 legStart;
 	const btVector3 legEnd;
@@ -47,7 +48,6 @@ public:
 		const btScalar springStiffness,
 		const btScalar springDamping,
 		const btScalar footAccel,
-		const btScalar footDecel,
 		const btVector3& expectedGravityForce,
 		const btVector3& upVector = btVector3(0, 1, 0));
 	~CharacterPhysicsComponent();

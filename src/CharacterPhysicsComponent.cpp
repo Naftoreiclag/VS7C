@@ -8,7 +8,6 @@ CharacterPhysicsComponent::CharacterPhysicsComponent(
 	const btScalar springStiffness,
 	const btScalar springDamping,
 	const btScalar footAccel,
-	const btScalar footDecel,
 	const btVector3& expectedGravityForce,
 	const btVector3& upVector)
 : artemis::Component(),
@@ -22,7 +21,7 @@ normalizedSpring(spring.normalized()),
 feetTouchingGround(false),
 footGrip(5),
 footAccel(footAccel),
-footDecel(footDecel),
+isWalking(false),
 expectedGravityForce(expectedGravityForce),
 upVector(upVector),
 expectedSpringCompression(expectedGravityForce / springStiffness),
@@ -94,35 +93,29 @@ void CharacterPhysicsSystem::processEntity(artemis::Entity& e) {
 
 	if(hasHit) {
 		// Holding on to the ground
-		/*
 		if(groundBody) {
 			charPhys->groundBody = groundBody;
-			btVector3 newGroundVelocity = groundBody->getLinearVelocity();
+			charPhys->groundVelocity = groundBody->getLinearVelocity();
 
-			// If the new velocity is different
-			if(charPhys->groundVelocity != newGroundVelocity) {
-				// Instantly accelerate to new velocity
-				btVector3 impulse = newGroundVelocity - charPhys->groundVelocity;
-				impulse.setY(0);
-				phys->rigidBody->applyImpulse(impulse * phys->mass, btVector3(0, 0, 0));
+			btVector3 gripAccel = charPhys->groundVelocity - phys->velocity;
+			if(!gripAccel.isZero()) {
+				gripAccel.normalize();
+				gripAccel *= charPhys->footGrip;
+				gripAccel.setY(0);
+				phys->rigidBody->applyForce(gripAccel * phys->mass, btVector3(0, 0, 0));
 			}
 		}
-		*/
 
-		// Walking
-		// true = speeding up; false = slowing down
-		btVector3 targetVel = charPhys->targetVelocityRelativeToGround;
-		btScalar targetVelMag = targetVel.length();
-
-		btVector3 currentVel = phys->velocity;
-		btScalar currentVelMag = currentVel.length();
-
-		bool speedingUp = targetVelMag > currentVelMag; // maybe use dot product instead?
-
-		btVector3 walkForceDir = (targetVel - currentVel).normalized();
-		walkForceDir *= speedingUp ? charPhys->footAccel : charPhys->footDecel;
-		walkForceDir.setY(0);
-		phys->rigidBody->applyForce(walkForceDir * phys->mass, btVector3(0, 0, 0));
+		if(charPhys->isWalking) {
+			btVector3 walkAccel = (charPhys->groundVelocity + charPhys->targetVelocityRelativeToGround) - phys->velocity;
+			if(!walkAccel.isZero()) {
+				walkAccel.normalize();
+				walkAccel *= charPhys->footAccel;
+				walkAccel.setY(0);
+				phys->rigidBody->applyForce(walkAccel * phys->mass, btVector3(0, 0, 0));
+			}
+			charPhys->isWalking = false;
+		}
 
 		// The new length of the virtual spring
 		btVector3 newLength = hit - absLegStart;
