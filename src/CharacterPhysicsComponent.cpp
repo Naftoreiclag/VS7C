@@ -20,6 +20,7 @@ springStiffness(springStiffness),
 springDamping(springDamping),
 normalizedSpring(spring.normalized()),
 feetTouchingGround(false),
+footGrip(5),
 footAccel(footAccel),
 footDecel(footDecel),
 expectedGravityForce(expectedGravityForce),
@@ -92,7 +93,8 @@ void CharacterPhysicsSystem::processEntity(artemis::Entity& e) {
 	}
 
 	if(hasHit) {
-		//
+		// Holding on to the ground
+		/*
 		if(groundBody) {
 			charPhys->groundBody = groundBody;
 			btVector3 newGroundVelocity = groundBody->getLinearVelocity();
@@ -105,6 +107,22 @@ void CharacterPhysicsSystem::processEntity(artemis::Entity& e) {
 				phys->rigidBody->applyImpulse(impulse * phys->mass, btVector3(0, 0, 0));
 			}
 		}
+		*/
+
+		// Walking
+		// true = speeding up; false = slowing down
+		btVector3 targetVel = charPhys->targetVelocityRelativeToGround;
+		btScalar targetVelMag = targetVel.length();
+
+		btVector3 currentVel = phys->velocity;
+		btScalar currentVelMag = currentVel.length();
+
+		bool speedingUp = targetVelMag > currentVelMag; // maybe use dot product instead?
+
+		btVector3 walkForceDir = (targetVel - currentVel).normalized();
+		walkForceDir *= speedingUp ? charPhys->footAccel : charPhys->footDecel;
+		walkForceDir.setY(0);
+		phys->rigidBody->applyForce(walkForceDir * phys->mass, btVector3(0, 0, 0));
 
 		// The new length of the virtual spring
 		btVector3 newLength = hit - absLegStart;
@@ -122,11 +140,6 @@ void CharacterPhysicsSystem::processEntity(artemis::Entity& e) {
 	} else {
 		charPhys->feetTouchingGround = false;
 	}
-
-	// thingy
-	btVector3 impulse = (charPhys->groundVelocity + charPhys->targetVelocityRelativeToGround) - phys->velocity;
-	impulse.setY(0);
-	phys->rigidBody->applyImpulse(impulse * phys->mass, btVector3(0, 0, 0));
 
 	// The location should be relative to the position the body should be at rest given the amount we expect the spring to compress and the length of the spring
 	phys->location += -charPhys->expectedSpringCompression;

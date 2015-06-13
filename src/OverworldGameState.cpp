@@ -184,8 +184,8 @@ void OverworldGameState::update(irr::f32 tpf) {
 	entityWorld.loopStart();
 	entityWorld.setDelta(tpf);
 
-	dynamicsWorld->stepSimulation(tpf, 6);
-	physSys->process();
+	dynamicsWorld->stepSimulation(tpf, 6); // Resolve all collisions, velocities, and forces
+	physSys->process(); // Record all changes to bodies
 	charPhysSys->process();
 
 	// Move the camera around

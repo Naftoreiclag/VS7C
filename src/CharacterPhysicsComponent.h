@@ -25,12 +25,13 @@ public:
 	// Walking-related stuff
 	const btVector3 upVector; // What direction is up; defines the plane that the player walks on
 	bool feetTouchingGround; // Whether or not the feet are in contact with some kind of ground
-	btVector3 groundVelocity; // Velocity of the body we are standing on
-	const btRigidBody* groundBody; // Body we last stood on
-	btVector3 targetVelocityRelativeToGround; // Adjust this value to create "walking"; any velocity parallel to upVector is ignored
+	const btRigidBody* groundBody; // Body we last stood on (default is NULL)
+	btVector3 groundVelocity; // Velocity of groundBody (default is ZERO)
+	btVector3 targetVelocityRelativeToGround; // Adjust this value to create "walking"; any velocity parallel to upVector is ignored (default is ZERO)
 
+	btScalar footGrip; // Rate at which the player accel/decelerates to groundVelocity
 	const btScalar footAccel; // Rate at which the player accelerates to the targetVelocity
-	const btScalar footDecel; // Rate at which the player deccelerates to the targetVelocity
+	const btScalar footDecel; // Rate at which the player decelerates to the targetVelocity
 
 	const btVector3 legStart;
 	const btVector3 legEnd;
@@ -65,5 +66,11 @@ public:
 	virtual void initialize();
 	virtual void processEntity(artemis::Entity& e);
 };
+
+/*
+class CharacterPhysicsSystemStepA : public artemis::EntityProcessingSystem {
+
+};
+*/
 
 #endif // CHARACTERPHYSICSCOMPONENT_H
