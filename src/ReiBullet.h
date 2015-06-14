@@ -1,11 +1,29 @@
 #ifndef REIBULLET_H
 #define REIBULLET_H
 
+#include "irrlicht.h"
 #include "Artemis/Artemis.h"
 #include "btBulletDynamicsCommon.h"
 
 namespace reib {
 	artemis::Entity* entityRaycast(btCollisionWorld* world, const btVector3& start, const btVector3& end);
+
+	class BulletDebugDrawer : public btIDebugDraw {
+	public:
+		irr::video::SMaterial material;
+
+		BulletDebugDrawer(irr::IrrlichtDevice* const device);
+		virtual void drawLine(const btVector3& from, const btVector3& to, const btVector3& color);
+		virtual void drawContactPoint(const btVector3& PointOnB, const btVector3& normalOnB, btScalar distance, int lifeTime, const btVector3& color);
+		virtual void reportErrorWarning(const char* warningString);
+		virtual void draw3dText(const btVector3& location, const char* textString);
+		virtual void setDebugMode(int debugMode);
+		virtual int getDebugMode() const;
+	private:
+		irr::IrrlichtDevice* device;
+		irr::video::IVideoDriver* driver;
+		int debugMode;
+	};
 };
 
 #endif // REIBULLET_H

@@ -31,6 +31,9 @@ void OverworldGameState::init() {
 	solver = new btSequentialImpulseConstraintSolver;
 	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
 	dynamicsWorld->setGravity(btVector3(0, -32.1522, 0)); // Earth gravity
+	bulletDebugDrawer = new reib::BulletDebugDrawer(device);
+	drawBulletDebug = true;
+	dynamicsWorld->setDebugDrawer(bulletDebugDrawer);
 
 	// Initalize all artemis systems
 	physSys = (PhysicsSystem*) systemMgr->setSystem(new PhysicsSystem());
@@ -171,6 +174,7 @@ void OverworldGameState::cleanup() {
 	delete dispatcher;
 	delete collisionConfiguration;
 	delete broadphase;
+	delete bulletDebugDrawer;
 }
 
 void OverworldGameState::pause()
@@ -273,4 +277,11 @@ void OverworldGameState::render() {
 		irr::core::rect<s32>(
 			centerOfScreen.X - 2, centerOfScreen.Y - 2,
 			centerOfScreen.X + 2, centerOfScreen.Y + 2));
+
+	// Something else
+	if(drawBulletDebug) {
+		driver->setTransform(irr::video::ETS_WORLD, irr::core::IdentityMatrix);
+		driver->setMaterial(bulletDebugDrawer->material);
+		dynamicsWorld->debugDrawWorld();
+	}
 }

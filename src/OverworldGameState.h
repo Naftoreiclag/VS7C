@@ -16,6 +16,8 @@
 #include "GameState.h"
 #include "InputManager.h"
 
+#include "ReiBullet.h"
+
 class ChunkNode;
 
 class OverworldGameState : public GameState, public InputReceiver
@@ -54,6 +56,9 @@ private:
 	irr::f32 pitchSpd;
 	irr::scene::ISceneNode* yawPivot;
 	irr::scene::ISceneNode* pitchPivot;
+
+	reib::BulletDebugDrawer* bulletDebugDrawer;
+	bool drawBulletDebug;
 
 	//sf::SoundBuffer buffer;
 	//sf::Sound sound;

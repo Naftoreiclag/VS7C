@@ -8,7 +8,6 @@
 
 namespace reim {
 
-
     btVector3 quaternionToEuler(const btQuaternion& rot);
 
     btVector3 onAxis(const btVector3& input, const btVector3& axisToRemove);
