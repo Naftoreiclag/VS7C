@@ -1,5 +1,6 @@
 #include "CharacterPhysicsComponent.h"
 #include "PhysicsComponent.h"
+#include "ReiMath.h"
 
 CharacterPhysicsComponent::CharacterPhysicsComponent(
 	btDynamicsWorld* const world,
@@ -8,8 +9,10 @@ CharacterPhysicsComponent::CharacterPhysicsComponent(
 	const btScalar springStiffness,
 	const btScalar springDamping,
 	const btScalar footAccel,
+	const btScalar footGrip,
 	const btVector3& expectedGravityForce,
-	const btVector3& upVector)
+	const btVector3& upVector,
+	const btScalar minVelocityRelativeToGround)
 : artemis::Component(),
 world(world),
 legEnd(legEnd),
@@ -19,8 +22,9 @@ springStiffness(springStiffness),
 springDamping(springDamping),
 normalizedSpring(spring.normalized()),
 feetTouchingGround(false),
-footGrip(5),
+footGrip(footGrip),
 footAccel(footAccel),
+minVelocityRelativeToGroundSq(minVelocityRelativeToGround * minVelocityRelativeToGround),
 isWalking(false),
 expectedGravityForce(expectedGravityForce),
 upVector(upVector),
@@ -97,21 +101,31 @@ void CharacterPhysicsSystem::processEntity(artemis::Entity& e) {
 			charPhys->groundBody = groundBody;
 			charPhys->groundVelocity = groundBody->getLinearVelocity();
 
-			btVector3 gripAccel = charPhys->groundVelocity - phys->velocity;
-			if(!gripAccel.isZero()) {
-				gripAccel.normalize();
-				gripAccel *= charPhys->footGrip;
-				gripAccel.setY(0);
-				phys->rigidBody->applyForce(gripAccel * phys->mass, btVector3(0, 0, 0));
+			if(!charPhys->isWalking) {
+				// If the character is moving too slow, just set speed to zero
+				if((phys->velocity - charPhys->groundVelocity).length2() < charPhys->minVelocityRelativeToGroundSq) {
+					// Apply impulse to set character velocity to be ground velocity
+					btVector3 impulse = charPhys->groundVelocity - phys->velocity;
+					phys->rigidBody->applyImpulse(impulse * phys->mass, btVector3(0, 0, 0));
+				}
+
+				// Gradually slow down to nothing
+				else {
+					btVector3 gripAccel = reim::onPlane(charPhys->groundVelocity - phys->velocity, charPhys->upVector);
+					if(!gripAccel.isZero()) {
+						gripAccel.normalize();
+						gripAccel *= charPhys->footGrip;
+						phys->rigidBody->applyForce(gripAccel * phys->mass, btVector3(0, 0, 0));
+					}
+				}
 			}
 		}
 
 		if(charPhys->isWalking) {
-			btVector3 walkAccel = (charPhys->groundVelocity + charPhys->targetVelocityRelativeToGround) - phys->velocity;
+			btVector3 walkAccel = reim::onPlane((charPhys->groundVelocity + charPhys->targetVelocityRelativeToGround) - phys->velocity, charPhys->upVector);
 			if(!walkAccel.isZero()) {
 				walkAccel.normalize();
 				walkAccel *= charPhys->footAccel;
-				walkAccel.setY(0);
 				phys->rigidBody->applyForce(walkAccel * phys->mass, btVector3(0, 0, 0));
 			}
 			charPhys->isWalking = false;

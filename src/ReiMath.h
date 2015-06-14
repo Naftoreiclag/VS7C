@@ -11,6 +11,9 @@ namespace reim {
 
     btVector3 quaternionToEuler(const btQuaternion& rot);
 
+    btVector3 onAxis(const btVector3& input, const btVector3& axisToRemove);
+    btVector3 onPlane(const btVector3& input, const btVector3& axisPerpToPlane);
+
     irr::core::vector3df bulletToIrr(const btVector3& vec);
 
     irr::f32 const degToRad = 0.01745329251f; // pi divided by 180

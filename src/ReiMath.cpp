@@ -20,6 +20,14 @@ btVector3 reim::quaternionToEuler(const btQuaternion& rot) {
 	return euler;
 }
 
+
+btVector3 reim::onAxis(const btVector3& input, const btVector3& axisToRemove) {
+	return axisToRemove * input.dot(axisToRemove);
+}
+btVector3 reim::onPlane(const btVector3& input, const btVector3& axisPerpToPlane) {
+	return input - (axisPerpToPlane * input.dot(axisPerpToPlane));
+}
+
 irr::core::vector3df reim::bulletToIrr(const btVector3& vec) {
 	return irr::core::vector3df(vec.x(), vec.y(), vec.z());
 }

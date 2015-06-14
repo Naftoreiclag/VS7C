@@ -120,8 +120,10 @@ artemis::Entity& OverworldGameState::makeEmptyCharEnt(btVector3 origin) {
 	// SceneNode
 	SceneNodeComponent* sceneNode;
 	{
-		scene::IMeshSceneNode* node = smgr->addCubeSceneNode(1);
-		node->getMaterial(0).GouraudShading = false;
+		scene::ISceneNode* node = smgr->addEmptySceneNode();
+		scene::IMeshSceneNode* cube = smgr->addCubeSceneNode(1, node);
+		cube->getMaterial(0).GouraudShading = false;
+		cube->setPosition(irr::core::vector3df(0, 0.5, 0));
 		sceneNode = new SceneNodeComponent(node);
 		// Do not drop resources or node, believing that Irrlicht handles that
 	}
@@ -145,7 +147,8 @@ artemis::Entity& OverworldGameState::makeEmptyCharEnt(btVector3 origin) {
 		btVector3(0, -1.5, 0),
 		80,
 		10,
-		10, // foot accel
+		30, // foot accel
+		20,
 		btVector3(0, -32.1522, 0)
 	);
 
@@ -184,8 +187,8 @@ void OverworldGameState::update(irr::f32 tpf) {
 	entityWorld.setDelta(tpf);
 
 	dynamicsWorld->stepSimulation(tpf, 6); // Resolve all collisions, velocities, and forces
-	physSys->process(); // Record all changes to bodies
-	charPhysSys->process();
+	charPhysSys->process(); // Do special physics
+	physSys->process(); // Update scenenodes
 
 	// Move the camera around
 
