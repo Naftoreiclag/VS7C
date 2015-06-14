@@ -135,10 +135,10 @@ void CharacterPhysicsSystem::processEntity(artemis::Entity& e) {
 		btVector3 newLength = hit - absLegStart;
 
 		// Calculate and apply Hooke's law with damping
-		btVector3 compression = charPhys->spring - newLength; // how much the spring is "compressed"
+		charPhys->springCompression = charPhys->spring - newLength; // how much the spring is "compressed"
 		btVector3 energyLoss = charPhys->normalizedSpring * phys->velocity.dot(charPhys->normalizedSpring); // get the body's velocity in terms of the springs' compression
 		btVector3 hooke = // Hooke's law
-		-(compression * charPhys->springStiffness) // The force the spring exerts due to compression is compression multiplied by the spring's stiffness
+		-(charPhys->springCompression * charPhys->springStiffness) // The force the spring exerts due to compression is compression multiplied by the spring's stiffness
 		-(energyLoss * charPhys->springDamping); // Reduce the force due to damping
 		phys->rigidBody->applyForce(hooke, btVector3(0, 0, 0));
 
@@ -151,5 +151,6 @@ void CharacterPhysicsSystem::processEntity(artemis::Entity& e) {
 	// The location should be relative to the position the body should be at rest given the amount we expect the spring to compress and the length of the spring
 	phys->location += -charPhys->expectedSpringCompression;
 	phys->location += charPhys->spring;
+	phys->location += -charPhys->springCompression;
 }
 

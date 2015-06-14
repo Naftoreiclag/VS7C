@@ -31,6 +31,8 @@ public:
 	btVector3 groundVelocity; // Velocity of groundBody (default is ZERO)
 	btVector3 targetVelocityRelativeToGround; // Adjust this value to create "walking"; any velocity parallel to upVector is ignored (default is ZERO)
 
+	btVector3 springCompression;
+
 	btScalar footGrip; // Rate at which the player accel/decelerates to groundVelocity
 	const btScalar footAccel; // Rate at which the player accelerates to the targetVelocity
 	const btScalar minVelocityRelativeToGroundSq; // Slowest that the player can travel relative to the ground (magnitude squared)
@@ -52,7 +54,7 @@ public:
 		const btScalar footGrip,
 		const btVector3& expectedGravityForce,
 		const btVector3& upVector = btVector3(0, 1, 0),
-		const btScalar minVelocityRelativeToGround = 0.1);
+		const btScalar minVelocityRelativeToGround = 0.3);
 	~CharacterPhysicsComponent();
 private:
 	const btVector3 expectedGravityForce; // What is the strength of gravity? Note: this does not define gravity for the character
