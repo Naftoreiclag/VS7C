@@ -38,7 +38,6 @@ void OverworldGameState::init() {
 	// Initalize all artemis systems
 	physSys = (PhysicsSystem*) systemMgr->setSystem(new PhysicsSystem());
 	charPhysSys = (CharacterPhysicsSystem*) systemMgr->setSystem(new CharacterPhysicsSystem());
-	playerSys = (PlayerSystem*) systemMgr->setSystem(new PlayerSystem());
 	systemMgr->initializeAll();
 
 	// Load sound
@@ -94,7 +93,6 @@ void OverworldGameState::init() {
 	dynamicsWorld->addRigidBody(planeRigid, PhysicsComponent::COLL_ENV, PhysicsComponent::COLL_ENV | PhysicsComponent::COLL_PLAYER);
 
 	playerEnt = &makeEmptyCharEnt(btVector3(5, 21, 5));
-	playerEnt->addComponent(new PlayerComponent(inputMgr));
 
 	artemis::Entity& sammy = makeEmptyCharEnt(btVector3(15, 20, 5));
     sammy.addComponent(new SoulComponent());
@@ -216,7 +214,6 @@ void OverworldGameState::update(irr::f32 tpf) {
 
 	// Move the player around
 
-	playerSys->process();
 
 	PhysicsComponent* phys = (PhysicsComponent*) playerEnt->getComponent<PhysicsComponent>();
 	CharacterPhysicsComponent* charPhys = (CharacterPhysicsComponent*) playerEnt->getComponent<CharacterPhysicsComponent>();

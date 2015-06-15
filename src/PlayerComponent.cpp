@@ -29,6 +29,8 @@ void PlayerSystem::processEntity(artemis::Entity& e) {
 	charPhys = characterPhysicsMapper.get(e);
 	player = playerMapper.get(e);
 
+
+
 	player->inputMgr->notifyMe(player, this);
 }
 
