@@ -92,7 +92,7 @@ void OverworldGameState::init() {
 	btRigidBody* planeRigid = new btRigidBody(0, 0, planeShape);
 	dynamicsWorld->addRigidBody(planeRigid, PhysicsComponent::COLL_ENV, PhysicsComponent::COLL_ENV | PhysicsComponent::COLL_PLAYER);
 
-	playerEnt = &makeEmptyCharEnt(btVector3(5, 20, 5));
+	playerEnt = &makeEmptyCharEnt(btVector3(5, 21, 5));
 	playerEnt->addComponent(new PlayerComponent());
 
 	artemis::Entity& sammy = makeEmptyCharEnt(btVector3(15, 20, 5));
@@ -124,9 +124,9 @@ artemis::Entity& OverworldGameState::makeEmptyCharEnt(btVector3 origin) {
 	SceneNodeComponent* sceneNode;
 	{
 		scene::ISceneNode* node = smgr->addEmptySceneNode();
-		scene::IMeshSceneNode* cube = smgr->addCubeSceneNode(1, node);
+		scene::IMeshSceneNode* cube = smgr->addSphereSceneNode(1, 16, node);
 		cube->getMaterial(0).GouraudShading = false;
-		cube->setPosition(irr::core::vector3df(0, 0.5, 0));
+		cube->setPosition(irr::core::vector3df(0, 0, 0));
 		sceneNode = new SceneNodeComponent(node);
 		// Do not drop resources or node, believing that Irrlicht handles that
 	}
@@ -138,7 +138,7 @@ artemis::Entity& OverworldGameState::makeEmptyCharEnt(btVector3 origin) {
 		trans.setIdentity();
 		trans.setOrigin(origin);
 		physics =
-			new PhysicsComponent(&entity, dynamicsWorld, 1, new btBoxShape(btVector3(0.5f, 0.5f, 0.5f)), trans,
+			new PhysicsComponent(&entity, dynamicsWorld, 1, new btCapsuleShape(1.0f, 1.5f), trans,
 								PhysicsComponent::COLL_PLAYER, PhysicsComponent::COLL_PLAYER | PhysicsComponent::COLL_ENV);
 		physics->rigidBody->setActivationState(DISABLE_DEACTIVATION);
 	}
@@ -146,8 +146,9 @@ artemis::Entity& OverworldGameState::makeEmptyCharEnt(btVector3 origin) {
 	// Character physics
 	CharacterPhysicsComponent* characterPhysics = new CharacterPhysicsComponent(
 		dynamicsWorld,
-		btVector3(0, 0, 0),
-		btVector3(0, -1.5, 0),
+		btVector3(0, -3.5f/2.0f, 0),
+		btVector3(0, 0.5, 0),
+		btVector3(0, -1.0, 0),
 		80,
 		10,
 		30, // foot accel
@@ -267,6 +268,15 @@ void OverworldGameState::keyPressed(irr::EKEY_CODE key) {
 	std::cout << key << std::endl;
 }
 
+
+void OverworldGameState::keyDown(irr::EKEY_CODE key) {
+
+
+	if(key == irr::KEY_SPACE) {
+		PhysicsComponent* phys = (PhysicsComponent*) playerEnt->getComponent<PhysicsComponent>();
+		phys->rigidBody->applyForce(btVector3(0, 40, 0), btVector3(0, 0, 0));
+	}
+}
 
 void OverworldGameState::render() {
 	smgr->drawAll();

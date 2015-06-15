@@ -35,6 +35,7 @@ public:
 	virtual void render();
 
 	virtual void keyPressed(irr::EKEY_CODE key);
+	virtual void keyDown(irr::EKEY_CODE key);
 private:
 	irr::video::IVideoDriver* driver;
 	irr::scene::ISceneManager* smgr;

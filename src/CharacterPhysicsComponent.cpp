@@ -4,17 +4,19 @@
 
 CharacterPhysicsComponent::CharacterPhysicsComponent(
 	btDynamicsWorld* const world,
+	const btVector3& originOffset,
 	const btVector3& legStart,
 	const btVector3& legEnd,
-	const btScalar springStiffness,
-	const btScalar springDamping,
-	const btScalar footAccel,
-	const btScalar footGrip,
+	const btScalar& springStiffness,
+	const btScalar& springDamping,
+	const btScalar& footAccel,
+	const btScalar& footGrip,
 	const btVector3& expectedGravityForce,
 	const btVector3& upVector,
 	const btScalar minVelocityRelativeToGround)
 : artemis::Component(),
 world(world),
+originOffset(originOffset),
 legEnd(legEnd),
 legStart(legStart),
 spring(legEnd - legStart),
@@ -58,11 +60,11 @@ void CharacterPhysicsSystem::processEntity(artemis::Entity& e) {
 
 	// Simulate a spring under the character ("legs")
 	// Since rays only register a hit if they hit a face on the "outside," we can project the rays from the inside of the character body
-	btVector3 absLegStart = charPhys->legStart + phys->location;
-	btVector3 absLegEnd = charPhys->legEnd + phys->location;
+	btVector3 absLegStart = charPhys->legStart + phys->location + charPhys->originOffset;
+	btVector3 absLegEnd = charPhys->legEnd + phys->location + charPhys->originOffset;
 	btCollisionWorld::AllHitsRayResultCallback rayCallback(absLegStart, absLegEnd);
 	charPhys->world->rayTest(absLegStart, absLegEnd, rayCallback);
-	// Determine if the spring has actually collided with anything, since some objects do not collide with anything
+	// Determine if the spring has actually collided with anything, since some objects are marked to not collide
 	bool hasHit = false;
 	btVector3 hit;
 	const btRigidBody* groundBody;
@@ -104,7 +106,7 @@ void CharacterPhysicsSystem::processEntity(artemis::Entity& e) {
 			if(!charPhys->isWalking) {
 				// If the character is moving too slow, just set speed to zero
 				if((phys->velocity - charPhys->groundVelocity).length2() < charPhys->minVelocityRelativeToGroundSq) {
-					// Apply impulse to set character velocity to be ground velocity
+					// Apply impulse to set character velocity relative to ground to zero
 					btVector3 impulse = charPhys->groundVelocity - phys->velocity;
 					phys->rigidBody->applyImpulse(impulse * phys->mass, btVector3(0, 0, 0));
 				}
@@ -149,8 +151,12 @@ void CharacterPhysicsSystem::processEntity(artemis::Entity& e) {
 	}
 
 	// The location should be relative to the position the body should be at rest given the amount we expect the spring to compress and the length of the spring
+
 	phys->location += -charPhys->expectedSpringCompression;
 	phys->location += charPhys->spring;
 	phys->location += -charPhys->springCompression;
+	phys->location += charPhys->originOffset;
+
+
 }
 
