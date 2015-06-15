@@ -49,6 +49,7 @@ private:
 
 	PhysicsSystem* physSys;
 	CharacterPhysicsSystem* charPhysSys;
+	PlayerSystem* playerSys;
 
 	irr::core::position2di centerOfScreen;
 	irr::f32 maxPitch;

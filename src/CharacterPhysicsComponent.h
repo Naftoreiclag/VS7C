@@ -34,7 +34,7 @@ public:
 	btVector3 targetVelocityRelativeToGround; // Adjust this value to create "walking"; any velocity parallel to upVector is ignored (default is ZERO)
 
 
-	btScalar footGrip; // Rate at which the player accel/decelerates to groundVelocity when not walking
+	const btScalar footGrip; // Rate at which the player accel/decelerates to groundVelocity when not walking
 	const btScalar footAccel; // Rate at which the player accelerates to the targetVelocity
 	const btScalar minVelocityRelativeToGroundSq; // Slowest that the player can travel relative to the ground (magnitude squared); if the player's velocity is less than this amount, velocity is set to zero
 

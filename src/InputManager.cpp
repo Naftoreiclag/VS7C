@@ -10,7 +10,7 @@ InputManager::InputManager() {
 	}
 }
 
-void InputManager::notifyMe(InputReceiver* receiver) {
+void InputManager::notifyMe(InputReceiver* receiver, InputReceiver* callMeInstead) const {
 	// If the receiver was never notified before, initialize all the variables
 	if(!receiver->lastDataReceieved.notifiedBefore) {
 		// Ensures no analog data is sent
@@ -30,7 +30,7 @@ void InputManager::notifyMe(InputReceiver* receiver) {
 
 	// Mouse movement
 	if(receiver->lastDataReceieved.toldMouseLoc != mouseLoc) {
-		receiver->mouseMove(mouseLoc);
+		callMeInstead->mouseMove(mouseLoc);
 		receiver->lastDataReceieved.toldMouseLoc = mouseLoc;
 	}
 
@@ -41,11 +41,11 @@ void InputManager::notifyMe(InputReceiver* receiver) {
 			// If the receiver was not already notified that it is down
 			if(!receiver->lastDataReceieved.toldKeyPressed[i]) {
 				// Tell the receiver that the key has switched from being up to being down
-				receiver->keyPressed((irr::EKEY_CODE) i);
+				callMeInstead->keyPressed((irr::EKEY_CODE) i);
 				receiver->lastDataReceieved.toldKeyPressed[i] = true;
 			}
 			// Send the "key is down" thing
-			receiver->keyDown((irr::EKEY_CODE) i);
+			callMeInstead->keyDown((irr::EKEY_CODE) i);
         }
 
         // The key is currently up
@@ -53,7 +53,7 @@ void InputManager::notifyMe(InputReceiver* receiver) {
 			// If the receiver was not updated that the key is now up
 			if(receiver->lastDataReceieved.toldKeyPressed[i]) {
 				// Tell the receiver that the key has switched from being down to being up
-                receiver->keyReleased((irr::EKEY_CODE) i);
+                callMeInstead->keyReleased((irr::EKEY_CODE) i);
 				receiver->lastDataReceieved.toldKeyPressed[i] = false;
 			}
         }
@@ -66,11 +66,11 @@ void InputManager::notifyMe(InputReceiver* receiver) {
 			// If the receiver was not already notified that it is down
 			if(!receiver->lastDataReceieved.toldMousePressed[i]) {
 				// Tell the receiver that the button has switched from being up to being down
-				receiver->mousePressed(i);
+				callMeInstead->mousePressed(i);
 				receiver->lastDataReceieved.toldMousePressed[i] = true;
 			}
 			// Send the "button is down" thing
-			receiver->mouseDown(i);
+			callMeInstead->mouseDown(i);
         }
 
         // The button is currently up
@@ -78,11 +78,15 @@ void InputManager::notifyMe(InputReceiver* receiver) {
 			// If the receiver was not updated that the button is now up
 			if(receiver->lastDataReceieved.toldMousePressed[i]) {
 				// Tell the receiver that the button has switched from being down to being up
-                receiver->mouseReleased(i);
+                callMeInstead->mouseReleased(i);
 				receiver->lastDataReceieved.toldMousePressed[i] = false;
 			}
         }
     }
+}
+
+void InputManager::notifyMe(InputReceiver* receiver) const {
+	notifyMe(receiver, receiver);
 }
 
 bool InputManager::OnEvent(const irr::SEvent& event) {

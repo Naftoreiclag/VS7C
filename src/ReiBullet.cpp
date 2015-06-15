@@ -46,7 +46,8 @@ debugMode(btIDebugDraw::DBG_DrawWireframe) {
 void reib::BulletDebugDrawer::drawLine(const btVector3& from, const btVector3& to, const btVector3& color) {
 	driver->draw3DLine(
 		irr::core::vector3df(from.getX(), from.getY(), from.getZ()),
-		irr::core::vector3df(to.getX(), to.getY(), to.getZ()));
+		irr::core::vector3df(to.getX(), to.getY(), to.getZ()),
+		irr::video::SColor(color.getX() * 255.0f, color.getY() * 255.0f, color.getZ() * 255.0f, 255.0f));
 }
 
 void reib::BulletDebugDrawer::drawContactPoint(const btVector3& PointOnB, const btVector3& normalOnB, btScalar distance, int lifeTime, const btVector3& color) {

@@ -32,7 +32,8 @@ expectedGravityForce(expectedGravityForce),
 upVector(upVector),
 expectedSpringCompression(expectedGravityForce / springStiffness),
 targetVelocityRelativeToGround(btVector3(0, 0, 0)),
-groundVelocity(btVector3(0, 0, 0)) {
+groundVelocity(btVector3(0, 0, 0)),
+springCompression(btVector3(0, 0, 0)) {
 }
 
 CharacterPhysicsComponent::~CharacterPhysicsComponent()
@@ -64,6 +65,7 @@ void CharacterPhysicsSystem::processEntity(artemis::Entity& e) {
 	btVector3 absLegEnd = charPhys->legEnd + phys->location + charPhys->originOffset;
 	btCollisionWorld::AllHitsRayResultCallback rayCallback(absLegStart, absLegEnd);
 	charPhys->world->rayTest(absLegStart, absLegEnd, rayCallback);
+
 	// Determine if the spring has actually collided with anything, since some objects are marked to not collide
 	bool hasHit = false;
 	btVector3 hit;
@@ -83,10 +85,8 @@ void CharacterPhysicsSystem::processEntity(artemis::Entity& e) {
             	short signed int otherGroup = broadPhase->m_collisionFilterGroup;
             	short signed int otherMask = broadPhase->m_collisionFilterMask;
 
-            	if(
-					((otherGroup & phys->collidesWith) != 0) // If we collide with other
+            	if(((otherGroup & phys->collidesWith) != 0) // If we collide with other
 					&& ((phys->collisionGroup & otherMask) != 0)) { // and if other collides with us
-
 
 					closestHitFraction = rayCallback.m_hitFractions.at(i);
 					hasHit = true;
@@ -97,6 +97,7 @@ void CharacterPhysicsSystem::processEntity(artemis::Entity& e) {
 		}
 	}
 
+	// "Leg spring" hit something
 	if(hasHit) {
 		// Holding on to the ground
 		if(groundBody) {
@@ -150,12 +151,10 @@ void CharacterPhysicsSystem::processEntity(artemis::Entity& e) {
 		charPhys->feetTouchingGround = false;
 	}
 
-	// The location should be relative to the position the body should be at rest given the amount we expect the spring to compress and the length of the spring
-
-	phys->location += -charPhys->expectedSpringCompression;
-	phys->location += charPhys->spring;
-	phys->location += -charPhys->springCompression;
-	phys->location += charPhys->originOffset;
+	// The location should be relative to:
+	phys->location += charPhys->spring - charPhys->expectedSpringCompression; // ... the position the body should be at rest given the amount we expect the spring to compress
+	phys->location += -charPhys->springCompression; // ... how much the spring is compressed right now
+	phys->location += charPhys->originOffset; // ... that weird origin offset thing I need to do
 
 
 }

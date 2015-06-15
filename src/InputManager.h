@@ -19,7 +19,8 @@ public:
 	InputManager();
 	virtual bool OnEvent(const irr::SEvent& event);
 
-	void notifyMe(InputReceiver* receiver);
+	void notifyMe(InputReceiver* receiver) const;
+	void notifyMe(InputReceiver* receiver, InputReceiver* callMeInstead) const;
 	bool isKeyDown(irr::EKEY_CODE keyCode) const;
 	bool isMouseDown(MCODE buttonCode) const;
 	irr::core::position2di getMouseLoc() const;

@@ -38,6 +38,7 @@ void OverworldGameState::init() {
 	// Initalize all artemis systems
 	physSys = (PhysicsSystem*) systemMgr->setSystem(new PhysicsSystem());
 	charPhysSys = (CharacterPhysicsSystem*) systemMgr->setSystem(new CharacterPhysicsSystem());
+	playerSys = (PlayerSystem*) systemMgr->setSystem(new PlayerSystem());
 	systemMgr->initializeAll();
 
 	// Load sound
@@ -52,9 +53,9 @@ void OverworldGameState::init() {
 	// Add the camera
 	device->getCursorControl()->setVisible(false);
 	yawPivot = smgr->addEmptySceneNode();
-	yawPivot->setPosition(irr::core::vector3df(0, 2, 0));
+	yawPivot->setPosition(irr::core::vector3df(0, 3, 0));
 	pitchPivot = smgr->addEmptySceneNode(yawPivot);
-	pitchPivot->setPosition(irr::core::vector3df(1, 0, 0));
+	pitchPivot->setPosition(irr::core::vector3df(2, 0, 0));
 	cam = smgr->addCameraSceneNode(pitchPivot);
 	cam->setPosition(core::vector3df(0, 0, -4));
 	yawSpd = 0.1;
@@ -93,7 +94,7 @@ void OverworldGameState::init() {
 	dynamicsWorld->addRigidBody(planeRigid, PhysicsComponent::COLL_ENV, PhysicsComponent::COLL_ENV | PhysicsComponent::COLL_PLAYER);
 
 	playerEnt = &makeEmptyCharEnt(btVector3(5, 21, 5));
-	playerEnt->addComponent(new PlayerComponent());
+	playerEnt->addComponent(new PlayerComponent(inputMgr));
 
 	artemis::Entity& sammy = makeEmptyCharEnt(btVector3(15, 20, 5));
     sammy.addComponent(new SoulComponent());
@@ -215,6 +216,8 @@ void OverworldGameState::update(irr::f32 tpf) {
 
 	// Move the player around
 
+	playerSys->process();
+
 	PhysicsComponent* phys = (PhysicsComponent*) playerEnt->getComponent<PhysicsComponent>();
 	CharacterPhysicsComponent* charPhys = (CharacterPhysicsComponent*) playerEnt->getComponent<CharacterPhysicsComponent>();
 
@@ -235,19 +238,6 @@ void OverworldGameState::update(irr::f32 tpf) {
 	if(inputMgr->isKeyDown(irr::KEY_KEY_D)) {
 		charPhys->targetVelocityRelativeToGround += charRight;
 	}
-	if(inputMgr->isKeyDown(irr::KEY_KEY_F)) {
-		core::line3df picker = smgr->getSceneCollisionManager()->getRayFromScreenCoordinates(inputMgr->getMouseLoc(), cam);
-		// (length of picker ray is between 2999 and 3001)
-		btVector3 startPt = reim::irrToBullet(picker.start);
-		btVector3 endPt = reim::irrToBullet(picker.end);
-
-		artemis::Entity* picked = reib::entityRaycast(dynamicsWorld, startPt, endPt);
-
-		if(picked) {
-            std::cout << "picky!" << std::endl;
-		}
-
-	}
 	if(!charPhys->targetVelocityRelativeToGround.isZero()) {
 		charPhys->targetVelocityRelativeToGround.normalize();
 		charPhys->isWalking = true;
@@ -263,6 +253,19 @@ void OverworldGameState::keyPressed(irr::EKEY_CODE key) {
 
 
 		makeEmptyCharEnt(btVector3(15, 20, 5));
+
+	}
+	if(key == irr::KEY_KEY_F) {
+		core::line3df picker = smgr->getSceneCollisionManager()->getRayFromScreenCoordinates(inputMgr->getMouseLoc(), cam);
+		// (length of picker ray is between 2999 and 3001)
+		btVector3 startPt = reim::irrToBullet(picker.start);
+		btVector3 endPt = reim::irrToBullet(picker.end);
+
+		artemis::Entity* picked = reib::entityRaycast(dynamicsWorld, startPt, endPt);
+
+		if(picked) {
+            std::cout << "picky!" << std::endl;
+		}
 
 	}
 	std::cout << key << std::endl;

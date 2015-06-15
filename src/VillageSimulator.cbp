@@ -5,7 +5,7 @@
 		<Option title="Village Simulator 7C" />
 		<Option pch_mode="0" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="Components\;GameStates\;Utility\;" />
+		<Option virtualFolders="Components\;GameStates\;Utility\;Managers\;" />
 		<Build>
 			<Target title="Linux">
 				<Option platforms="Unix;" />
@@ -98,10 +98,18 @@
 		<Unit filename="Foo.h" />
 		<Unit filename="GameState.cpp" />
 		<Unit filename="GameState.h" />
-		<Unit filename="GameStateManager.cpp" />
-		<Unit filename="GameStateManager.h" />
-		<Unit filename="InputManager.cpp" />
-		<Unit filename="InputManager.h" />
+		<Unit filename="GameStateManager.cpp">
+			<Option virtualFolder="Managers/" />
+		</Unit>
+		<Unit filename="GameStateManager.h">
+			<Option virtualFolder="Managers/" />
+		</Unit>
+		<Unit filename="InputManager.cpp">
+			<Option virtualFolder="Managers/" />
+		</Unit>
+		<Unit filename="InputManager.h">
+			<Option virtualFolder="Managers/" />
+		</Unit>
 		<Unit filename="InteractionComponent.cpp">
 			<Option virtualFolder="Components/" />
 		</Unit>
