@@ -4,8 +4,7 @@
  * See accompanying file LICENSE
  */
 
-#include "GameState.h"
+#include "nresSystem.h"
 
-GameState::GameState(irr::IrrlichtDevice* irrlicht)
-{
-}
+nres::System::System() {}
+nres::System::~System() {}

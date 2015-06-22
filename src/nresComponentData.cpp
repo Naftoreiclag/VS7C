@@ -4,8 +4,9 @@
  * See accompanying file LICENSE
  */
 
-#include "GameState.h"
+#include "nresComponentData.h"
 
-GameState::GameState(irr::IrrlichtDevice* irrlicht)
-{
+namespace nres {
+ComponentData::ComponentData() {}
+ComponentData::~ComponentData() {}
 }

@@ -4,8 +4,11 @@
  * See accompanying file LICENSE
  */
 
-#include "GameState.h"
+#ifndef NRESTYPEDEFS_H
+#define NRESTYPEDEFS_H
 
-GameState::GameState(irr::IrrlichtDevice* irrlicht)
-{
+namespace nres {
+typedef unsigned long ComponentID; // at least 32 bit
 }
+
+#endif // NRESTYPEDEFS_H

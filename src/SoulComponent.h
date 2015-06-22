@@ -1,7 +1,13 @@
+/* Copyright (c) 2015 "Naftoreiclag" https://github.com/Naftoreiclag
+ *
+ * Distributed under the Apache License Version 2.0 (http://www.apache.org/licenses/)
+ * See accompanying file LICENSE
+ */
+
 #ifndef SOULCOMPONENT_H
 #define SOULCOMPONENT_H
 
-#include "Artemis/Artemis.h"
+#include "NREntitySystem.h"
 
 /*
 Marks an entity as non-player-controlled characters,
