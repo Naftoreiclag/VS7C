@@ -5,7 +5,7 @@
 		<Option title="Village Simulator 7C" />
 		<Option pch_mode="0" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="Components\;GameStates\;Utility\;Managers\;" />
+		<Option virtualFolders="Components\;GameStates\;Utility\;Managers\;nres\;" />
 		<Build>
 			<Target title="Linux">
 				<Option platforms="Unix;" />
@@ -94,8 +94,18 @@
 		<Unit filename="Chunk.h" />
 		<Unit filename="ChunkNode.cpp" />
 		<Unit filename="ChunkNode.h" />
-		<Unit filename="Foo.cpp" />
-		<Unit filename="Foo.h" />
+		<Unit filename="ComponentIDs.cpp">
+			<Option virtualFolder="Utility/" />
+		</Unit>
+		<Unit filename="ComponentIDs.h">
+			<Option virtualFolder="Utility/" />
+		</Unit>
+		<Unit filename="ConversationComponent.cpp">
+			<Option virtualFolder="Components/" />
+		</Unit>
+		<Unit filename="ConversationComponent.h">
+			<Option virtualFolder="Components/" />
+		</Unit>
 		<Unit filename="GameState.cpp" />
 		<Unit filename="GameState.h" />
 		<Unit filename="GameStateManager.cpp">
@@ -104,6 +114,12 @@
 		<Unit filename="GameStateManager.h">
 			<Option virtualFolder="Managers/" />
 		</Unit>
+		<Unit filename="HierarchicalBoolean.cpp" />
+		<Unit filename="HierarchicalBoolean.h" />
+		<Unit filename="HierarchicalBooleanShape.cpp" />
+		<Unit filename="HierarchicalBooleanShape.h" />
+		<Unit filename="HierarchicalShapeBuilder.cpp" />
+		<Unit filename="HierarchicalShapeBuilder.h" />
 		<Unit filename="InputManager.cpp">
 			<Option virtualFolder="Managers/" />
 		</Unit>
@@ -115,6 +131,9 @@
 		</Unit>
 		<Unit filename="InteractionComponent.h">
 			<Option virtualFolder="Components/" />
+		</Unit>
+		<Unit filename="NREntitySystem.h">
+			<Option virtualFolder="nres/" />
 		</Unit>
 		<Unit filename="OverworldGameState.cpp">
 			<Option virtualFolder="GameStates/" />
@@ -159,6 +178,36 @@
 			<Option virtualFolder="Components/" />
 		</Unit>
 		<Unit filename="main.cpp" />
+		<Unit filename="nresComponentData.cpp">
+			<Option virtualFolder="nres/" />
+		</Unit>
+		<Unit filename="nresComponentData.h">
+			<Option virtualFolder="nres/" />
+		</Unit>
+		<Unit filename="nresEntity.cpp">
+			<Option virtualFolder="nres/" />
+		</Unit>
+		<Unit filename="nresEntity.h">
+			<Option virtualFolder="nres/" />
+		</Unit>
+		<Unit filename="nresMapOfSets.h">
+			<Option virtualFolder="nres/" />
+		</Unit>
+		<Unit filename="nresSystem.cpp">
+			<Option virtualFolder="nres/" />
+		</Unit>
+		<Unit filename="nresSystem.h">
+			<Option virtualFolder="nres/" />
+		</Unit>
+		<Unit filename="nresTypedefs.h">
+			<Option virtualFolder="nres/" />
+		</Unit>
+		<Unit filename="nresWorld.cpp">
+			<Option virtualFolder="nres/" />
+		</Unit>
+		<Unit filename="nresWorld.h">
+			<Option virtualFolder="nres/" />
+		</Unit>
 		<Extensions>
 			<code_completion />
 			<debugger />

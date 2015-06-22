@@ -12,22 +12,20 @@
 #include <vector>
 #include <algorithm>
 
-#define FOR_EACH_STATE std::vector<GameState*>::iterator it = managedStates.begin(); it != managedStates.end(); ++ it
-
 
 GameStateManager::GameStateManager()
 {
 }
 
 void GameStateManager::update(const irr::f32 tpf) {
-	for(FOR_EACH_STATE) {
+	for(std::vector<GameState*>::iterator it = managedStates.begin(); it != managedStates.end(); ++ it) {
 		GameState* gs = *it;
 		gs->update(tpf);
 	}
 }
 
 void GameStateManager::render() {
-	for(FOR_EACH_STATE) {
+	for(std::vector<GameState*>::iterator it = managedStates.begin(); it != managedStates.end(); ++ it) {
 		GameState* gs = *it;
 		gs->render();
 	}
@@ -45,7 +43,7 @@ void GameStateManager::attachState(GameState& state) {
 
 void GameStateManager::detachAll() {
 	// For each state
-	for(FOR_EACH_STATE) {
+	for(std::vector<GameState*>::iterator it = managedStates.begin(); it != managedStates.end(); ++ it) {
 		// Properly manage lifecycle
 		GameState* gs = *it;
 		gs->cleanup();
@@ -59,7 +57,7 @@ void GameStateManager::detachAll() {
 void GameStateManager::detachState(GameState& state) {
 
 	// For each state
-	for(FOR_EACH_STATE) {
+	for(std::vector<GameState*>::iterator it = managedStates.begin(); it != managedStates.end(); ++ it) {
 		// Properly manage lifecycle
 		GameState* gs = *it;
 		if(gs == &state) {

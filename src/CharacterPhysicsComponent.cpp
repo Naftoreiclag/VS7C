@@ -8,6 +8,10 @@
 #include "PhysicsComponent.h"
 #include "ReiMath.h"
 
+/*
+Component
+*/
+
 CharacterPhysicsComponent::CharacterPhysicsComponent(
 	btDynamicsWorld* const world,
 	const btVector3& originOffset,
@@ -20,8 +24,7 @@ CharacterPhysicsComponent::CharacterPhysicsComponent(
 	const btVector3& expectedGravityForce,
 	const btVector3& upVector,
 	const btScalar minVelocityRelativeToGround)
-: artemis::Component(),
-world(world),
+: world(world),
 originOffset(originOffset),
 legEnd(legEnd),
 legStart(legStart),
@@ -32,7 +35,7 @@ normalizedSpring(spring.normalized()),
 feetTouchingGround(false),
 footGrip(footGrip),
 footAccel(footAccel),
-minVelocityRelativeToGroundSq(minVelocityRelativeToGround * minVelocityRelativeToGround),
+minVelocityRelativeToGround(minVelocityRelativeToGround),
 isWalking(false),
 expectedGravityForce(expectedGravityForce),
 upVector(upVector),
@@ -42,24 +45,38 @@ groundVelocity(btVector3(0, 0, 0)),
 springCompression(btVector3(0, 0, 0)) {
 }
 
-CharacterPhysicsComponent::~CharacterPhysicsComponent()
-{
+CharacterPhysicsComponent* CharacterPhysicsComponent::clone() const {
+	return new CharacterPhysicsComponent(
+										world,
+										originOffset,
+										legStart,
+										legEnd,
+										springStiffness,
+										springDamping,
+										footAccel,
+										footGrip,
+										expectedGravityForce,
+										upVector,
+										minVelocityRelativeToGround);
 }
 
+CharacterPhysicsComponent::~CharacterPhysicsComponent() {}
 
-CharacterPhysicsSystem::CharacterPhysicsSystem() {
-	addComponentType<CharacterPhysicsComponent>();
-	addComponentType<PhysicsComponent>();
+/*
+System
+*/
+
+CharacterPhysicsSystem::CharacterPhysicsSystem() {}
+CharacterPhysicsSystem::~CharacterPhysicsSystem() {}
+
+const nres::ComponentID* CharacterPhysicsSystem::getComponentIDs(std::size_t& numComponentIDs) const {
+	numComponentIDs = 2;
+	return accessedComponents;
 }
 
-void CharacterPhysicsSystem::initialize() {
-	characterPhysicsMapper.init(*world);
-	physicsMapper.init(*world);
-}
-
-void CharacterPhysicsSystem::processEntity(artemis::Entity& e) {
-	PhysicsComponent* phys = physicsMapper.get(e);
-	CharacterPhysicsComponent* charPhys = characterPhysicsMapper.get(e);
+void CharacterPhysicsSystem::process(nres::Entity& e) {
+	PhysicsComponent* phys = (PhysicsComponent*) e.getComponentData(compIDs::CID_PHYSICS);
+	CharacterPhysicsComponent* charPhys = (CharacterPhysicsComponent*) e.getComponentData(compIDs::CID_CHARPHYSICS);
 
 	// No turning?
 	phys->rigidBody->setAngularFactor(0);
@@ -112,7 +129,7 @@ void CharacterPhysicsSystem::processEntity(artemis::Entity& e) {
 
 			if(!charPhys->isWalking) {
 				// If the character is moving too slow, just set speed to zero
-				if((phys->velocity - charPhys->groundVelocity).length2() < charPhys->minVelocityRelativeToGroundSq) {
+				if((phys->velocity - charPhys->groundVelocity).length2() < charPhys->minVelocityRelativeToGround * charPhys->minVelocityRelativeToGround) {
 					// Apply impulse to set character velocity relative to ground to zero
 					btVector3 impulse = charPhys->groundVelocity - phys->velocity;
 					phys->rigidBody->applyImpulse(impulse * phys->mass, btVector3(0, 0, 0));

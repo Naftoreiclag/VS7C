@@ -7,7 +7,7 @@
 #ifndef CHARACTERCOMPONENT_H
 #define CHARACTERCOMPONENT_H
 
-#include "Artemis/Artemis.h"
+#include "NREntitySystem.h"
 
 /*
 This component defines all character-related information that
@@ -17,10 +17,11 @@ applies to both players and non-players, including:
 Must also have either a PlayerComponent or SoulComponent to have any functionality
 */
 
-class CharacterComponent : public artemis::Component {
+class CharacterComponent : public nres::ComponentData {
 public:
 	std::string name;
 	bool sitting;
+	virtual CharacterComponent* clone() const;
 	CharacterComponent();
 	~CharacterComponent();
 };

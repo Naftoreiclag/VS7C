@@ -4,18 +4,17 @@
  * See accompanying file LICENSE
  */
 
-#include "SoulComponent.h"
+#ifndef BOOLEANTREE_H
+#define BOOLEANTREE_H
 
-SoulComponent::SoulComponent()
+
+class BooleanTree
 {
+	public:
+		BooleanTree();
+		virtual ~BooleanTree();
+	protected:
+	private:
+};
 
-}
-
-SoulComponent* SoulComponent::clone() const {
-	return new SoulComponent();
-}
-
-SoulComponent::~SoulComponent()
-{
-	//dtor
-}
+#endif // BOOLEANTREE_H

@@ -7,7 +7,8 @@
 #ifndef PHYSICSCOMPONENT_H
 #define PHYSICSCOMPONENT_H
 
-#include "Artemis/Artemis.h"
+#include "NREntitySystem.h"
+#include "ComponentIDs.h"
 #include "irrlicht.h"
 #include "SceneNodeComponent.h"
 #include "btBulletDynamicsCommon.h"
@@ -17,7 +18,7 @@ Adds bullet dynamics to an entity.
 Associated PhysicsSystem updates the sceneNode's orientation to match the rigid body's.
 Note: physics shapes given to this component are deleted. To add resuable shapes, use shared_ptr<> instead.
 */
-class PhysicsComponent : public artemis::Component {
+class PhysicsComponent : public nres::ComponentData {
 public:
 	static signed short int const COLL_PLAYER = 1 << 0;
 	static signed short int const COLL_ENV = 1 << 1;
@@ -33,10 +34,10 @@ public:
 	// Added to bullet rigid bodies in order to associate them with the entity they belong to
 	class BulletEntityUserData {
 	public:
-		artemis::Entity* const owner;
+		nres::Entity* const owner;
 	private:
 		friend class PhysicsComponent;
-		BulletEntityUserData(artemis::Entity* const owner);
+		BulletEntityUserData(nres::Entity* const owner);
 	};
 private:
 	// Utilizes the bullet calling stuff, relays information to the PhysicsComponent
@@ -60,13 +61,14 @@ public:
     const signed short int collidesWith;
 
 	PhysicsComponent(
-		artemis::Entity* const owner,
+		nres::Entity* const owner,
 		btDynamicsWorld* const world,
 		const btScalar mass,
 		btCollisionShape* collisionShape,
 		const btTransform &initialLoc,
 		const signed short int collisionGroup = 1, // 0000000000000001
 		const signed short int collidesWith = -1); // 1111111111111111
+	virtual PhysicsComponent* clone() const;
 	~PhysicsComponent();
 private:
 	btCollisionShape* collisionShape; // For deletion
@@ -74,15 +76,13 @@ private:
 };
 
 // The associated system that manages all entities using PhysicsComponent
-class PhysicsSystem : public artemis::EntityProcessingSystem {
+class PhysicsSystem : public nres::System {
 private:
-	artemis::ComponentMapper<PhysicsComponent> physicsMapper;
-	artemis::ComponentMapper<SceneNodeComponent> sceneNodeMapper;
-
+	nres::ComponentID accessedComponents[2] = {compIDs::CID_SCENE, compIDs::CID_PHYSICS};
 public:
 	PhysicsSystem();
-	virtual void initialize();
-	virtual void processEntity(artemis::Entity& e);
+	virtual const nres::ComponentID* getComponentIDs(std::size_t& numComponentIDs) const;
+	virtual void process(nres::Entity& e);
 };
 
 #endif // PHYSICSCOMPONENT_H

@@ -8,7 +8,8 @@
 #define CHARACTERPHYSICSCOMPONENT_H
 
 #include "irrlicht.h"
-#include "Artemis/Artemis.h"
+#include "NREntitySystem.h"
+#include "ComponentIDs.h"
 #include "btBulletDynamicsCommon.h"
 
 class PhysicsComponent;
@@ -23,7 +24,7 @@ Adds character-like physics behavior:
 - Handles "walking" and "friction" by moving the character relative to the ground's velocity
 */
 
-class CharacterPhysicsComponent : public artemis::Component {
+class CharacterPhysicsComponent : public nres::ComponentData {
 public:
 	btDynamicsWorld* const world;
 
@@ -39,10 +40,9 @@ public:
 	btVector3 groundVelocity; // Velocity of groundBody (default is ZERO)
 	btVector3 targetVelocityRelativeToGround; // Adjust this value to create "walking"; any velocity parallel to upVector is ignored (default is ZERO)
 
-
 	const btScalar footGrip; // Rate at which the player accel/decelerates to groundVelocity when not walking
 	const btScalar footAccel; // Rate at which the player accelerates to the targetVelocity
-	const btScalar minVelocityRelativeToGroundSq; // Slowest that the player can travel relative to the ground (magnitude squared); if the player's velocity is less than this amount, velocity is set to zero
+	const btScalar minVelocityRelativeToGround; // Slowest that the player can travel relative to the ground; if the player's velocity is less than this amount, velocity is set to zero
 
 	const btVector3 legStart; // Beginning of the "leg spring"; should be well within the rigidBody to prevent glitchy behavior
 	const btVector3 legEnd; // Where the "leg spring" ends
@@ -65,24 +65,18 @@ public:
 		const btVector3& expectedGravityForce,
 		const btVector3& upVector = btVector3(0, 1, 0),
 		const btScalar minVelocityRelativeToGround = 0.3);
+	virtual CharacterPhysicsComponent* clone() const;
 	~CharacterPhysicsComponent();
 };
 
-class CharacterPhysicsSystem : public artemis::EntityProcessingSystem {
+class CharacterPhysicsSystem : public nres::System {
 private:
-	artemis::ComponentMapper<CharacterPhysicsComponent> characterPhysicsMapper;
-	artemis::ComponentMapper<PhysicsComponent> physicsMapper;
-
+	nres::ComponentID accessedComponents[2] = {compIDs::CID_CHARPHYSICS, compIDs::CID_PHYSICS};
 public:
 	CharacterPhysicsSystem();
-	virtual void initialize();
-	virtual void processEntity(artemis::Entity& e);
+	virtual ~CharacterPhysicsSystem();
+	virtual const nres::ComponentID* getComponentIDs(std::size_t& numComponentIDs) const;
+	virtual void process(nres::Entity& entity);
 };
-
-/*
-class CharacterPhysicsSystemStepA : public artemis::EntityProcessingSystem {
-
-};
-*/
 
 #endif // CHARACTERPHYSICSCOMPONENT_H

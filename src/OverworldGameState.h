@@ -8,8 +8,10 @@
 #define OVERWORLDGAMESTATE_H
 
 #include "irrlicht.h"
-#include "Artemis/Artemis.h"
 #include "btBulletDynamicsCommon.h"
+
+#include "NREntitySystem.h"
+#include "ComponentIDs.h"
 
 #include "CharacterComponent.h"
 #include "CharacterPhysicsComponent.h"
@@ -26,8 +28,7 @@
 
 class ChunkNode;
 
-class OverworldGameState : public GameState, public InputReceiver
-{
+class OverworldGameState : public GameState, public InputReceiver {
 public:
 	OverworldGameState(irr::IrrlichtDevice *irrlicht);
 
@@ -49,9 +50,7 @@ private:
 	irr::IrrlichtDevice* device;
 	InputManager* inputMgr;
 
-	artemis::World entityWorld;
-	artemis::EntityManager* entityMgr;
-	artemis::SystemManager* systemMgr;
+	nres::World entityWorld;
 
 	PhysicsSystem* physSys;
 	CharacterPhysicsSystem* charPhysSys;
@@ -75,11 +74,11 @@ private:
 	btCollisionDispatcher* dispatcher;
 	btSequentialImpulseConstraintSolver* solver;
 
-	artemis::Entity& makeEmptyCharEnt(btVector3 aaa);
+	nres::Entity& makeEmptyCharEnt(btVector3 aaa);
 
 	btDiscreteDynamicsWorld* dynamicsWorld;
 
-	artemis::Entity* playerEnt;
+	nres::Entity* playerEnt;
 
 	irr::scene::IMeshSceneNode* chunkNode;
 };

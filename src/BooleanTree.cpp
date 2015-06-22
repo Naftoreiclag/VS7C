@@ -4,18 +4,14 @@
  * See accompanying file LICENSE
  */
 
-#include "SoulComponent.h"
+#include "BooleanTree.h"
 
-SoulComponent::SoulComponent()
+BooleanTree::BooleanTree()
 {
-
+	//ctor
 }
 
-SoulComponent* SoulComponent::clone() const {
-	return new SoulComponent();
-}
-
-SoulComponent::~SoulComponent()
+BooleanTree::~BooleanTree()
 {
 	//dtor
 }

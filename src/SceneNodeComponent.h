@@ -8,14 +8,17 @@
 #define SCENENODECOMPONENT_H
 
 #include "irrlicht.h"
-#include "Artemis/Artemis.h"
+
+#include "NREntitySystem.h"
+#include "ComponentIDs.h"
 
 /*
 Basic scene node data, nothing else really
 */
-class SceneNodeComponent : public artemis::Component {
+class SceneNodeComponent : public nres::ComponentData {
 public:
 	SceneNodeComponent(irr::scene::ISceneNode* sceneNode);
+	virtual SceneNodeComponent* clone() const;
 	~SceneNodeComponent();
 	irr::scene::ISceneNode* const sceneNode;
 };

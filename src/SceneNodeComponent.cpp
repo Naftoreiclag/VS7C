@@ -7,9 +7,13 @@
 #include "SceneNodeComponent.h"
 
 SceneNodeComponent::SceneNodeComponent(irr::scene::ISceneNode* sceneNode)
-: artemis::Component(),
-sceneNode(sceneNode) {
+: sceneNode(sceneNode) {
 	sceneNode->grab();
+}
+
+// TODO: this is wrong
+SceneNodeComponent* SceneNodeComponent::clone() const {
+	return new SceneNodeComponent(sceneNode);
 }
 
 SceneNodeComponent::~SceneNodeComponent() {

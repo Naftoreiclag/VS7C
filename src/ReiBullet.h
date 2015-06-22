@@ -8,11 +8,11 @@
 #define REIBULLET_H
 
 #include "irrlicht.h"
-#include "Artemis/Artemis.h"
+#include "NREntitySystem.h"
 #include "btBulletDynamicsCommon.h"
 
 namespace reib {
-	artemis::Entity* entityRaycast(btCollisionWorld* world, const btVector3& start, const btVector3& end);
+	nres::Entity* entityRaycast(btCollisionWorld* world, const btVector3& start, const btVector3& end);
 
 	class BulletDebugDrawer : public btIDebugDraw {
 	public:

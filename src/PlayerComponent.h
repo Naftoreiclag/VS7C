@@ -7,7 +7,8 @@
 #ifndef PLAYERCOMPONENT_H
 #define PLAYERCOMPONENT_H
 
-#include "Artemis/Artemis.h"
+#include "NREntitySystem.h"
+#include "ComponentIDs.h"
 
 #include "CharacterPhysicsComponent.h"
 #include "PhysicsComponent.h"
@@ -17,7 +18,8 @@
 /*
 Marks an entity as player-controlled
 */
-class PlayerComponent : public artemis::Component, public InputReceiver {
+/*
+class PlayerComponent : public nres::ComponentData, public InputReceiver {
 public:
 	const InputManager* const inputMgr;
 
@@ -25,16 +27,13 @@ public:
 	~PlayerComponent();
 };
 
-class PlayerSystem : public artemis::EntityProcessingSystem, public InputReceiver {
+class PlayerSystem : public nres::System, public InputReceiver {
 private:
-	artemis::ComponentMapper<PhysicsComponent> physicsMapper;
-	artemis::ComponentMapper<CharacterPhysicsComponent> characterPhysicsMapper;
-	artemis::ComponentMapper<PlayerComponent> playerMapper;
-
+	nres::ComponentID accessedComponents[3] = {compIDs::CID_PHYSICS, compIDs::CID_CHARPHYSICS, compIDs::CID_PLAYER};
 public:
 	PlayerSystem();
 	virtual void initialize();
-	virtual void processEntity(artemis::Entity& e);
+	virtual void processEntity(nres::Entity& e);
 
 private:
 	PhysicsComponent* phys;
@@ -45,5 +44,6 @@ public:
 	virtual void keyPressed(irr::EKEY_CODE key);
 	virtual void keyDown(irr::EKEY_CODE key);
 };
+*/
 
 #endif // PLAYERCOMPONENT_H

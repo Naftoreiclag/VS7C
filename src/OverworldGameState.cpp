@@ -23,9 +23,6 @@ OverworldGameState::OverworldGameState(irr::IrrlichtDevice *irrlicht)
 	driver = irrlicht->getVideoDriver();
 	smgr = irrlicht->getSceneManager();
 	inputMgr = (InputManager*) irrlicht->getEventReceiver();
-
-	systemMgr = entityWorld.getSystemManager();
-	entityMgr = entityWorld.getEntityManager();
 }
 
 void OverworldGameState::init() {
@@ -41,14 +38,9 @@ void OverworldGameState::init() {
 	drawBulletDebug = true;
 	dynamicsWorld->setDebugDrawer(bulletDebugDrawer);
 
-	// Initalize all artemis systems
-	physSys = (PhysicsSystem*) systemMgr->setSystem(new PhysicsSystem());
-	charPhysSys = (CharacterPhysicsSystem*) systemMgr->setSystem(new CharacterPhysicsSystem());
-	systemMgr->initializeAll();
-
-	// Load sound
-	//buffer.loadFromFile("example_media/impact.wav");
-	//sound.setBuffer(buffer);
+	// Initialize entity systems
+	physSys = new PhysicsSystem();
+	charPhysSys = new CharacterPhysicsSystem();
 
 	// Calc center of screen
 	irr::s32 centerX = (irr::s32) (driver->getScreenSize().Width / 2);
@@ -99,12 +91,14 @@ void OverworldGameState::init() {
 	dynamicsWorld->addRigidBody(planeRigid, PhysicsComponent::COLL_ENV, PhysicsComponent::COLL_ENV | PhysicsComponent::COLL_PLAYER);
 
 	playerEnt = &makeEmptyCharEnt(btVector3(5, 21, 5));
+	playerEnt->finalize();
 
-	artemis::Entity& sammy = makeEmptyCharEnt(btVector3(15, 20, 5));
-    sammy.addComponent(new SoulComponent());
+	nres::Entity& sammy = makeEmptyCharEnt(btVector3(15, 20, 5));
+    sammy.addComponent(compIDs::CID_SOUL, new SoulComponent());
+    sammy.finalize();
 
 
-	SceneNodeComponent* playerSceneNode = (SceneNodeComponent*) playerEnt->getComponent<SceneNodeComponent>();
+	SceneNodeComponent* playerSceneNode = (SceneNodeComponent*) playerEnt->getComponentData(compIDs::CID_SCENE);
 	yawPivot->setParent(playerSceneNode->sceneNode);
 
 	// Cool skybox
@@ -119,9 +113,9 @@ void OverworldGameState::init() {
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
 }
 
-artemis::Entity& OverworldGameState::makeEmptyCharEnt(btVector3 origin) {
+nres::Entity& OverworldGameState::makeEmptyCharEnt(btVector3 origin) {
 	// Make
-	artemis::Entity& entity = entityMgr->create();
+	nres::Entity& entity = entityWorld.newEntity();
 
 	CharacterComponent* character = new CharacterComponent();
 
@@ -161,12 +155,10 @@ artemis::Entity& OverworldGameState::makeEmptyCharEnt(btVector3 origin) {
 		btVector3(0, -32.1522, 0)
 	);
 
-	// Finalize and return
-	entity.addComponent(character);
-	entity.addComponent(sceneNode);
-	entity.addComponent(physics);
-	entity.addComponent(characterPhysics);
-	entity.refresh();
+	entity.addComponent(compIDs::CID_CHARACTER, character);
+	entity.addComponent(compIDs::CID_SCENE, sceneNode);
+	entity.addComponent(compIDs::CID_PHYSICS, physics);
+	entity.addComponent(compIDs::CID_CHARPHYSICS, characterPhysics);
 	return entity;
 }
 
@@ -193,12 +185,9 @@ void OverworldGameState::resume()
 }
 
 void OverworldGameState::update(irr::f32 tpf) {
-	entityWorld.loopStart();
-	entityWorld.setDelta(tpf);
-
 	dynamicsWorld->stepSimulation(tpf, 6); // Resolve all collisions, velocities, and forces
-	charPhysSys->process(); // Do special physics
-	physSys->process(); // Update scenenodes
+	entityWorld.process(*charPhysSys); // Do special physics
+	entityWorld.process(*physSys); // Update scenenodes
 
 	// Move the camera around
 
@@ -221,8 +210,8 @@ void OverworldGameState::update(irr::f32 tpf) {
 	// Move the player around
 
 
-	PhysicsComponent* phys = (PhysicsComponent*) playerEnt->getComponent<PhysicsComponent>();
-	CharacterPhysicsComponent* charPhys = (CharacterPhysicsComponent*) playerEnt->getComponent<CharacterPhysicsComponent>();
+	PhysicsComponent* phys = (PhysicsComponent*) playerEnt->getComponentData(compIDs::CID_PLAYER);
+	CharacterPhysicsComponent* charPhys = (CharacterPhysicsComponent*) playerEnt->getComponentData(compIDs::CID_CHARPHYSICS);
 
 	inputMgr->notifyMe(this);
 
@@ -253,9 +242,7 @@ void OverworldGameState::update(irr::f32 tpf) {
 void OverworldGameState::keyPressed(irr::EKEY_CODE key) {
 
 	if(key == irr::KEY_KEY_Q) {
-
-
-		makeEmptyCharEnt(btVector3(15, 20, 5));
+		makeEmptyCharEnt(btVector3(15, 20, 5)).finalize();
 
 	}
 	if(key == irr::KEY_KEY_F) {
@@ -264,7 +251,12 @@ void OverworldGameState::keyPressed(irr::EKEY_CODE key) {
 		btVector3 startPt = reim::irrToBullet(picker.start);
 		btVector3 endPt = reim::irrToBullet(picker.end);
 
-		artemis::Entity* picked = reib::entityRaycast(dynamicsWorld, startPt, endPt);
+		nres::Entity* picked = reib::entityRaycast(dynamicsWorld, startPt, endPt);
+
+		nres::ComponentData* data = picked->getComponentData(compIDs::CID_INTERACTION);
+		if(data) {
+			InteractionComponent* interData = (InteractionComponent*) data;
+		}
 
 		if(picked) {
             std::cout << "picky!" << std::endl;
@@ -279,7 +271,7 @@ void OverworldGameState::keyDown(irr::EKEY_CODE key) {
 
 
 	if(key == irr::KEY_SPACE) {
-		PhysicsComponent* phys = (PhysicsComponent*) playerEnt->getComponent<PhysicsComponent>();
+		PhysicsComponent* phys = (PhysicsComponent*) playerEnt->getComponentData(compIDs::CID_PHYSICS);
 		phys->rigidBody->applyForce(btVector3(0, 40, 0), btVector3(0, 0, 0));
 	}
 }

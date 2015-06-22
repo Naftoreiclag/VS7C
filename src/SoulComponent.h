@@ -8,6 +8,7 @@
 #define SOULCOMPONENT_H
 
 #include "NREntitySystem.h"
+#include "ComponentIDs.h"
 
 /*
 Marks an entity as non-player-controlled characters,
@@ -16,11 +17,12 @@ such as that guy that serves you your coffee.
 For characters who do not have a player-granted soul,
 here is one that exists in the game's world.
 */
-class SoulComponent : public artemis::Component
+class SoulComponent : public nres::ComponentData
 {
 public:
 	bool happiness;
 	SoulComponent();
+	virtual SoulComponent* clone() const;
 	~SoulComponent();
 };
 

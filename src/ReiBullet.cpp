@@ -7,12 +7,12 @@
 #include "ReiBullet.h"
 #include "PhysicsComponent.h"
 
-artemis::Entity* reib::entityRaycast(btCollisionWorld* world, const btVector3& start, const btVector3& end) {
+nres::Entity* reib::entityRaycast(btCollisionWorld* world, const btVector3& start, const btVector3& end) {
 	btCollisionWorld::AllHitsRayResultCallback rayCallback(start, end);
 	world->rayTest(start, end, rayCallback);
 
 	if(rayCallback.hasHit()) {
-		artemis::Entity* hit = 0;
+		nres::Entity* hit = 0;
 
 		// We cannot rely on the order of rayCallback.m_collisionObjects, so we have to compare the distances manually
 		btScalar closestHitFraction(1337); // All fractions are <= 1 so this is effectively infinite

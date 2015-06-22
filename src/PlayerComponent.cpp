@@ -6,6 +6,7 @@
 
 #include "PlayerComponent.h"
 
+/*
 PlayerComponent::PlayerComponent(const InputManager* const inputMgr)
 : artemis::Component(),
 inputMgr(inputMgr) {
@@ -48,4 +49,5 @@ void PlayerSystem::keyDown(irr::EKEY_CODE key) {
 
 
 }
+*/
 

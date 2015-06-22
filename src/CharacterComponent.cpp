@@ -7,9 +7,12 @@
 #include "CharacterComponent.h"
 
 CharacterComponent::CharacterComponent()
-: artemis::Component()
 {
 	//ctor
+}
+
+CharacterComponent* CharacterComponent::clone() const {
+	return new CharacterComponent();
 }
 
 CharacterComponent::~CharacterComponent()

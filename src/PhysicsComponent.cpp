@@ -24,20 +24,19 @@ void PhysicsComponent::BulletCallback::setWorldTransform(const btTransform &worl
 	sendTo->needsAttencion = true;
 }
 
-PhysicsComponent::BulletEntityUserData::BulletEntityUserData(artemis::Entity* const owner)
+PhysicsComponent::BulletEntityUserData::BulletEntityUserData(nres::Entity* const owner)
 : owner(owner) {
 }
 
 PhysicsComponent::PhysicsComponent(
-		artemis::Entity* const owner,
+		nres::Entity* const owner,
 		btDynamicsWorld* const world,
 		const btScalar mass,
 		btCollisionShape* collisionShape,
 		const btTransform& initialLoc,
 		const signed short int collisionGroup,
 		const signed short int collidesWith)
-: artemis::Component(),
-userData(new BulletEntityUserData(owner)),
+: userData(new BulletEntityUserData(owner)),
 collisionShape(collisionShape),
 mass(mass),
 isStatic(mass == 0),
@@ -64,21 +63,23 @@ PhysicsComponent::~PhysicsComponent() {
 	delete userData;
 }
 
+PhysicsComponent* PhysicsComponent::clone() const {
+	return 0;
+}
+
 PhysicsSystem::PhysicsSystem() {
-	addComponentType<PhysicsComponent>();
-	addComponentType<SceneNodeComponent>();
 }
 
-void PhysicsSystem::initialize() {
-	physicsMapper.init(*world);
-	sceneNodeMapper.init(*world);
+const nres::ComponentID* PhysicsSystem::getComponentIDs(std::size_t& numComponentIDs) const {
+	numComponentIDs = 2;
+    return accessedComponents;
 }
 
-void PhysicsSystem::processEntity(artemis::Entity& e) {
+void PhysicsSystem::process(nres::Entity& e) {
 
-	PhysicsComponent* phys = physicsMapper.get(e);
+	PhysicsComponent* phys = (PhysicsComponent*) e.getComponentData(compIDs::CID_PHYSICS);
 	if(phys->needsAttencion) {
-		SceneNodeComponent* scene = sceneNodeMapper.get(e);
+		SceneNodeComponent* scene = (SceneNodeComponent*) e.getComponentData(compIDs::CID_SCENE);
 
 		scene->sceneNode->setRotation(reim::bulletToIrr(reim::quaternionToEuler(phys->rotation)));
 		scene->sceneNode->setPosition(reim::bulletToIrr(phys->location));
