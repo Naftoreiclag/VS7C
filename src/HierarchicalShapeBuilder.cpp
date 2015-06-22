@@ -5,7 +5,7 @@
  */
 
 #include "HierarchicalShapeBuilder.h"
-#include "HierarchicalBooleanShape.h"
+#include "HierarchicalBoolean.h"
 
 #include <algorithm>
 
@@ -161,9 +161,10 @@ HierarchicalBooleanShape* HierarchicalShapeBuilder::makeNewBooleanShape() {
 
 		// Nodes affect every descendant
 		recursiveAffectsChildren(retVal, focus.ID);
-
-
 	}
+
+	//
+	retVal->nameToID = nameToID;
 
     return retVal;
 }
