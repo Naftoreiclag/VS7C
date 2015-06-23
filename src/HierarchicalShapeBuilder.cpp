@@ -8,6 +8,7 @@
 #include "HierarchicalBoolean.h"
 
 #include <algorithm>
+#include <iostream>
 
 HierarchicalShapeBuilder::HierarchicalShapeBuilder()
 : nextID(0) {
@@ -28,11 +29,14 @@ HierarchicalShapeBuilder::IDType HierarchicalShapeBuilder::declareNode(NameType 
 		idToNode[nextID] = newNode;
 		++ nextID;
 
+		std::cout << "New node declared: " << name << std::endl;
+
 		return nextID - 1;
     }
 
     // Node is registered
     else {
+		std::cout << "Node access: " << location->second << std::endl;
 		return location->second;
     }
 }
@@ -51,20 +55,30 @@ void HierarchicalShapeBuilder::easyAddID(std::vector<IDType>& vec, IDType id) {
     }
 
     if(!found) {
+		std::cout << "Data added: " << id << std::endl;
 		vec.push_back(id);
     }
 }
 
 
 void HierarchicalShapeBuilder::declareRelationship(NameType parent, NameType child) {
+	std::cout << "New relationship: " << parent << " is parent of " << child << std::endl;
+
 	IDType parentID = declareNode(parent);
 	IDType childID = declareNode(child);
 
 	Node& parentNode = getNodeFromID(parentID);
 	Node& childNode = getNodeFromID(childID);
 
+/*
 	easyAddID(parentNode.children, childID);
 	easyAddID(childNode.parents, parentID);
+	*/
+
+	parentNode.children.push_back(childID);
+	childNode.parents.push_back(parentID);
+
+	std::cout << child << " now has " << getNodeFromID(childID).parents.size() << " parent(s)" << std::endl;
 }
 
 /*
@@ -77,6 +91,7 @@ In this case, A's knowledge of C will be erased since it knows through B that C 
 
 Parent knowledge is modified afterward
 */
+// THIS IS BROKEN DO NOT USE
 void HierarchicalShapeBuilder::cleanRedundantData() {
 	// Clean child data
 	for(std::map<IDType, Node>::iterator nodeIt = idToNode.begin(); nodeIt != idToNode.end(); ++ nodeIt) {
@@ -84,7 +99,7 @@ void HierarchicalShapeBuilder::cleanRedundantData() {
 
 		// Remember which children to remove from the list
 		std::vector<IDType> removeUs;
-		for(std::vector<IDType>::iterator childIt = focus.children.begin(); childIt != focus.children.begin(); ++ childIt) {
+		for(std::vector<IDType>::iterator childIt = focus.children.begin(); childIt != focus.children.end(); ++ childIt) {
 			IDType childID = *childIt;
 
 			// If this parent is an ancestor of child in a way other than being an immediate parent
@@ -93,7 +108,7 @@ void HierarchicalShapeBuilder::cleanRedundantData() {
 			}
 		}
 
-		for(std::vector<IDType>::iterator childIt = removeUs.begin(); childIt != removeUs.begin(); ++ childIt) {
+		for(std::vector<IDType>::iterator childIt = removeUs.begin(); childIt != removeUs.end(); ++ childIt) {
 			// erase-remove idiom
             focus.children.erase(std::remove(focus.children.begin(), focus.children.end(), *childIt), focus.children.end());
 		}
@@ -110,7 +125,7 @@ void HierarchicalShapeBuilder::cleanRedundantData() {
 		Node& focus = nodeIt->second;
 
 		// For each node, tell its childen (which should now only be immediate children) that this node is their parent
-		for(std::vector<IDType>::iterator childIt = focus.children.begin(); childIt != focus.children.begin(); ++ childIt) {
+		for(std::vector<IDType>::iterator childIt = focus.children.begin(); childIt != focus.children.end(); ++ childIt) {
 			IDType childID = *childIt;
 			Node& childNode = getNodeFromID(childID);
 
@@ -148,6 +163,7 @@ HierarchicalBooleanShape* HierarchicalShapeBuilder::makeNewBooleanShape() {
     // Register every node in advance
 	for(std::map<IDType, Node>::iterator nodeIt = idToNode.begin(); nodeIt != idToNode.end(); ++ nodeIt) {
 		Node& focus = nodeIt->second;
+		std::cout << "Creating affects/affector grids for: " << focus.ID << std::endl;
 		retVal->affects[focus.ID] = std::vector<IDType>();
 		retVal->affectedBy[focus.ID] = std::vector<IDType>();
 	}
@@ -155,6 +171,7 @@ HierarchicalBooleanShape* HierarchicalShapeBuilder::makeNewBooleanShape() {
 	// For every node
 	for(std::map<IDType, Node>::iterator nodeIt = idToNode.begin(); nodeIt != idToNode.end(); ++ nodeIt) {
 		Node& focus = nodeIt->second;
+		std::cout << "Populating grids for: " << focus.ID << std::endl;
 
 		// Nodes affect every ancestor
 		recursiveAffectsParents(retVal, focus.ID);
@@ -172,13 +189,14 @@ HierarchicalBooleanShape* HierarchicalShapeBuilder::makeNewBooleanShape() {
 void HierarchicalShapeBuilder::recursiveAffectsParents(HierarchicalBooleanShape* retVal, IDType focusID) {
 
 	Node& focus = getNodeFromID(focusID);
-	std::vector<IDType>& affects = retVal->affects[focusID];
-	for(std::vector<IDType>::iterator parentIt = focus.parents.begin(); parentIt != focus.parents.begin(); ++ parentIt) {
+	std::cout << "Element " << focus.ID << " has " << focus.parents.size() << " parent(s)" << std::endl;
+	for(std::vector<IDType>::iterator parentIt = focus.parents.begin(); parentIt != focus.parents.end(); ++ parentIt) {
 		IDType parentID = *parentIt;
-		std::vector<IDType>& affectedBy = retVal->affectedBy[parentID];
 
-		affects.push_back(parentID);
-		affectedBy.push_back(focusID);
+		std::cout << focusID << " affects " << parentID << std::endl;
+
+		retVal->affects[focusID].push_back(parentID);
+		retVal->affectedBy[parentID].push_back(focusID);
 
 		recursiveAffectsChildren(retVal, parentID);
 	}
@@ -187,13 +205,13 @@ void HierarchicalShapeBuilder::recursiveAffectsParents(HierarchicalBooleanShape*
 void HierarchicalShapeBuilder::recursiveAffectsChildren(HierarchicalBooleanShape* retVal, IDType focusID) {
 
 	Node& focus = getNodeFromID(focusID);
-	std::vector<IDType>& affects = retVal->affects[focusID];
-	for(std::vector<IDType>::iterator childIt = focus.children.begin(); childIt != focus.children.begin(); ++ childIt) {
+	for(std::vector<IDType>::iterator childIt = focus.children.begin(); childIt != focus.children.end(); ++ childIt) {
 		IDType childID = *childIt;
-		std::vector<IDType>& affectedBy = retVal->affectedBy[childID];
 
-		affects.push_back(childID);
-		affectedBy.push_back(focusID);
+		std::cout << focusID << " affects " << childID << std::endl;
+
+		retVal->affects[focusID].push_back(childID);
+		retVal->affectedBy[childID].push_back(focusID);
 
 		recursiveAffectsChildren(retVal, childID);
 	}

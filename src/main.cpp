@@ -24,37 +24,44 @@ using namespace irr;
 
 #include "HierarchicalBoolean.h"
 #include "HierarchicalShapeBuilder.h"
+#include "HierarchicalDebugger.h"
 #include <iostream>
 
 int main()
 {
 	// Test
 	HierarchicalShapeBuilder builder;
-	builder.declareNode("arm");
-	builder.declareNode("hand");
-	builder.declareNode("finger");
-	builder.declareNode("palm");
-	builder.declareNode("elbow");
-	builder.declareNode("forearm");
-	builder.declareNode("bicep");
+	builder.declareNode("a");
+	builder.declareNode("b");
+	builder.declareNode("c");
+	builder.declareNode("d");
+	builder.declareNode("e");
+	builder.declareNode("f");
+	builder.declareNode("g");
 
-	builder.declareRelationship("arm", "hand");
-	builder.declareRelationship("arm", "elbow");
-	builder.declareRelationship("arm", "forearm");
-	builder.declareRelationship("arm", "bicep");
-
-	builder.declareRelationship("hand", "finger");
-	builder.declareRelationship("hand", "palm");
+	builder.declareRelationship("a", "b");
+	builder.declareRelationship("b", "c");
+	builder.declareRelationship("c", "d");
+	builder.declareRelationship("d", "e");
+	builder.declareRelationship("e", "f");
+	builder.declareRelationship("f", "g");
 
 	HierarchicalBooleanShape* shape = builder.makeNewBooleanShape();
 
+	HierarchicalDebugger debugg;
+	debugg.debug(shape);
+
 	HierarchicalBoolean hbool(*shape);
 
-	hbool.setBoolean("hand", true);
+	hbool.setBoolean("g", true);
 
-	std::cout << hbool.getBoolean("hand") << std::endl;
-	std::cout << hbool.getBoolean("arm") << std::endl;
-	std::cout << hbool.getBoolean("finger") << std::endl;
+	std::cout << hbool.getBoolean("a") << std::endl;
+	std::cout << hbool.getBoolean("b") << std::endl;
+	std::cout << hbool.getBoolean("c") << std::endl;
+	std::cout << hbool.getBoolean("d") << std::endl;
+	std::cout << hbool.getBoolean("e") << std::endl;
+	std::cout << hbool.getBoolean("f") << std::endl;
+	std::cout << hbool.getBoolean("g") << std::endl;
 
 	delete shape;
 

@@ -116,8 +116,7 @@
 		</Unit>
 		<Unit filename="HierarchicalBoolean.cpp" />
 		<Unit filename="HierarchicalBoolean.h" />
-		<Unit filename="HierarchicalBooleanShape.cpp" />
-		<Unit filename="HierarchicalBooleanShape.h" />
+		<Unit filename="HierarchicalDebugger.h" />
 		<Unit filename="HierarchicalShapeBuilder.cpp" />
 		<Unit filename="HierarchicalShapeBuilder.h" />
 		<Unit filename="InputManager.cpp">

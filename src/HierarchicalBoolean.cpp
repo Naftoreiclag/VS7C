@@ -10,6 +10,9 @@ HierarchicalBoolean::HierarchicalBoolean(const HierarchicalBooleanShape& shape)
 : shape(shape),
 shapeSize(shape.nameToID.size()) {
 	bits = new irr::u8[shapeSize];
+	for(std::size_t i = 0; i < shapeSize; ++ i) {
+		*(bits + i) = vFalse;
+	}
 }
 
 HierarchicalBoolean::~HierarchicalBoolean() {
