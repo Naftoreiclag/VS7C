@@ -50,7 +50,7 @@ class HierarchicalDebugger
 		void debug(HierarchicalBoolean& boolean) {
 			for(int i = 0; i < boolean.shape.nameToID.size(); ++ i) {
 				std::cout << getName(&boolean.shape, i) << ": ";
-				std::cout << ((int) *(boolean.bits + i)) << std::endl;
+				//std::cout << ((int) *(boolean.bits + i)) << std::endl;
 
 
 			}
