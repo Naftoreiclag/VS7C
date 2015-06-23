@@ -8,10 +8,11 @@
 #define PHYSICSCOMPONENT_H
 
 #include "NREntitySystem.h"
-#include "ComponentIDs.h"
 #include "irrlicht.h"
 #include "SceneNodeComponent.h"
 #include "btBulletDynamicsCommon.h"
+
+#include "RID.h"
 
 /*
 Adds bullet dynamics to an entity.
@@ -78,7 +79,7 @@ private:
 // The associated system that manages all entities using PhysicsComponent
 class PhysicsSystem : public nres::System {
 private:
-	nres::ComponentID accessedComponents[2] = {compIDs::CID_SCENE, compIDs::CID_PHYSICS};
+	nres::ComponentID accessedComponents[2];
 public:
 	PhysicsSystem();
 	virtual const nres::ComponentID* getComponentIDs(std::size_t& numComponentIDs) const;

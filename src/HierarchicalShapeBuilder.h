@@ -9,15 +9,16 @@
 
 #include "irrlicht.h"
 
+#include "RID.h"
+
 #include <vector>
-#include <string>
 #include <map>
 
 class HierarchicalBooleanShape;
 class HierarchicalShapeBuilder {
 public:
 	typedef irr::u32 IDType;
-	typedef std::string NameType;
+	typedef RID NameType;
 private:
 	struct Node {
 		IDType ID;

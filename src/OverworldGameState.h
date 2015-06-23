@@ -11,13 +11,11 @@
 #include "btBulletDynamicsCommon.h"
 
 #include "NREntitySystem.h"
-#include "ComponentIDs.h"
 
 #include "CharacterComponent.h"
 #include "CharacterPhysicsComponent.h"
 #include "InteractionComponent.h"
 #include "PhysicsComponent.h"
-#include "PlayerComponent.h"
 #include "SceneNodeComponent.h"
 #include "SoulComponent.h"
 

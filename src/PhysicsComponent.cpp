@@ -68,6 +68,8 @@ PhysicsComponent* PhysicsComponent::clone() const {
 }
 
 PhysicsSystem::PhysicsSystem() {
+	accessedComponents[0] = RID("comp physics");
+	accessedComponents[1] = RID("comp scene");
 }
 
 const nres::ComponentID* PhysicsSystem::getComponentIDs(std::size_t& numComponentIDs) const {
@@ -77,9 +79,9 @@ const nres::ComponentID* PhysicsSystem::getComponentIDs(std::size_t& numComponen
 
 void PhysicsSystem::process(nres::Entity& e) {
 
-	PhysicsComponent* phys = (PhysicsComponent*) e.getComponentData(compIDs::CID_PHYSICS);
+	PhysicsComponent* phys = (PhysicsComponent*) e.getComponentData(RID("comp physics"));
 	if(phys->needsAttencion) {
-		SceneNodeComponent* scene = (SceneNodeComponent*) e.getComponentData(compIDs::CID_SCENE);
+		SceneNodeComponent* scene = (SceneNodeComponent*) e.getComponentData(RID("comp scene"));
 
 		scene->sceneNode->setRotation(reim::bulletToIrr(reim::quaternionToEuler(phys->rotation)));
 		scene->sceneNode->setPosition(reim::bulletToIrr(phys->location));

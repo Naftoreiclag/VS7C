@@ -8,7 +8,6 @@
 #define INTERACTIONCOMPONENT_H
 
 #include "NREntitySystem.h"
-#include "ComponentIDs.h"
 
 /*
 Defines entities that can be interacted with

@@ -10,7 +10,6 @@
 #include "irrlicht.h"
 
 #include "NREntitySystem.h"
-#include "ComponentIDs.h"
 
 /*
 Basic scene node data, nothing else really

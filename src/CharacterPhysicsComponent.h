@@ -9,8 +9,9 @@
 
 #include "irrlicht.h"
 #include "NREntitySystem.h"
-#include "ComponentIDs.h"
 #include "btBulletDynamicsCommon.h"
+
+#include "RID.h"
 
 class PhysicsComponent;
 
@@ -71,7 +72,7 @@ public:
 
 class CharacterPhysicsSystem : public nres::System {
 private:
-	nres::ComponentID accessedComponents[2] = {compIDs::CID_CHARPHYSICS, compIDs::CID_PHYSICS};
+	nres::ComponentID accessedComponents[2];
 public:
 	CharacterPhysicsSystem();
 	virtual ~CharacterPhysicsSystem();

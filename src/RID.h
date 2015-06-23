@@ -65,7 +65,6 @@ namespace RIDDatabase {
 	const std::string& getHumanReadableID(const RIDValue& value);
 	const RIDValue& getValueID(const std::string& humanReadableID);
 
-	void addErrorData(const RIDValue& value, const std::string& humanReadableID, const std::string& humanDesc = "");
 	RIDMetadata* getErrorData();
 }
 

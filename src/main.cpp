@@ -31,24 +31,28 @@ using namespace irr;
 
 int main()
 {
-	RIDDatabase::addErrorData(0, "ERROR", "Returned when accessing an invalid RID.");
-	RIDDatabase::addRID(123, "onetwothree", "numbers");
-	RIDDatabase::addRID(1337, "swagNum");
-	RIDDatabase::addRID(42, "tmoltuae");
-	RIDDatabase::addRID(10000000000, "bigbig");
+	RIDDatabase::addRID(0, "ERROR", "Returned when accessing an invalid RID.");
 
-	std::cout << std::endl;
+	RIDDatabase::addRID(0x44b961e67d501b91, "comp scene");
+	RIDDatabase::addRID(0x8995921e44b772ba, "comp physics");
+	RIDDatabase::addRID(0x921e1e349ed94eb0, "comp interaction");
+	RIDDatabase::addRID(0xc8c272903f8f650b, "comp character physics");
+	RIDDatabase::addRID(0x98f165b645bd9dbd, "comp character");
+	RIDDatabase::addRID(0x88d8e29ee7928c59, "comp soul");
+	RIDDatabase::addRID(0x7684839d77df4b64, "comp player");
+	RIDDatabase::addRID(0x7371db68529979cc, "comp conversation");
+//	RIDDatabase::addRID(, "");
 
-	std::cout << "aaa = " << RID("swagNum") << std::endl;
-	std::cout << "aaa = " << RID("error") << std::endl;
-	std::cout << "aaa = " << RID("asdfasdfasdf") << std::endl;
-	std::cout << "aaa = " << RID(531) << std::endl;
-	std::cout << "aaa = " << RID(123) << std::endl;
-	std::cout << "aaa = " << RID(123).getHumanDesc() << std::endl;
-	std::cout << "aaa = " << RID(123).getHumanReadableID() << std::endl;
+	RIDDatabase::addRID(0x95adb8e9b5b6c2d6, "body leg left");
+	RIDDatabase::addRID(0xf63fc1bddabc4907, "body foot left");
+	RIDDatabase::addRID(0x1ba45f15da8817d2, "body leg right");
+	RIDDatabase::addRID(0x169de19b59ea666b, "body foot right");
 
-	RID test = 42;
-	std::cout << test.getHumanReadableID() << std::endl;
+	HierarchicalShapeBuilder b;
+	b.declareNode(RID("body leg left"));
+	b.declareNode(RID("body leg right"));
+	b.declareNode(RID("body foot left"));
+	b.declareNode(RID("body foot right"));
 
 	// Get the preferred driver type
 	video::E_DRIVER_TYPE driverType=driverChoiceConsole();

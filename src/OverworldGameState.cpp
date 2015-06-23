@@ -94,11 +94,11 @@ void OverworldGameState::init() {
 	playerEnt->finalize();
 
 	nres::Entity& sammy = makeEmptyCharEnt(btVector3(15, 20, 5));
-    sammy.addComponent(compIDs::CID_SOUL, new SoulComponent());
+    sammy.addComponent(RID("comp soul"), new SoulComponent());
     sammy.finalize();
 
 
-	SceneNodeComponent* playerSceneNode = (SceneNodeComponent*) playerEnt->getComponentData(compIDs::CID_SCENE);
+	SceneNodeComponent* playerSceneNode = (SceneNodeComponent*) playerEnt->getComponentData(RID("comp scene"));
 	yawPivot->setParent(playerSceneNode->sceneNode);
 
 	// Cool skybox
@@ -155,10 +155,10 @@ nres::Entity& OverworldGameState::makeEmptyCharEnt(btVector3 origin) {
 		btVector3(0, -32.1522, 0)
 	);
 
-	entity.addComponent(compIDs::CID_CHARACTER, character);
-	entity.addComponent(compIDs::CID_SCENE, sceneNode);
-	entity.addComponent(compIDs::CID_PHYSICS, physics);
-	entity.addComponent(compIDs::CID_CHARPHYSICS, characterPhysics);
+	entity.addComponent(RID("comp character"), character);
+	entity.addComponent(RID("comp scene"), sceneNode);
+	entity.addComponent(RID("comp physics"), physics);
+	entity.addComponent(RID("comp character physics"), characterPhysics);
 	return entity;
 }
 
@@ -210,8 +210,8 @@ void OverworldGameState::update(irr::f32 tpf) {
 	// Move the player around
 
 
-	PhysicsComponent* phys = (PhysicsComponent*) playerEnt->getComponentData(compIDs::CID_PLAYER);
-	CharacterPhysicsComponent* charPhys = (CharacterPhysicsComponent*) playerEnt->getComponentData(compIDs::CID_CHARPHYSICS);
+	PhysicsComponent* phys = (PhysicsComponent*) playerEnt->getComponentData(RID("comp physics"));
+	CharacterPhysicsComponent* charPhys = (CharacterPhysicsComponent*) playerEnt->getComponentData(RID("comp character physics"));
 
 	inputMgr->notifyMe(this);
 
@@ -253,7 +253,7 @@ void OverworldGameState::keyPressed(irr::EKEY_CODE key) {
 
 		nres::Entity* picked = reib::entityRaycast(dynamicsWorld, startPt, endPt);
 
-		nres::ComponentData* data = picked->getComponentData(compIDs::CID_INTERACTION);
+		nres::ComponentData* data = picked->getComponentData(RID("comp interaction"));
 		if(data) {
 			InteractionComponent* interData = (InteractionComponent*) data;
 		}
@@ -271,7 +271,7 @@ void OverworldGameState::keyDown(irr::EKEY_CODE key) {
 
 
 	if(key == irr::KEY_SPACE) {
-		PhysicsComponent* phys = (PhysicsComponent*) playerEnt->getComponentData(compIDs::CID_PHYSICS);
+		PhysicsComponent* phys = (PhysicsComponent*) playerEnt->getComponentData(RID("comp physics"));
 		phys->rigidBody->applyForce(btVector3(0, 40, 0), btVector3(0, 0, 0));
 	}
 }

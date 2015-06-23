@@ -7,8 +7,10 @@
 #ifndef NRESTYPEDEFS_H
 #define NRESTYPEDEFS_H
 
+#include "RID.h"
+
 namespace nres {
-typedef unsigned long ComponentID; // at least 32 bit
+typedef RID ComponentID;
 }
 
 #endif // NRESTYPEDEFS_H

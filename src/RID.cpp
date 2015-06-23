@@ -52,7 +52,13 @@ humanReadableID(humanReadableID),
 humanDesc(humanDesc) { }
 
 void RIDDatabase::addRID(const RIDValue& value, const std::string& humanReadableID, const std::string& humanDesc) {
-	metadataTable.insert(RIDMetadata(value, humanReadableID, humanDesc));
+	if(value == 0) {
+		errorData = new RIDMetadata(value, humanReadableID, humanDesc);
+		metadataTable.insert(*errorData);
+
+	} else {
+		metadataTable.insert(RIDMetadata(value, humanReadableID, humanDesc));
+	}
 }
 
 const RIDDatabase::RIDMetadata& RIDDatabase::getMetadata(const RIDValue& value) {
@@ -90,9 +96,6 @@ const RIDDatabase::RIDValue& RIDDatabase::getValueID(const std::string& humanRea
 	}
 }
 
-void RIDDatabase::addErrorData(const RIDValue& value, const std::string& humanReadableID, const std::string& humanDesc) {
-	errorData = new RIDMetadata(value, humanReadableID, humanDesc);
-}
 RIDDatabase::RIDMetadata* RIDDatabase::getErrorData() {
 	return errorData;
 }

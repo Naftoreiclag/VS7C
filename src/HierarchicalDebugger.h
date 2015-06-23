@@ -18,7 +18,7 @@ class HierarchicalDebugger
 	public:
 		HierarchicalDebugger(){};
 
-		std::string getName(const HierarchicalBooleanShape* shape, const irr::u32 id) {
+		RID getName(const HierarchicalBooleanShape* shape, const irr::u32 id) {
 			for(auto it = shape->nameToID.begin(); it != shape->nameToID.end(); ++ it) {
 
 				if(it->second == id) {

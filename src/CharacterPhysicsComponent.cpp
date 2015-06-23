@@ -66,7 +66,10 @@ CharacterPhysicsComponent::~CharacterPhysicsComponent() {}
 System
 */
 
-CharacterPhysicsSystem::CharacterPhysicsSystem() {}
+CharacterPhysicsSystem::CharacterPhysicsSystem() {
+	accessedComponents[0] = RID("comp physics");
+	accessedComponents[1] = RID("comp character physics");
+}
 CharacterPhysicsSystem::~CharacterPhysicsSystem() {}
 
 const nres::ComponentID* CharacterPhysicsSystem::getComponentIDs(std::size_t& numComponentIDs) const {
@@ -75,8 +78,8 @@ const nres::ComponentID* CharacterPhysicsSystem::getComponentIDs(std::size_t& nu
 }
 
 void CharacterPhysicsSystem::process(nres::Entity& e) {
-	PhysicsComponent* phys = (PhysicsComponent*) e.getComponentData(compIDs::CID_PHYSICS);
-	CharacterPhysicsComponent* charPhys = (CharacterPhysicsComponent*) e.getComponentData(compIDs::CID_CHARPHYSICS);
+	PhysicsComponent* phys = (PhysicsComponent*) e.getComponentData(RID("comp physics"));
+	CharacterPhysicsComponent* charPhys = (CharacterPhysicsComponent*) e.getComponentData(RID("comp character physics"));
 
 	// No turning?
 	phys->rigidBody->setAngularFactor(0);

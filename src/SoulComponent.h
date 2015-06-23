@@ -8,7 +8,6 @@
 #define SOULCOMPONENT_H
 
 #include "NREntitySystem.h"
-#include "ComponentIDs.h"
 
 /*
 Marks an entity as non-player-controlled characters,
