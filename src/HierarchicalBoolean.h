@@ -15,9 +15,11 @@
 #include "irrlicht.h"
 
 struct HierarchicalBooleanShape {
-	std::map<HierarchicalShapeBuilder::NameType, HierarchicalShapeBuilder::IDType> nameToID;
-    std::map<HierarchicalShapeBuilder::IDType, std::vector<HierarchicalShapeBuilder::IDType> > affects;
-    std::map<HierarchicalShapeBuilder::IDType, std::vector<HierarchicalShapeBuilder::IDType> > affectedBy;
+	typedef HierarchicalShapeBuilder::NameType NameType;
+	typedef HierarchicalShapeBuilder::IDType IDType;
+	std::map<NameType, IDType> nameToID;
+    std::map<IDType, std::vector<IDType> > affects;
+    std::map<IDType, std::vector<IDType> > affectedBy;
 };
 
 class HierarchicalBoolean {
@@ -25,26 +27,26 @@ public:
 	typedef HierarchicalShapeBuilder::NameType NameType;
 	typedef HierarchicalShapeBuilder::IDType IDType;
 public:
-	HierarchicalBoolean(const HierarchicalBooleanShape shape);
-	const HierarchicalBooleanShape shape;
+	HierarchicalBoolean(const HierarchicalBooleanShape& shape);
+	const HierarchicalBooleanShape& shape;
 	virtual ~HierarchicalBoolean();
 public:
-	void setBoolean(HierarchicalShapeBuilder::NameType name, bool boolean);
-	void setWeakBoolean(HierarchicalShapeBuilder::NameType name);
+	void setBoolean(NameType name, bool boolean);
+	void setWeakTrue(NameType name);
 
-	bool getBoolean(HierarchicalShapeBuilder::NameType name);
+	bool getBoolean(NameType name);
 private:
-	void setValue(HierarchicalShapeBuilder::NameType name, irr::u8 value);
-	void update(IDType boolID);
+	void setValue(NameType name, irr::u8 value);
 
 	static const irr::u8 vFalse = 0;
 	static const irr::u8 vInfTrue = 1;
 	static const irr::u8 vWeakTrue = 2;
-	static cosnt irr::u8 vTrue = 3;
+	static const irr::u8 vTrue = 3;
 
 	const std::size_t shapeSize;
 	irr::u8* bits;
 
+	void updateTrueness(IDType boolID);
 };
 
 #endif // HIERARCHICALBOOLEAN_H

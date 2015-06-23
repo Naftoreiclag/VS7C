@@ -22,8 +22,42 @@ using namespace irr;
 #pragma comment(lib, "Irrlicht.lib")
 #endif
 
+#include "HierarchicalBoolean.h"
+#include "HierarchicalShapeBuilder.h"
+#include <iostream>
+
 int main()
 {
+	// Test
+	HierarchicalShapeBuilder builder;
+	builder.declareNode("arm");
+	builder.declareNode("hand");
+	builder.declareNode("finger");
+	builder.declareNode("palm");
+	builder.declareNode("elbow");
+	builder.declareNode("forearm");
+	builder.declareNode("bicep");
+
+	builder.declareRelationship("arm", "hand");
+	builder.declareRelationship("arm", "elbow");
+	builder.declareRelationship("arm", "forearm");
+	builder.declareRelationship("arm", "bicep");
+
+	builder.declareRelationship("hand", "finger");
+	builder.declareRelationship("hand", "palm");
+
+	HierarchicalBooleanShape* shape = builder.makeNewBooleanShape();
+
+	HierarchicalBoolean hbool(*shape);
+
+	hbool.setBoolean("hand", true);
+
+	std::cout << hbool.getBoolean("hand") << std::endl;
+	std::cout << hbool.getBoolean("arm") << std::endl;
+	std::cout << hbool.getBoolean("finger") << std::endl;
+
+	delete shape;
+
 	// Get the preferred driver type
 	video::E_DRIVER_TYPE driverType=driverChoiceConsole();
 	if(driverType == video::EDT_COUNT) { return 1; }
@@ -60,6 +94,8 @@ int main()
 	// Initialize tpf calculator
 	u32 then = device->getTimer()->getTime();
 	u32 frames = 0;
+
+
 
 	// Main loop
 	while(device->run()) {
