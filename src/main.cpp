@@ -31,20 +31,22 @@ int main()
 {
 	// Test
 	HierarchicalShapeBuilder builder;
-	builder.declareNode("a");
-	builder.declareNode("b");
-	builder.declareNode("c");
-	builder.declareNode("d");
-	builder.declareNode("e");
-	builder.declareNode("f");
-	builder.declareNode("g");
+	builder.declareNode("footl");
+	builder.declareNode("legl");
+	builder.declareNode("kneel");
+	builder.declareNode("footr");
+	builder.declareNode("legr");
+	builder.declareNode("kneer");
+	builder.declareNode("pelvis");
+	builder.declareNode("waistDown");
 
-	builder.declareRelationship("a", "b");
-	builder.declareRelationship("b", "c");
-	builder.declareRelationship("c", "d");
-	builder.declareRelationship("d", "e");
-	builder.declareRelationship("e", "f");
-	builder.declareRelationship("f", "g");
+	builder.declareRelationship("waistDown", "pelvis");
+	builder.declareRelationship("waistDown", "legl");
+	builder.declareRelationship("waistDown", "legr");
+	builder.declareRelationship("legl", "kneel");
+	builder.declareRelationship("legr", "kneer");
+	builder.declareRelationship("legl", "footl");
+	builder.declareRelationship("legr", "footr");
 
 	HierarchicalBooleanShape* shape = builder.makeNewBooleanShape();
 
@@ -53,15 +55,14 @@ int main()
 
 	HierarchicalBoolean hbool(*shape);
 
-	hbool.setBoolean("g", true);
-
-	std::cout << hbool.getBoolean("a") << std::endl;
-	std::cout << hbool.getBoolean("b") << std::endl;
-	std::cout << hbool.getBoolean("c") << std::endl;
-	std::cout << hbool.getBoolean("d") << std::endl;
-	std::cout << hbool.getBoolean("e") << std::endl;
-	std::cout << hbool.getBoolean("f") << std::endl;
-	std::cout << hbool.getBoolean("g") << std::endl;
+	hbool.setBoolean("footl", true);
+	debugg.debug(hbool);
+	hbool.setBoolean("footr", true);
+	debugg.debug(hbool);
+	hbool.setBoolean("footl", false);
+	debugg.debug(hbool);
+	hbool.setWeakTrue("kneel");
+	debugg.debug(hbool);
 
 	delete shape;
 

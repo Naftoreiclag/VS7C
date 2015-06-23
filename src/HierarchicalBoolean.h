@@ -34,7 +34,7 @@ public:
 	void setBoolean(NameType name, bool boolean);
 	void setWeakTrue(NameType name);
 
-	bool getBoolean(NameType name);
+	bool getBoolean(NameType name) const;
 private:
 	void setValue(NameType name, irr::u8 value);
 

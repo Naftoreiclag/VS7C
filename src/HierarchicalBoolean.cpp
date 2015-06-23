@@ -26,7 +26,7 @@ void HierarchicalBoolean::setWeakTrue(NameType name) {
 	setValue(name, vWeakTrue);
 }
 
-bool HierarchicalBoolean::getBoolean(NameType name) {
+bool HierarchicalBoolean::getBoolean(NameType name) const {
     std::map<NameType, IDType>::const_iterator location = shape.nameToID.find(name);
 	if(location == shape.nameToID.end()) {
 		return false;
@@ -111,7 +111,11 @@ void HierarchicalBoolean::setValue(NameType name, irr::u8 value) {
 
 		// Recalculate stuff
 		for(std::map<NameType, IDType>::const_iterator it = shape.nameToID.begin(); it != shape.nameToID.end(); ++ it) {
-			updateTrueness(it->second);
+			IDType recalcID = it->second;
+
+			if(*(bits + recalcID) == vTrue) {
+				updateTrueness(recalcID);
+			}
 		}
 	}
 

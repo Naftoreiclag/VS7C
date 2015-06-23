@@ -18,7 +18,7 @@ class HierarchicalDebugger
 	public:
 		HierarchicalDebugger(){};
 
-		std::string getName(HierarchicalBooleanShape* shape, const irr::u32 id) {
+		std::string getName(const HierarchicalBooleanShape* shape, const irr::u32 id) {
 			for(auto it = shape->nameToID.begin(); it != shape->nameToID.end(); ++ it) {
 
 				if(it->second == id) {
@@ -45,6 +45,17 @@ class HierarchicalDebugger
 
 				std::cout  << std::endl;
 			}
+		}
+
+		void debug(HierarchicalBoolean& boolean) {
+			for(int i = 0; i < boolean.shape.nameToID.size(); ++ i) {
+				std::cout << getName(&boolean.shape, i) << ": ";
+				std::cout << ((int) *(boolean.bits + i)) << std::endl;
+
+
+			}
+
+
 		}
 
 	protected:
