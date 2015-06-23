@@ -35,8 +35,8 @@ public:
 	void declareRelationship(NameType parent, NameType child);
 
 	bool isAncestor(IDType child, IDType parent, bool checkImmediate); // Recursive search, checks if parent is an ancestor to child, optionally ignoring immediate parents
-	void recursiveAffectsParents(HierarchicalBooleanShape* shape, IDType focus);
-	void recursiveAffectsChildren(HierarchicalBooleanShape* shape, IDType focus);
+	void recursiveAffectsParents(HierarchicalBooleanShape* shape, IDType receiver, IDType focus);
+	void recursiveAffectsChildren(HierarchicalBooleanShape* shape, IDType receiver, IDType focus);
 private:
 	std::map<NameType, IDType> nameToID;
 	std::map<IDType, Node> idToNode;

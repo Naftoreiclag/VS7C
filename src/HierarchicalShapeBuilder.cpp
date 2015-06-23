@@ -91,7 +91,6 @@ In this case, A's knowledge of C will be erased since it knows through B that C 
 
 Parent knowledge is modified afterward
 */
-// THIS IS BROKEN DO NOT USE
 void HierarchicalShapeBuilder::cleanRedundantData() {
 	// Clean child data
 	for(std::map<IDType, Node>::iterator nodeIt = idToNode.begin(); nodeIt != idToNode.end(); ++ nodeIt) {
@@ -174,10 +173,10 @@ HierarchicalBooleanShape* HierarchicalShapeBuilder::makeNewBooleanShape() {
 		std::cout << "Populating grids for: " << focus.ID << std::endl;
 
 		// Nodes affect every ancestor
-		recursiveAffectsParents(retVal, focus.ID);
+		recursiveAffectsParents(retVal, focus.ID, focus.ID);
 
 		// Nodes affect every descendant
-		recursiveAffectsChildren(retVal, focus.ID);
+		recursiveAffectsChildren(retVal, focus.ID, focus.ID);
 	}
 
 	//
@@ -186,33 +185,34 @@ HierarchicalBooleanShape* HierarchicalShapeBuilder::makeNewBooleanShape() {
     return retVal;
 }
 
-void HierarchicalShapeBuilder::recursiveAffectsParents(HierarchicalBooleanShape* retVal, IDType focusID) {
+void HierarchicalShapeBuilder::recursiveAffectsParents(HierarchicalBooleanShape* retVal, IDType receiver, IDType focusID) {
 
 	Node& focus = getNodeFromID(focusID);
 	std::cout << "Element " << focus.ID << " has " << focus.parents.size() << " parent(s)" << std::endl;
 	for(std::vector<IDType>::iterator parentIt = focus.parents.begin(); parentIt != focus.parents.end(); ++ parentIt) {
 		IDType parentID = *parentIt;
 
-		std::cout << focusID << " affects " << parentID << std::endl;
+		std::cout << receiver << " affects " << parentID << std::endl;
 
-		retVal->affects[focusID].push_back(parentID);
-		retVal->affectedBy[parentID].push_back(focusID);
+		retVal->affects[receiver].push_back(parentID);
+		retVal->affectedBy[parentID].push_back(receiver);
 
-		recursiveAffectsChildren(retVal, parentID);
+		recursiveAffectsParents(retVal, receiver, parentID);
 	}
 }
 
-void HierarchicalShapeBuilder::recursiveAffectsChildren(HierarchicalBooleanShape* retVal, IDType focusID) {
+void HierarchicalShapeBuilder::recursiveAffectsChildren(HierarchicalBooleanShape* retVal, IDType receiver, IDType focusID) {
 
 	Node& focus = getNodeFromID(focusID);
+	std::cout << "Element " << focus.ID << " has " << focus.children.size() << " child(ren)" << std::endl;
 	for(std::vector<IDType>::iterator childIt = focus.children.begin(); childIt != focus.children.end(); ++ childIt) {
 		IDType childID = *childIt;
 
-		std::cout << focusID << " affects " << childID << std::endl;
+		std::cout << receiver << " affects " << childID << std::endl;
 
-		retVal->affects[focusID].push_back(childID);
-		retVal->affectedBy[childID].push_back(focusID);
+		retVal->affects[receiver].push_back(childID);
+		retVal->affectedBy[childID].push_back(receiver);
 
-		recursiveAffectsChildren(retVal, childID);
+		recursiveAffectsChildren(retVal, receiver, childID);
 	}
 }
