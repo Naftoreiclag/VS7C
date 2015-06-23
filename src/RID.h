@@ -23,6 +23,9 @@ public:
 	RID(std::string humanReadableID);
 	~RID();
 
+	const std::string& getHumanReadableID();
+	const std::string& getHumanDesc();
+
 	RID& operator=(const RID& arg);
 	bool operator==(const RID& arg);
 	bool operator<(const RID& arg);
@@ -56,13 +59,14 @@ namespace RIDDatabase {
 		>
 	> RIDMetadataTable;
 
-	RIDMetadataTable metadataTable;
-
 	void addRID(const RIDValue& value, const std::string& humanReadableID, const std::string& humanDesc = "");
 	const RIDMetadata& getMetadata(const RIDValue& value);
 	const RIDMetadata& getMetadata(const std::string& humanReadableID);
 	const std::string& getHumanReadableID(const RIDValue& value);
 	const RIDValue& getValueID(const std::string& humanReadableID);
+
+	void addErrorData(const RIDValue& value, const std::string& humanReadableID, const std::string& humanDesc = "");
+	RIDMetadata* getErrorData();
 }
 
 

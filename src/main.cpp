@@ -27,44 +27,28 @@ using namespace irr;
 #include "HierarchicalDebugger.h"
 #include <iostream>
 
+#include "RID.h"
+
 int main()
 {
-	// Test
-	HierarchicalShapeBuilder builder;
-	builder.declareNode("footl");
-	builder.declareNode("legl");
-	builder.declareNode("kneel");
-	builder.declareNode("footr");
-	builder.declareNode("legr");
-	builder.declareNode("kneer");
-	builder.declareNode("pelvis");
-	builder.declareNode("waistDown");
+	RIDDatabase::addErrorData(0, "ERROR", "Returned when accessing an invalid RID.");
+	RIDDatabase::addRID(123, "onetwothree", "numbers");
+	RIDDatabase::addRID(1337, "swagNum");
+	RIDDatabase::addRID(42, "tmoltuae");
+	RIDDatabase::addRID(10000000000, "bigbig");
 
-	builder.declareRelationship("waistDown", "pelvis");
-	builder.declareRelationship("waistDown", "legl");
-	builder.declareRelationship("waistDown", "legr");
-	builder.declareRelationship("legl", "kneel");
-	builder.declareRelationship("legr", "kneer");
-	builder.declareRelationship("legl", "footl");
-	builder.declareRelationship("legr", "footr");
+	std::cout << std::endl;
 
-	HierarchicalBooleanShape* shape = builder.makeNewBooleanShape();
+	std::cout << "aaa = " << RID("swagNum") << std::endl;
+	std::cout << "aaa = " << RID("error") << std::endl;
+	std::cout << "aaa = " << RID("asdfasdfasdf") << std::endl;
+	std::cout << "aaa = " << RID(531) << std::endl;
+	std::cout << "aaa = " << RID(123) << std::endl;
+	std::cout << "aaa = " << RID(123).getHumanDesc() << std::endl;
+	std::cout << "aaa = " << RID(123).getHumanReadableID() << std::endl;
 
-	HierarchicalDebugger debugg;
-	debugg.debug(shape);
-
-	HierarchicalBoolean hbool(*shape);
-
-	hbool.setBoolean("footl", true);
-	debugg.debug(hbool);
-	hbool.setBoolean("footr", true);
-	debugg.debug(hbool);
-	hbool.setBoolean("footl", false);
-	debugg.debug(hbool);
-	hbool.setWeakTrue("kneel");
-	debugg.debug(hbool);
-
-	delete shape;
+	RID test = 42;
+	std::cout << test.getHumanReadableID() << std::endl;
 
 	// Get the preferred driver type
 	video::E_DRIVER_TYPE driverType=driverChoiceConsole();

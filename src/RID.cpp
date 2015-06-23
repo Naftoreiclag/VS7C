@@ -16,6 +16,15 @@ RID::RID(std::string humanReadableID) {
 RID::RID(const RID& arg) {
 	value = arg.value;
 }
+RID::~RID() {
+}
+
+const std::string& RID::getHumanReadableID() {
+	return RIDDatabase::getMetadata(value).humanReadableID;
+}
+const std::string& RID::getHumanDesc() {
+	return RIDDatabase::getMetadata(value).humanDesc;
+}
 
 RID& RID::operator=(const RID& arg) {
 	value = arg.value;
@@ -34,6 +43,9 @@ RID::operator RIDValue() const {
 	return value;
 }
 
+RIDDatabase::RIDMetadataTable metadataTable;
+RIDDatabase::RIDMetadata* errorData = 0;
+
 RIDDatabase::RIDMetadata::RIDMetadata(RIDValue valueID, std::string humanReadableID, std::string humanDesc)
 :valueID(valueID),
 humanReadableID(humanReadableID),
@@ -45,19 +57,42 @@ void RIDDatabase::addRID(const RIDValue& value, const std::string& humanReadable
 
 const RIDDatabase::RIDMetadata& RIDDatabase::getMetadata(const RIDValue& value) {
 	RIDMetadataTable::nth_index<0>::type::iterator it = metadataTable.get<0>().find(value);
-	return *it;
+	if(it == metadataTable.get<0>().end()) {
+		return *errorData;
+	} else {
+		return *it;
+	}
 }
 
 const RIDDatabase::RIDMetadata& RIDDatabase::getMetadata(const std::string& humanReadableID) {
 	RIDMetadataTable::nth_index<1>::type::iterator it = metadataTable.get<1>().find(humanReadableID);
-	return *it;
+	if(it == metadataTable.get<1>().end()) {
+		return *errorData;
+	} else {
+		return *it;
+	}
 }
 
 const std::string& RIDDatabase::getHumanReadableID(const RIDValue& value) {
 	RIDMetadataTable::nth_index<0>::type::iterator it = metadataTable.get<0>().find(value);
-	return it->humanDesc;
+	if(it == metadataTable.get<0>().end()) {
+		return errorData->humanReadableID;
+	} else {
+		return it->humanReadableID;
+	}
 }
 const RIDDatabase::RIDValue& RIDDatabase::getValueID(const std::string& humanReadableID) {
 	RIDMetadataTable::nth_index<1>::type::iterator it = metadataTable.get<1>().find(humanReadableID);
-	return it->valueID;
+	if(it == metadataTable.get<1>().end()) {
+		return errorData->valueID;
+	} else {
+		return it->valueID;
+	}
+}
+
+void RIDDatabase::addErrorData(const RIDValue& value, const std::string& humanReadableID, const std::string& humanDesc) {
+	errorData = new RIDMetadata(value, humanReadableID, humanDesc);
+}
+RIDDatabase::RIDMetadata* RIDDatabase::getErrorData() {
+	return errorData;
 }
