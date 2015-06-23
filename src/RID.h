@@ -11,8 +11,10 @@
 #include "boost/multi_index_container.hpp"
 #include "boost/multi_index/ordered_index.hpp"
 #include "boost/multi_index/identity.hpp"
+#include "boost/multi_index/member.hpp"
 #include "irrlicht.h"
 
+// sizeof RID == sizeof irr::u64
 class RID {
 public:
     typedef irr::u64 RIDValue;
@@ -30,9 +32,37 @@ private:
 };
 
 namespace RIDDatabase {
-    typedef RID::RIDValue RIDValue;
 
-	void addRID(RIDValue value, std::string humanReadableID);
+	struct RIDMetadata {
+		typedef RID::RIDValue RIDValue;
+
+		RIDMetadata(RIDValue valueID, std::string humanReadableID, std::string humanDesc);
+
+		RIDValue valueID;
+		std::string humanReadableID;
+		std::string humanDesc;
+	};
+
+    typedef RID::RIDValue RIDValue;
+    typedef boost::multi_index_container<
+		RIDMetadata,
+		boost::multi_index::indexed_by<
+			boost::multi_index::ordered_unique<
+				boost::multi_index::member<RIDMetadata, RIDValue, &RIDMetadata::valueID> // Order by 64 bit number
+			>,
+			boost::multi_index::ordered_unique<
+				boost::multi_index::member<RIDMetadata, std::string, &RIDMetadata::humanReadableID> // Order by 64 bit number
+			>
+		>
+	> RIDMetadataTable;
+
+	RIDMetadataTable metadataTable;
+
+	void addRID(const RIDValue& value, const std::string& humanReadableID, const std::string& humanDesc = "");
+	const RIDMetadata& getMetadata(const RIDValue& value);
+	const RIDMetadata& getMetadata(const std::string& humanReadableID);
+	const std::string& getHumanReadableID(const RIDValue& value);
+	const RIDValue& getValueID(const std::string& humanReadableID);
 }
 
 

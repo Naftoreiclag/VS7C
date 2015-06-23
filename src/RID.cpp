@@ -7,12 +7,10 @@
 #include "RID.h"
 
 RID::RID(RIDValue value)
-: value(value) {
-
-}
+: value(value) { }
 
 RID::RID(std::string humanReadableID) {
-	value = 0;
+	value = RIDDatabase::getValueID(humanReadableID);
 }
 
 RID::RID(const RID& arg) {
@@ -36,3 +34,30 @@ RID::operator RIDValue() const {
 	return value;
 }
 
+RIDDatabase::RIDMetadata::RIDMetadata(RIDValue valueID, std::string humanReadableID, std::string humanDesc)
+:valueID(valueID),
+humanReadableID(humanReadableID),
+humanDesc(humanDesc) { }
+
+void RIDDatabase::addRID(const RIDValue& value, const std::string& humanReadableID, const std::string& humanDesc) {
+	metadataTable.insert(RIDMetadata(value, humanReadableID, humanDesc));
+}
+
+const RIDDatabase::RIDMetadata& RIDDatabase::getMetadata(const RIDValue& value) {
+	RIDMetadataTable::nth_index<0>::type::iterator it = metadataTable.get<0>().find(value);
+	return *it;
+}
+
+const RIDDatabase::RIDMetadata& RIDDatabase::getMetadata(const std::string& humanReadableID) {
+	RIDMetadataTable::nth_index<1>::type::iterator it = metadataTable.get<1>().find(humanReadableID);
+	return *it;
+}
+
+const std::string& RIDDatabase::getHumanReadableID(const RIDValue& value) {
+	RIDMetadataTable::nth_index<0>::type::iterator it = metadataTable.get<0>().find(value);
+	return it->humanDesc;
+}
+const RIDDatabase::RIDValue& RIDDatabase::getValueID(const std::string& humanReadableID) {
+	RIDMetadataTable::nth_index<1>::type::iterator it = metadataTable.get<1>().find(humanReadableID);
+	return it->valueID;
+}
