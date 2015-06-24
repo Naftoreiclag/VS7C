@@ -7,3 +7,8 @@
 #include "InteractionComponent.h"
 
 InteractionComponent::InteractionComponent() {}
+InteractionComponent::~InteractionComponent() {}
+
+InteractionComponent* InteractionComponent::clone() const {
+	return new InteractionComponent();
+}

@@ -117,7 +117,9 @@ nres::Entity& OverworldGameState::makeEmptyCharEnt(btVector3 origin) {
 	// Make
 	nres::Entity& entity = entityWorld.newEntity();
 
-	CharacterComponent* character = new CharacterComponent();
+	CharacterIdentityComponent* characterIdentity = new CharacterIdentityComponent();
+	CharacterBodyComponent* characterBody = new CharacterBodyComponent();
+	CharacterPerformerComponent* characterPerformer = new CharacterPerformerComponent();
 
 	// SceneNode
 	SceneNodeComponent* sceneNode;
@@ -155,10 +157,12 @@ nres::Entity& OverworldGameState::makeEmptyCharEnt(btVector3 origin) {
 		btVector3(0, -32.1522, 0)
 	);
 
-	entity.addComponent(RID("comp character"), character);
 	entity.addComponent(RID("comp scene"), sceneNode);
 	entity.addComponent(RID("comp physics"), physics);
 	entity.addComponent(RID("comp character physics"), characterPhysics);
+	entity.addComponent(RID("comp character body"), characterBody);
+	entity.addComponent(RID("comp character identity"), characterIdentity);
+	entity.addComponent(RID("comp character performer"), characterPerformer);
 	return entity;
 }
 
@@ -258,14 +262,9 @@ void OverworldGameState::keyPressed(irr::EKEY_CODE key) {
 			InteractionComponent* interData = (InteractionComponent*) data;
 		}
 
-		if(picked) {
-            std::cout << "picky!" << std::endl;
-		}
-
 	}
 	std::cout << key << std::endl;
 }
-
 
 void OverworldGameState::keyDown(irr::EKEY_CODE key) {
 

@@ -37,22 +37,20 @@ int main()
 	RIDDatabase::addRID(0x8995921e44b772ba, "comp physics");
 	RIDDatabase::addRID(0x921e1e349ed94eb0, "comp interaction");
 	RIDDatabase::addRID(0xc8c272903f8f650b, "comp character physics");
-	RIDDatabase::addRID(0x98f165b645bd9dbd, "comp character");
+	RIDDatabase::addRID(0x54486a4b03795e5f, "comp character identity");
+	RIDDatabase::addRID(0x30689203b7f8c6f9, "comp character performer");
+	RIDDatabase::addRID(0x8b9c0a77986c1e9c, "comp character body");
 	RIDDatabase::addRID(0x88d8e29ee7928c59, "comp soul");
 	RIDDatabase::addRID(0x7684839d77df4b64, "comp player");
 	RIDDatabase::addRID(0x7371db68529979cc, "comp conversation");
 //	RIDDatabase::addRID(, "");
+	RIDDatabase::addRID(0x3dacd70cf7b698cc, "sitting");
+	RIDDatabase::addRID(0xeb57a6cfcf7e5943, "standing");
 
 	RIDDatabase::addRID(0x95adb8e9b5b6c2d6, "body leg left");
 	RIDDatabase::addRID(0xf63fc1bddabc4907, "body foot left");
 	RIDDatabase::addRID(0x1ba45f15da8817d2, "body leg right");
 	RIDDatabase::addRID(0x169de19b59ea666b, "body foot right");
-
-	HierarchicalShapeBuilder b;
-	b.declareNode(RID("body leg left"));
-	b.declareNode(RID("body leg right"));
-	b.declareNode(RID("body foot left"));
-	b.declareNode(RID("body foot right"));
 
 	// Get the preferred driver type
 	video::E_DRIVER_TYPE driverType=driverChoiceConsole();

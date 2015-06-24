@@ -12,7 +12,8 @@
 
 #include "NREntitySystem.h"
 
-#include "CharacterComponent.h"
+#include "CharacterIdentityComponent.h"
+#include "CharacterBodyComponent.h"
 #include "CharacterPhysicsComponent.h"
 #include "InteractionComponent.h"
 #include "PhysicsComponent.h"

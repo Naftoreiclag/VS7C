@@ -4,18 +4,14 @@
  * See accompanying file LICENSE
  */
 
-#include "CharacterComponent.h"
+#include "CharacterTask.h"
 
-CharacterComponent::CharacterComponent()
+CharacterTask::CharacterTask()
 {
 	//ctor
 }
 
-CharacterComponent* CharacterComponent::clone() const {
-	return new CharacterComponent();
-}
-
-CharacterComponent::~CharacterComponent()
+CharacterTask::~CharacterTask()
 {
+	//dtor
 }
-

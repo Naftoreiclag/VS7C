@@ -16,6 +16,9 @@ such as that guy that serves you your coffee.
 For characters who do not have a player-granted soul,
 here is one that exists in the game's world.
 */
+
+// Emotion and AI go here
+// This is the alternative to having a player control a character
 class SoulComponent : public nres::ComponentData
 {
 public:

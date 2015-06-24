@@ -9,12 +9,11 @@
 
 #include "NREntitySystem.h"
 
-/*
-Defines entities that can be interacted with
-*/
 class InteractionComponent : public nres::ComponentData {
 public:
 	InteractionComponent();
+	virtual InteractionComponent* clone() const;
+	~InteractionComponent();
 };
 
 #endif // INTERACTIONCOMPONENT_H

@@ -5,7 +5,7 @@
 		<Option title="Village Simulator 7C" />
 		<Option pch_mode="0" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="Components\;GameStates\;Utility\;Managers\;Data\;Entity System\;" />
+		<Option virtualFolders="Components\;GameStates\;Utility\;Managers\;Data\;Entity System\;Components\Character\;Character Task Engine\;" />
 		<Build>
 			<Target title="Linux">
 				<Option platforms="Unix;" />
@@ -81,36 +81,40 @@
 		<Unit filename="Array2d.h">
 			<Option virtualFolder="Data/" />
 		</Unit>
-		<Unit filename="BodyComponent.cpp">
-			<Option virtualFolder="Components/" />
+		<Unit filename="CharacterBodyComponent.cpp">
+			<Option virtualFolder="Components/Character/" />
 		</Unit>
-		<Unit filename="BodyComponent.h">
-			<Option virtualFolder="Components/" />
+		<Unit filename="CharacterBodyComponent.h">
+			<Option virtualFolder="Components/Character/" />
 		</Unit>
-		<Unit filename="CharacterComponent.cpp">
-			<Option virtualFolder="Components/" />
+		<Unit filename="CharacterIdentityComponent.cpp">
+			<Option virtualFolder="Components/Character/" />
 		</Unit>
-		<Unit filename="CharacterComponent.h">
-			<Option virtualFolder="Components/" />
+		<Unit filename="CharacterIdentityComponent.h">
+			<Option virtualFolder="Components/Character/" />
+		</Unit>
+		<Unit filename="CharacterPerformerComponent.cpp">
+			<Option virtualFolder="Components/Character/" />
+		</Unit>
+		<Unit filename="CharacterPerformerComponent.h">
+			<Option virtualFolder="Components/Character/" />
 		</Unit>
 		<Unit filename="CharacterPhysicsComponent.cpp">
-			<Option virtualFolder="Components/" />
+			<Option virtualFolder="Components/Character/" />
 		</Unit>
 		<Unit filename="CharacterPhysicsComponent.h">
-			<Option virtualFolder="Components/" />
+			<Option virtualFolder="Components/Character/" />
 		</Unit>
-		<Unit filename="CharacterState.cpp" />
-		<Unit filename="CharacterState.h" />
+		<Unit filename="CharacterTask.cpp">
+			<Option virtualFolder="Character Task Engine/" />
+		</Unit>
+		<Unit filename="CharacterTask.h">
+			<Option virtualFolder="Character Task Engine/" />
+		</Unit>
 		<Unit filename="Chunk.cpp" />
 		<Unit filename="Chunk.h" />
 		<Unit filename="ChunkNode.cpp" />
 		<Unit filename="ChunkNode.h" />
-		<Unit filename="ComponentIDs.cpp">
-			<Option virtualFolder="Utility/" />
-		</Unit>
-		<Unit filename="ComponentIDs.h">
-			<Option virtualFolder="Utility/" />
-		</Unit>
 		<Unit filename="ConversationComponent.cpp">
 			<Option virtualFolder="Components/" />
 		</Unit>
@@ -165,12 +169,6 @@
 			<Option virtualFolder="Components/" />
 		</Unit>
 		<Unit filename="PhysicsComponent.h">
-			<Option virtualFolder="Components/" />
-		</Unit>
-		<Unit filename="PlayerComponent.cpp">
-			<Option virtualFolder="Components/" />
-		</Unit>
-		<Unit filename="PlayerComponent.h">
 			<Option virtualFolder="Components/" />
 		</Unit>
 		<Unit filename="RID.cpp">
