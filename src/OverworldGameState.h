@@ -52,7 +52,7 @@ private:
 	irr::IrrlichtDevice* device;
 	InputManager* inputMgr;
 
-	nres::World entityWorld;
+	nres::World* entityWorld;
 
 	PhysicsSystem* physSys;
 	CharacterPhysicsSystem* charPhysSys;

@@ -58,7 +58,7 @@ velocity(btVector3(0, 0, 0)) {
 PhysicsComponent::~PhysicsComponent() {
 	std::cout << "phys remove rigid body" << std::endl;
 	std::cout << rigidBody << std::endl;
-	//world->removeRigidBody(rigidBody);
+	world->removeRigidBody(rigidBody);
 
 	std::cout << "phys delete shape" << std::endl;
 	delete collisionShape; // Deletes the shape. If you want to have a re-usable shape, then use shared_ptr<btCollisionShape>

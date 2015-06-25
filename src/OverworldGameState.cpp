@@ -39,6 +39,7 @@ void OverworldGameState::init() {
 	dynamicsWorld->setDebugDrawer(bulletDebugDrawer);
 
 	// Initialize entity systems
+	entityWorld = new nres::World();
 	physSys = new PhysicsSystem();
 	charPhysSys = new CharacterPhysicsSystem();
 	charPerfSys = new CharacterPerformerSystem();
@@ -116,7 +117,7 @@ void OverworldGameState::init() {
 
 nres::Entity& OverworldGameState::makeEmptyCharEnt(btVector3 origin) {
 	// Make
-	nres::Entity& entity = entityWorld.newEntity();
+	nres::Entity& entity = entityWorld->newEntity();
 
 	CharacterIdentityComponent* characterIdentity = new CharacterIdentityComponent();
 	CharacterBodyComponent* characterBody = new CharacterBodyComponent();
@@ -177,6 +178,9 @@ OverworldGameState::~OverworldGameState() {
 
 	std::cout << "delete dynamics world" << std::endl;
 
+	// delete world before deleting bullet physics
+	delete entityWorld;
+
 	delete dynamicsWorld;
 	std::cout << "delete solver" << std::endl;
 	delete solver;
@@ -209,10 +213,10 @@ void OverworldGameState::resume()
 
 void OverworldGameState::update(irr::f32 tpf) {
 	dynamicsWorld->stepSimulation(tpf, 6); // Resolve all collisions, velocities, and forces
-	entityWorld.process(*charPhysSys); // Do special physics
-	entityWorld.process(*physSys); // Update scenenodes
+	entityWorld->process(*charPhysSys); // Do special physics
+	entityWorld->process(*physSys); // Update scenenodes
 	charPerfSys->setTpf(tpf);
-	entityWorld.process(*charPerfSys);
+	entityWorld->process(*charPerfSys);
 
 	// Move the camera around
 
