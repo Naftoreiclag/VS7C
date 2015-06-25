@@ -9,16 +9,16 @@
 
 #include "NREntitySystem.h"
 
-#include "CharacterTaskAtomic.h"
 #include "CharacterTaskCondition.h"
 #include "RID.h"
-
+#include "irrlicht.h"
 
 #include "CharacterPerformerComponent.h"
 
 class CharacterPerformerSystem : public nres::System {
-private:
+public:
 	typedef CharacterTaskCondition::CharacterState CharacterState;
+private:
 	struct ConditionReport {
 		ConditionReport()
 		: fulfilled(false),
@@ -46,11 +46,15 @@ private:
 
 	// Find the total difficulty of this task and all sub-tasks, assuming all sub-tasks determined by analyzeCondition()
 	void analyzeTask(CharacterState state, CharacterTask* task, TaskReport& report, int layer);
+
+	//
+	irr::f32 tpf;
 private:
 	nres::ComponentID accessedComponents[2];
 public:
 	CharacterPerformerSystem();
 	~CharacterPerformerSystem();
+	void setTpf(irr::f32 tpf);
 	virtual const nres::ComponentID* getComponentIDs(std::size_t& numComponentIDs) const;
 	virtual void process(nres::Entity& entity);
 };

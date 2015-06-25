@@ -6,7 +6,7 @@
 
 #include "CharacterPerformerSystem.h"
 
-
+#include "CharacterTaskRegistry.h"
 
 CharacterPerformerSystem::CharacterPerformerSystem() {
 	accessedComponents[0] = RID("comp character performer");
@@ -20,26 +20,39 @@ const nres::ComponentID* CharacterPerformerSystem::getComponentIDs(std::size_t& 
     return accessedComponents;
 }
 
+void CharacterPerformerSystem::setTpf(irr::f32 value) {
+	tpf = value;
+}
+
 void CharacterPerformerSystem::process(nres::Entity& entity) {
     CharacterPerformerComponent* perf = (CharacterPerformerComponent*) entity.getComponentData(RID("comp character performer"));
     CharacterBodyComponent* body = (CharacterBodyComponent*) entity.getComponentData(RID("comp character body"));
 
-    CharacterState state(body);
-
+	CharacterState state(body);
     if(perf->currentAction) {
         // Check for interruptions
+        // ???
+
         // Perform current action
-    } else if(perf->currentObjective) {
-    	// Objective is already fulfilled
-		if(perf->currentObjective->isFulfilled(state)) {
-			delete perf->currentObjective;
-			perf->currentObjective = 0;
-		} else {
+		perf->currentAction->process(state, tpf);
 
+		// Check for completion, delete if completed
+		if(perf->currentAction->isCompleted(state)) {
+			delete perf->currentAction;
+			perf->currentAction = 0;
 		}
+    } else if(perf->currentObjective) {
+    	ConditionReport report = analyzeCondition(state, perf->currentObjective);
 
+		// Fulfilled already
+    	if(report.fulfilled) {
+			perf->currentObjective = 0;
+    	}
 
-		// Find next action to fulfill this
+    	// Setup action
+    	else {
+			perf->currentAction = report.idealNextStep->clone();
+    	}
     }
 }
 
@@ -63,7 +76,7 @@ CharacterPerformerSystem::ConditionReport CharacterPerformerSystem::analyzeCondi
 	}
 
 	//
-    std::vector<CharacterTask*> taskCandidates;
+    std::vector<CharacterTask*> taskCandidates = CharacterTaskRegistry::getTasks(*condition);
 
     std::vector<TaskReport> taskReports;
 	for(std::vector<CharacterTask*>::iterator it = taskCandidates.begin(); it != taskCandidates.end(); ++ it) {

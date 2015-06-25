@@ -27,22 +27,31 @@ enum CharacterTaskType {
 // Note:: atomic tasks are derived from this class
 class CharacterTask {
 public:
-	const CharacterTaskType type;
-
-	typedef irr::u32 Difficulty;
-
-	virtual CharacterTask* clone() const = 0;
-
-	virtual void process(irr::f32 tpf) = 0;
-
-	virtual bool isCompleted() = 0;
-	virtual std::vector<CharacterTaskCondition> getPrerequisites() = 0;
-	virtual std::vector<CharacterTaskCondition> getEffects() = 0;
-	virtual bool fulfills(CharacterTaskCondition& condition) = 0;
-	virtual Difficulty getDifficulty() = 0;
-
 	CharacterTask(CharacterTaskType type);
 	virtual ~CharacterTask();
+
+	const CharacterTaskType type;
+	virtual CharacterTask* clone() const = 0;
+
+	virtual std::vector<CharacterTaskCondition> getPrerequisites() const = 0;
+	virtual std::vector<CharacterTaskCondition> getEffects() const = 0;
+	virtual bool fulfills(const CharacterTaskCondition& condition) const = 0;
+
+	typedef CharacterTaskCondition::CharacterState CharacterState;
+	virtual void process(CharacterState& state, irr::f32 tpf) = 0;
+	virtual bool isCompleted(const CharacterState& state) const = 0;
+
+	/*
+	Example difficulty levels:
+	0. blinking, turning head, breathing, chewing
+	1. walking
+	2. standing, sitting
+
+	*/
+
+	typedef irr::u32 Difficulty;
+	virtual Difficulty getDifficulty() const;
+
 };
 
 #endif // CHARACTERTASK_H

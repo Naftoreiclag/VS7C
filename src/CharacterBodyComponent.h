@@ -14,6 +14,8 @@ class CharacterBodyComponent : public nres::ComponentData {
 public:
 	RID bodyPosition;
 
+	bool sitting = false;
+
 	CharacterBodyComponent();
 	virtual CharacterBodyComponent* clone() const;
 	virtual ~CharacterBodyComponent();

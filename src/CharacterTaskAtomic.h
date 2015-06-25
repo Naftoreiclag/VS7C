@@ -11,8 +11,6 @@
 
 class CharacterTaskAtomic : public CharacterTask {
 public:
-	virtual void process(irr::f32 tpf) = 0;
-
 	CharacterTaskAtomic();
 	virtual ~CharacterTaskAtomic();
 };

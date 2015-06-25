@@ -12,8 +12,18 @@
 class CharacterTaskSit : public CharacterTaskAtomic {
 public:
 	CharacterTaskSit();
-	virtual void process(irr::f32 tpf);
 	virtual ~CharacterTaskSit();
+
+	virtual CharacterTaskSit* clone() const;
+
+	virtual std::vector<CharacterTaskCondition> getPrerequisites()const ;
+	virtual std::vector<CharacterTaskCondition> getEffects() const;
+	virtual bool fulfills(const CharacterTaskCondition& condition) const;
+
+	virtual void process(CharacterState& state, irr::f32 tpf);
+	virtual bool isCompleted(const CharacterState& state) const;
+
+	virtual Difficulty getDifficulty() const;
 };
 
 #endif // CHARACTERTASKSIT_H

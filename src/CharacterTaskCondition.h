@@ -23,6 +23,8 @@ public:
 		CharacterBodyComponent* body;
 	};
 public:
+	bool sitting = false;
+
 	CharacterTaskCondition();
 	virtual ~CharacterTaskCondition();
 	bool isFulfilled(CharacterState state);

@@ -14,12 +14,12 @@ namespace CharacterTaskRegistry {
 		knownTasks.push_back(task);
 	}
 
-	std::vector<CharacterTask*> getTasks(CharacterTaskCondition prerequisites) {
+	std::vector<CharacterTask*> getTasks(const CharacterTaskCondition& fulfillThis) {
 		std::vector<CharacterTask*> retVal;
         for(std::vector<CharacterTask*>::iterator it = knownTasks.begin(); it != knownTasks.end(); ++ it) {
 			CharacterTask* task = *it;
 
-			if(task->fulfills(prerequisites)) {
+			if(task->fulfills(fulfillThis)) {
 				retVal.push_back(task);
 			}
         }

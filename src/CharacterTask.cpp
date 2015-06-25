@@ -14,3 +14,7 @@ CharacterTask::~CharacterTask()
 {
 	//dtor
 }
+
+CharacterTask::Difficulty CharacterTask::getDifficulty() const {
+	return 100;
+}
