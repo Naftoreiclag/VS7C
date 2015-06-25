@@ -300,10 +300,15 @@ void OverworldGameState::keyPressed(irr::EKEY_CODE key) {
 
 		nres::Entity* picked = reib::entityRaycast(dynamicsWorld, startPt, endPt);
 
+		if(picked) {
+
 		nres::ComponentData* data = picked->getComponentData(RID("comp interaction"));
 		if(data) {
 			InteractionComponent* interData = (InteractionComponent*) data;
 		}
+
+		}
+
 
 	}
 	std::cout << key << std::endl;

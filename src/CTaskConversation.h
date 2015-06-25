@@ -4,17 +4,17 @@
  * See accompanying file LICENSE
  */
 
-#ifndef CHARACTERTASKSIT_H
-#define CHARACTERTASKSIT_H
+#ifndef CTASKCONVERSATION_H
+#define CTASKCONVERSATION_H
 
-#include "CharacterTaskAtomic.h"
+#include "CharacterTask.h"
 
-class CharacterTaskSit : public CharacterTaskAtomic {
+class CTaskConversation : public CharacterTask {
 public:
-	CharacterTaskSit();
-	virtual ~CharacterTaskSit();
+	CTaskConversation();
+	virtual ~CTaskConversation();
 
-	virtual CharacterTaskSit* clone() const;
+	virtual CTaskConversation* clone() const;
 
 	virtual std::vector<CharacterTaskCondition> getPrerequisites()const ;
 	virtual std::vector<CharacterTaskCondition> getEffects() const;
@@ -22,8 +22,6 @@ public:
 
 	virtual bool process(CharacterState& state, irr::f32 tpf);
 	virtual bool isCompleted(const CharacterState& state) const;
-
-	// virtual Difficulty getDifficulty() const;
 };
 
-#endif // CHARACTERTASKSIT_H
+#endif // CTASKCONVERSATION_H

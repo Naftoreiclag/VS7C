@@ -43,9 +43,10 @@ bool CharacterTaskStand::fulfills(const CharacterTaskCondition& condition) const
 	return condition.sitting == false;
 }
 
-void CharacterTaskStand::process(CharacterState& state, irr::f32 tpf) {
+bool CharacterTaskStand::process(CharacterState& state, irr::f32 tpf) {
 	std::cout << "you stand up" << std::endl;
     state.body->sitting = false;
+    return true;
 }
 
 bool CharacterTaskStand::isCompleted(const CharacterState& state) const {

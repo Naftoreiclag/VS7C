@@ -9,6 +9,9 @@
 CharacterTask::CharacterTask(CharacterTaskType type)
 : type(type) {
 }
+CharacterTask::CharacterTask()
+: type(UNDEF) {
+}
 
 CharacterTask::~CharacterTask()
 {

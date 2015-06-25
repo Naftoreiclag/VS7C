@@ -10,8 +10,8 @@
 #include "CharacterBodyComponent.h"
 
 /*
+Specifies a particular condition that a characterstate might be in.
 Atomic condition, such as sitting down, standing, located somewhere, etc...
-
 */
 
 class CharacterTaskCondition {

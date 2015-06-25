@@ -11,12 +11,14 @@
 #include "CharacterTaskCondition.h"
 #include "CharacterTask.h"
 
+/*
+Includes only data about what the character is doing at any one time
+TODO: add support for doing multiple things at once
+*/
 class CharacterPerformerComponent : public nres::ComponentData {
 public:
 	CharacterTaskCondition* currentObjective;
 	CharacterTask* currentAction;
-
-	int forecast;
 
 	CharacterPerformerComponent();
 	virtual CharacterPerformerComponent* clone() const;

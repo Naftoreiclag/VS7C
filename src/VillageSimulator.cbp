@@ -5,7 +5,7 @@
 		<Option title="Village Simulator 7C" />
 		<Option pch_mode="0" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="Character Task Engine\;Character Task Engine\;Character Task Engine\Types\;Character Task Engine\Types\Atomic\;Character Task Engine\;Character Task Engine\Types\;Character Task Engine\Types\Atomic\;Character Task Engine\;Utility\;Data\;Components\;Entity System\;GameStates\;Components\Character\;Managers\;Character Components\;" />
+		<Option virtualFolders="Character Task Engine\;Character Task Engine\;Character Task Engine\Types\;Character Task Engine\Types\Atomic\;Character Task Engine\;Character Task Engine\Types\;Character Task Engine\Types\Atomic\;Character Task Engine\;Utility\;Data\;Components\;Entity System\;GameStates\;Managers\;Character Components\;" />
 		<Build>
 			<Target title="Linux">
 				<Option platforms="Unix;" />
@@ -80,6 +80,12 @@
 		<Unit filename="Array2d.h">
 			<Option virtualFolder="Data/" />
 		</Unit>
+		<Unit filename="CTaskConversation.cpp">
+			<Option virtualFolder="Character Task Engine/Types/Atomic/" />
+		</Unit>
+		<Unit filename="CTaskConversation.h">
+			<Option virtualFolder="Character Task Engine/Types/Atomic/" />
+		</Unit>
 		<Unit filename="CTaskSTand.h">
 			<Option virtualFolder="Character Task Engine/Types/Atomic/" />
 		</Unit>
@@ -104,6 +110,12 @@
 		<Unit filename="CharacterIdentityComponent.h">
 			<Option virtualFolder="Character Components/" />
 		</Unit>
+		<Unit filename="CharacterObjective.cpp">
+			<Option virtualFolder="Character Task Engine/" />
+		</Unit>
+		<Unit filename="CharacterObjective.h">
+			<Option virtualFolder="Character Task Engine/" />
+		</Unit>
 		<Unit filename="CharacterPerformerComponent.cpp">
 			<Option virtualFolder="Character Components/" />
 		</Unit>
@@ -120,6 +132,12 @@
 			<Option virtualFolder="Character Components/" />
 		</Unit>
 		<Unit filename="CharacterPhysicsComponent.h">
+			<Option virtualFolder="Character Components/" />
+		</Unit>
+		<Unit filename="CharacterState.cpp">
+			<Option virtualFolder="Character Components/" />
+		</Unit>
+		<Unit filename="CharacterState.h">
 			<Option virtualFolder="Character Components/" />
 		</Unit>
 		<Unit filename="CharacterTask.cpp">
@@ -247,10 +265,10 @@
 			<Option virtualFolder="Components/" />
 		</Unit>
 		<Unit filename="SoulComponent.cpp">
-			<Option virtualFolder="Components/" />
+			<Option virtualFolder="Character Components/" />
 		</Unit>
 		<Unit filename="SoulComponent.h">
-			<Option virtualFolder="Components/" />
+			<Option virtualFolder="Character Components/" />
 		</Unit>
 		<Unit filename="TableData.cpp">
 			<Option virtualFolder="Data/" />

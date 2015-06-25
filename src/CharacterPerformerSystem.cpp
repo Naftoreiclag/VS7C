@@ -32,11 +32,8 @@ void CharacterPerformerSystem::process(nres::Entity& entity) {
 
 	CharacterState state(body);
     if(perf->currentAction) {
-        // Check for interruptions
-        // ???
-
         // Perform current action
-		perf->currentAction->process(state, tpf);
+		bool success = perf->currentAction->process(state, tpf);
 
 		// Check for completion, delete if completed
 		if(perf->currentAction->isCompleted(state)) {
@@ -79,38 +76,79 @@ CharacterPerformerSystem::ConditionReport CharacterPerformerSystem::analyzeCondi
 		return retVal;
 	}
 
-	std::cout << "getting tasks" << std::endl;
-
-	//
+	// Get all possible tasks that can fufill this condition
     std::vector<CharacterTask*> taskCandidates = CharacterTaskRegistry::getTasks(*condition);
-	std::cout << "getting reports" << std::endl;
 
+    // If there are no candidates, throw an exception
+    if(taskCandidates.empty()) {
+		retVal.idealNextStep = 0;
+		retVal.error.message = "Does not know how to fulfill %condition%";
+		return retVal;
+    }
+
+	// Keep track of reports for each candidate so that the optimal task can be chosen
     std::vector<TaskReport> taskReports;
 	for(std::vector<CharacterTask*>::iterator it = taskCandidates.begin(); it != taskCandidates.end(); ++ it) {
-		std::cout << "candidate" << std::endl;
 		CharacterTask* candidate = *it;
 
+		// Generate a report for each potential task, most importantly evaluating the difficulty of each
 		TaskReport report;
 		analyzeTask(state, candidate, report, 5);
 		report.subject = candidate;
 
+		// Keep track of reports
 		taskReports.push_back(report);
 	}
 
-	// Find easiest task
+	// Find the ideal task
 	TaskReport* idealTask;
-	CharacterTask::Difficulty lowestDifficulty;
-	for(std::vector<TaskReport>::iterator it = taskReports.begin(); it != taskReports.end(); ++ it) {
-		TaskReport& report = *it;
+	idealTask = findIdealTask(state, taskReports, true, true); // Including only possible ones and sure ones
 
-		if(!idealTask || lowestDifficulty > report.difficulty) {
-			idealTask = &report;
-			lowestDifficulty = report.difficulty;
+	// No certain task exists
+	if(!idealTask) {
+		// Try find a task that is not certain but might still be possible
+		idealTask = findIdealTask(state, taskReports, false, true);
+
+		// No task exists
+		if(!idealTask) {
+			// Find the best task to do, if it were possible
+			idealTask = findIdealTask(state, taskReports, false, false);
+
+			// (idealTask must exist here, since we know the number of candidates > 0 from the previous check)
+			retVal.idealNextStep = 0;
+			retVal.error.message = "Cannot do %task% because %reasons%"; // use some info from idealTask up there
+			return retVal;
 		}
 	}
 
+	// Everything is okay and the ideal next step has been determined
 	retVal.idealNextStep = idealTask->subject;
 	return retVal;
+}
+
+CharacterPerformerSystem::TaskReport* CharacterPerformerSystem::findIdealTask(CharacterState state, std::vector<TaskReport>& reports, bool onlySure, bool onlyPossible) {
+	TaskReport* idealTask = 0;
+	for(std::vector<TaskReport>::iterator it = reports.begin(); it != reports.end(); ++ it) {
+		TaskReport& report = *it;
+
+		// If there are errors in this task and we only accept possible ones
+		if(onlyPossible && !report.conditionErrors.empty()) { continue; }
+
+		// If the certainty of this report is not acceptable
+		if(onlySure && !report.unsure) { continue; }
+
+		// If this is the first task we examine, then it is the best one so far
+		if(!idealTask) {
+			idealTask = &report;
+		}
+
+		// If this new task has a lower difficulty
+		if(idealTask->difficulty > report.difficulty) {
+			idealTask = &report;
+		}
+	}
+
+	return idealTask;
 }
 
 // Find the total difficulty of this task and all sub-tasks, assuming all sub-tasks determined by analyzeCondition()
@@ -140,7 +178,12 @@ void CharacterPerformerSystem::analyzeTask(CharacterState state, CharacterTask* 
 			continue;
 		}
 
-		// Check for errors here
+		// If the condition is unfulfillable
+		if(!condRep.idealNextStep) {
+			report.unsure = true;
+			report.conditionErrors.push_back(condRep.error);
+			continue;
+		}
 
 		// Look ahead further
 		analyzeTask(state, condRep.idealNextStep, report, layer - 1);

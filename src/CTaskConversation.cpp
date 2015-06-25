@@ -4,26 +4,26 @@
  * See accompanying file LICENSE
  */
 
-#include "CTaskSit.h"
+#include "CTaskConversation.h"
 
 #include <iostream>
 
-CharacterTaskSit::CharacterTaskSit()
+CTaskConversation::CTaskConversation()
 {
 	//ctor
 }
 
-CharacterTaskSit::~CharacterTaskSit()
+CTaskConversation::~CTaskConversation()
 {
 	//dtor
 }
 
-CharacterTaskSit* CharacterTaskSit::clone() const {
-	return new CharacterTaskSit();
+CTaskConversation* CTaskConversation::clone() const {
+	return new CTaskConversation();
 }
 
 
-std::vector<CharacterTaskCondition> CharacterTaskSit::getPrerequisites() const {
+std::vector<CharacterTaskCondition> CTaskConversation::getPrerequisites() const {
 	std::vector<CharacterTaskCondition> retVal;
 	CharacterTaskCondition condition;
 	condition.sitting = false;
@@ -31,7 +31,7 @@ std::vector<CharacterTaskCondition> CharacterTaskSit::getPrerequisites() const {
 	return retVal;
 }
 
-std::vector<CharacterTaskCondition> CharacterTaskSit::getEffects() const {
+std::vector<CharacterTaskCondition> CTaskConversation::getEffects() const {
 	std::vector<CharacterTaskCondition> retVal;
 	CharacterTaskCondition condition;
 	condition.sitting = true;
@@ -39,16 +39,17 @@ std::vector<CharacterTaskCondition> CharacterTaskSit::getEffects() const {
 	return retVal;
 }
 
-bool CharacterTaskSit::fulfills(const CharacterTaskCondition& condition) const {
+bool CTaskConversation::fulfills(const CharacterTaskCondition& condition) const {
 	return condition.sitting == true;
 }
 
-bool CharacterTaskSit::process(CharacterState& state, irr::f32 tpf) {
+bool CTaskConversation::process(CharacterState& state, irr::f32 tpf) {
 	std::cout << "you sit down" << std::endl;
     state.body->sitting = true;
     return true;
 }
 
-bool CharacterTaskSit::isCompleted(const CharacterState& state) const {
+bool CTaskConversation::isCompleted(const CharacterState& state) const {
     return state.body->sitting;
 }
+
