@@ -283,6 +283,15 @@ void OverworldGameState::keyPressed(irr::EKEY_CODE key) {
 		charPerf->currentObjective = aaa;
 
 	}
+	if(key == irr::KEY_KEY_B) {
+		CharacterPerformerComponent* charPerf = (CharacterPerformerComponent*) playerEnt->getComponentData(RID("comp character performer"));
+
+		CharacterTaskCondition* aaa = new CharacterTaskCondition();
+		aaa->sitting = false;
+		std::cout << "set current objective" << std::endl;
+		charPerf->currentObjective = aaa;
+
+	}
 	if(key == irr::KEY_KEY_F) {
 		core::line3df picker = smgr->getSceneCollisionManager()->getRayFromScreenCoordinates(inputMgr->getMouseLoc(), cam);
 		// (length of picker ray is between 2999 and 3001)
@@ -301,8 +310,6 @@ void OverworldGameState::keyPressed(irr::EKEY_CODE key) {
 }
 
 void OverworldGameState::keyDown(irr::EKEY_CODE key) {
-
-
 	if(key == irr::KEY_SPACE) {
 		PhysicsComponent* phys = (PhysicsComponent*) playerEnt->getComponentData(RID("comp physics"));
 		phys->rigidBody->applyForce(btVector3(0, 40, 0), btVector3(0, 0, 0));

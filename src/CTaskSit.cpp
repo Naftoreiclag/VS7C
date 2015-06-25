@@ -4,7 +4,7 @@
  * See accompanying file LICENSE
  */
 
-#include "CharacterTaskSit.h"
+#include "CTaskSit.h"
 
 #include <iostream>
 

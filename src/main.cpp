@@ -23,7 +23,8 @@ using namespace irr;
 #endif
 
 #include <iostream>
-#include "CharacterTaskSit.h"
+#include "CTaskSit.h"
+#include "CTaskStand.h"
 #include "CharacterTaskRegistry.h"
 
 #include "RID.h"
@@ -52,6 +53,7 @@ int main()
 	RIDDatabase::addRID(0x169de19b59ea666b, "body foot right");
 
 	CharacterTaskRegistry::addTask(new CharacterTaskSit());
+	CharacterTaskRegistry::addTask(new CharacterTaskStand());
 
 	// Get the preferred driver type
 	video::E_DRIVER_TYPE driverType = video::EDT_OPENGL; //driverChoiceConsole();
