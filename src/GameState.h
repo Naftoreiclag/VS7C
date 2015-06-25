@@ -12,6 +12,7 @@
 class GameState : public irr::IReferenceCounted {
 public:
 	GameState(irr::IrrlichtDevice* irrlicht);
+	virtual ~GameState();
 
 	virtual void init() = 0;
 	virtual void cleanup() = 0;

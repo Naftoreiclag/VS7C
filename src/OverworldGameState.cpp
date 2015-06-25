@@ -168,20 +168,34 @@ nres::Entity& OverworldGameState::makeEmptyCharEnt(btVector3 origin) {
 }
 
 void OverworldGameState::cleanup() {
+}
 
+OverworldGameState::~OverworldGameState() {
 	chunkNode->drop();
 	chunkNode = 0;
 
+
+	std::cout << "delete dynamics world" << std::endl;
+
 	delete dynamicsWorld;
+	std::cout << "delete solver" << std::endl;
 	delete solver;
+	std::cout << "delete dispatcher" << std::endl;
 	delete dispatcher;
+	std::cout << "delete coll" << std::endl;
 	delete collisionConfiguration;
+	std::cout << "delete broad" << std::endl;
 	delete broadphase;
+	std::cout << "delete debug drawer" << std::endl;
 	delete bulletDebugDrawer;
 
+	std::cout << "delete physs" << std::endl;
 	delete physSys;
+	std::cout << "delete charperfs" << std::endl;
 	delete charPerfSys;
+	std::cout << "delete charphyss" << std::endl;
 	delete charPhysSys;
+	std::cout << "done" << std::endl;
 }
 
 void OverworldGameState::pause()

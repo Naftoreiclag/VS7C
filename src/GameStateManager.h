@@ -17,8 +17,8 @@ public:
 	GameStateManager();
 	virtual ~GameStateManager();
 
-	void attachState(GameState& state);
-	void detachState(GameState& state);
+	void attachState(GameState* state);
+	void detachState(GameState* state);
 	void detachAll();
 
 	void update(const irr::f32 tpf);

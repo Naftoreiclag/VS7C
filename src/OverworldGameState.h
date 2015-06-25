@@ -32,6 +32,7 @@ class ChunkNode;
 class OverworldGameState : public GameState, public InputReceiver {
 public:
 	OverworldGameState(irr::IrrlichtDevice *irrlicht);
+	virtual ~OverworldGameState();
 
 	virtual void init();
 	virtual void cleanup();

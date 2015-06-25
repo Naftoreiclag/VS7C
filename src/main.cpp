@@ -82,7 +82,7 @@ int main()
 
 	// Initial state
 	GameState* initialState = new OverworldGameState(device);
-	gsmgr.attachState(*initialState);
+	gsmgr.attachState(initialState);
 	initialState->drop();
 	initialState = 0;
 
@@ -123,7 +123,12 @@ int main()
 			frames = 0;
 		}
 	}
+	std::cout << "end game" << std::endl;
+
+	gsmgr.detachAll();
+	std::cout << "end detach" << std::endl;
 
 	device->drop(); device = 0;
+	std::cout << "complete" << std::endl;
 	return 0;
 }
