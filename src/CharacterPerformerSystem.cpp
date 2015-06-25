@@ -7,6 +7,7 @@
 #include "CharacterPerformerSystem.h"
 
 #include "CharacterTaskRegistry.h"
+#include <iostream>
 
 CharacterPerformerSystem::CharacterPerformerSystem() {
 	accessedComponents[0] = RID("comp character performer");
@@ -27,6 +28,7 @@ void CharacterPerformerSystem::setTpf(irr::f32 value) {
 void CharacterPerformerSystem::process(nres::Entity& entity) {
     CharacterPerformerComponent* perf = (CharacterPerformerComponent*) entity.getComponentData(RID("comp character performer"));
     CharacterBodyComponent* body = (CharacterBodyComponent*) entity.getComponentData(RID("comp character body"));
+
 
 	CharacterState state(body);
     if(perf->currentAction) {
@@ -63,6 +65,8 @@ CharacterPerformerSystem::ConditionReport CharacterPerformerSystem::analyzeCondi
 	// The report about this condition, including which of task could best fulfill it
 	ConditionReport retVal;
 
+	std::cout << "checking fulfillment" << std::endl;
+
 	// If condition does not exist for some reason
 	if(!condition) {
 		retVal.fulfilled = true;
@@ -75,11 +79,15 @@ CharacterPerformerSystem::ConditionReport CharacterPerformerSystem::analyzeCondi
 		return retVal;
 	}
 
+	std::cout << "getting tasks" << std::endl;
+
 	//
     std::vector<CharacterTask*> taskCandidates = CharacterTaskRegistry::getTasks(*condition);
+	std::cout << "getting reports" << std::endl;
 
     std::vector<TaskReport> taskReports;
 	for(std::vector<CharacterTask*>::iterator it = taskCandidates.begin(); it != taskCandidates.end(); ++ it) {
+		std::cout << "candidate" << std::endl;
 		CharacterTask* candidate = *it;
 
 		TaskReport report;

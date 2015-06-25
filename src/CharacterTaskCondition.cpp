@@ -12,7 +12,7 @@ CharacterTaskCondition::CharacterTaskCondition()
 }
 
 bool CharacterTaskCondition::isFulfilled(CharacterState state) {
-	return false;
+	return state.body->sitting == sitting;
 }
 
 CharacterTaskCondition::~CharacterTaskCondition()

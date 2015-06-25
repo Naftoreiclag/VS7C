@@ -256,6 +256,15 @@ void OverworldGameState::keyPressed(irr::EKEY_CODE key) {
 		makeEmptyCharEnt(btVector3(15, 20, 5)).finalize();
 
 	}
+	if(key == irr::KEY_KEY_K) {
+		CharacterPerformerComponent* charPerf = (CharacterPerformerComponent*) playerEnt->getComponentData(RID("comp character performer"));
+
+		CharacterTaskCondition* aaa = new CharacterTaskCondition();
+		aaa->sitting = true;
+		std::cout << "set current objective" << std::endl;
+		charPerf->currentObjective = aaa;
+
+	}
 	if(key == irr::KEY_KEY_F) {
 		core::line3df picker = smgr->getSceneCollisionManager()->getRayFromScreenCoordinates(inputMgr->getMouseLoc(), cam);
 		// (length of picker ray is between 2999 and 3001)

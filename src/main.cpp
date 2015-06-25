@@ -23,6 +23,8 @@ using namespace irr;
 #endif
 
 #include <iostream>
+#include "CharacterTaskSit.h"
+#include "CharacterTaskRegistry.h"
 
 #include "RID.h"
 
@@ -49,6 +51,8 @@ int main()
 	RIDDatabase::addRID(0x1ba45f15da8817d2, "body leg right");
 	RIDDatabase::addRID(0x169de19b59ea666b, "body foot right");
 
+	CharacterTaskRegistry::addTask(new CharacterTaskSit());
+
 	// Get the preferred driver type
 	video::E_DRIVER_TYPE driverType=driverChoiceConsole();
 	if(driverType == video::EDT_COUNT) { return 1; }
@@ -59,7 +63,7 @@ int main()
 	// Create the irrlicht device
 	SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
 	params.DriverType = driverType;
-	params.WindowSize = core::dimension2d<u32>(1920, 1080);
+	params.WindowSize = core::dimension2d<u32>(1280, 720);
 	params.Bits = 16;
 	params.Fullscreen = false;
 	params.Stencilbuffer = true;
