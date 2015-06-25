@@ -4,13 +4,18 @@
  * See accompanying file LICENSE
  */
 
-#include "CharacterTask.h"
+#include "CharacterTaskSit.h"
 
-CharacterTask::CharacterTask(CharacterTaskType type)
-: type(type) {
+CharacterTaskSit::CharacterTaskSit()
+{
+	//ctor
 }
 
-CharacterTask::~CharacterTask()
+void CharacterTaskSit::process(irr::f32 tpf) {
+
+}
+
+CharacterTaskSit::~CharacterTaskSit()
 {
 	//dtor
 }

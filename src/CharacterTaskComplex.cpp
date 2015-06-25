@@ -4,13 +4,14 @@
  * See accompanying file LICENSE
  */
 
-#include "CharacterTask.h"
+#include "CharacterTaskComplex.h"
 
-CharacterTask::CharacterTask(CharacterTaskType type)
-: type(type) {
+CharacterTaskComplex::CharacterTaskComplex()
+: CharacterTask::CharacterTask(COMPLEX) {
+	//ctor
 }
 
-CharacterTask::~CharacterTask()
+CharacterTaskComplex::~CharacterTaskComplex()
 {
 	//dtor
 }

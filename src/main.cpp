@@ -22,9 +22,6 @@ using namespace irr;
 #pragma comment(lib, "Irrlicht.lib")
 #endif
 
-#include "HierarchicalBoolean.h"
-#include "HierarchicalShapeBuilder.h"
-#include "HierarchicalDebugger.h"
 #include <iostream>
 
 #include "RID.h"

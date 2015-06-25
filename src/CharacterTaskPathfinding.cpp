@@ -4,13 +4,14 @@
  * See accompanying file LICENSE
  */
 
-#include "CharacterTask.h"
+#include "CharacterTaskPathfinding.h"
 
-CharacterTask::CharacterTask(CharacterTaskType type)
-: type(type) {
+CharacterTaskPathfinding::CharacterTaskPathfinding()
+: CharacterTask::CharacterTask(PATHFINDING) {
+	//ctor
 }
 
-CharacterTask::~CharacterTask()
+CharacterTaskPathfinding::~CharacterTaskPathfinding()
 {
 	//dtor
 }

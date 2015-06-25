@@ -39,7 +39,11 @@ private:
 class InputReceiver {
 public:
 	struct PreviousReception {
-		bool notifiedBefore = false;
+		PreviousReception()
+		:notifiedBefore(false) {
+		}
+
+		bool notifiedBefore;
 		bool toldKeyPressed[irr::KEY_KEY_CODES_COUNT];
 		bool toldMousePressed[InputManager::MCODE_COUNT];
 		irr::core::position2di toldMouseLoc;

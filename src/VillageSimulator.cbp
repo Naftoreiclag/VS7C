@@ -5,7 +5,7 @@
 		<Option title="Village Simulator 7C" />
 		<Option pch_mode="0" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="Components\;GameStates\;Utility\;Managers\;Data\;Entity System\;Components\Character\;Character Task Engine\;" />
+		<Option virtualFolders="Components\;GameStates\;Utility\;Managers\;Data\;Entity System\;Components\Character\;Character Task Definitions\;" />
 		<Build>
 			<Target title="Linux">
 				<Option platforms="Unix;" />
@@ -46,7 +46,6 @@
 			<Add alias="All" targets="Windows;Linux;" />
 		</VirtualTargets>
 		<Compiler>
-			<Add option="-std=c++11" />
 			<Add option="-g" />
 			<Add option="-DdSINGLE" />
 			<Add directory="../thirdparty/irrlicht-1.8.1/include" />
@@ -94,10 +93,16 @@
 			<Option virtualFolder="Components/Character/" />
 		</Unit>
 		<Unit filename="CharacterPerformerComponent.cpp">
-			<Option virtualFolder="Components/Character/" />
+			<Option virtualFolder="Character Task Definitions/" />
 		</Unit>
 		<Unit filename="CharacterPerformerComponent.h">
-			<Option virtualFolder="Components/Character/" />
+			<Option virtualFolder="Character Task Definitions/" />
+		</Unit>
+		<Unit filename="CharacterPerformerSystem.cpp">
+			<Option virtualFolder="Character Task Definitions/" />
+		</Unit>
+		<Unit filename="CharacterPerformerSystem.h">
+			<Option virtualFolder="Character Task Definitions/" />
 		</Unit>
 		<Unit filename="CharacterPhysicsComponent.cpp">
 			<Option virtualFolder="Components/Character/" />
@@ -106,10 +111,46 @@
 			<Option virtualFolder="Components/Character/" />
 		</Unit>
 		<Unit filename="CharacterTask.cpp">
-			<Option virtualFolder="Character Task Engine/" />
+			<Option virtualFolder="Character Task Definitions/" />
 		</Unit>
 		<Unit filename="CharacterTask.h">
-			<Option virtualFolder="Character Task Engine/" />
+			<Option virtualFolder="Character Task Definitions/" />
+		</Unit>
+		<Unit filename="CharacterTaskAtomic.cpp">
+			<Option virtualFolder="Character Task Definitions/" />
+		</Unit>
+		<Unit filename="CharacterTaskAtomic.h">
+			<Option virtualFolder="Character Task Definitions/" />
+		</Unit>
+		<Unit filename="CharacterTaskComplex.cpp">
+			<Option virtualFolder="Character Task Definitions/" />
+		</Unit>
+		<Unit filename="CharacterTaskComplex.h">
+			<Option virtualFolder="Character Task Definitions/" />
+		</Unit>
+		<Unit filename="CharacterTaskCondition.cpp">
+			<Option virtualFolder="Character Task Definitions/" />
+		</Unit>
+		<Unit filename="CharacterTaskCondition.h">
+			<Option virtualFolder="Character Task Definitions/" />
+		</Unit>
+		<Unit filename="CharacterTaskPathfinding.cpp">
+			<Option virtualFolder="Character Task Definitions/" />
+		</Unit>
+		<Unit filename="CharacterTaskPathfinding.h">
+			<Option virtualFolder="Character Task Definitions/" />
+		</Unit>
+		<Unit filename="CharacterTaskRegistry.cpp">
+			<Option virtualFolder="Character Task Definitions/" />
+		</Unit>
+		<Unit filename="CharacterTaskRegistry.h">
+			<Option virtualFolder="Character Task Definitions/" />
+		</Unit>
+		<Unit filename="CharacterTaskSit.cpp">
+			<Option virtualFolder="Character Task Definitions/" />
+		</Unit>
+		<Unit filename="CharacterTaskSit.h">
+			<Option virtualFolder="Character Task Definitions/" />
 		</Unit>
 		<Unit filename="Chunk.cpp" />
 		<Unit filename="Chunk.h" />

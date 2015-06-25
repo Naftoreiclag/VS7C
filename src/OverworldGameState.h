@@ -15,6 +15,7 @@
 #include "CharacterIdentityComponent.h"
 #include "CharacterBodyComponent.h"
 #include "CharacterPhysicsComponent.h"
+#include "CharacterPerformerComponent.h"
 #include "InteractionComponent.h"
 #include "PhysicsComponent.h"
 #include "SceneNodeComponent.h"

@@ -16,6 +16,7 @@
 class HierarchicalDebugger
 {
 	public:
+		/*
 		HierarchicalDebugger(){};
 
 		RID getName(const HierarchicalBooleanShape* shape, const irr::u32 id) {
@@ -57,7 +58,7 @@ class HierarchicalDebugger
 
 
 		}
-
+*/
 	protected:
 	private:
 };

@@ -8,10 +8,15 @@
 #define CHARACTERPERFORMERCOMPONENT_H
 
 #include "NREntitySystem.h"
+#include "CharacterTaskCondition.h"
+#include "CharacterTask.h"
 
 class CharacterPerformerComponent : public nres::ComponentData {
 public:
+	CharacterTaskCondition* currentObjective;
+	CharacterTask* currentAction;
 
+	int forecast;
 
 	CharacterPerformerComponent();
 	virtual CharacterPerformerComponent* clone() const;

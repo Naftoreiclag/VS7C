@@ -4,13 +4,11 @@
  * See accompanying file LICENSE
  */
 
-#include "CharacterTask.h"
+#include "CharacterTaskAtomic.h"
 
-CharacterTask::CharacterTask(CharacterTaskType type)
-: type(type) {
+CharacterTaskAtomic::CharacterTaskAtomic()
+: CharacterTask::CharacterTask(ATOMIC) {
 }
 
-CharacterTask::~CharacterTask()
-{
-	//dtor
+CharacterTaskAtomic::~CharacterTaskAtomic() {
 }
