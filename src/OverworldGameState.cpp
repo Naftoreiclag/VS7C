@@ -41,6 +41,7 @@ void OverworldGameState::init() {
 	// Initialize entity systems
 	physSys = new PhysicsSystem();
 	charPhysSys = new CharacterPhysicsSystem();
+	charPerfSys = new CharacterPerformerSystem();
 
 	// Calc center of screen
 	irr::s32 centerX = (irr::s32) (driver->getScreenSize().Width / 2);
@@ -177,6 +178,10 @@ void OverworldGameState::cleanup() {
 	delete collisionConfiguration;
 	delete broadphase;
 	delete bulletDebugDrawer;
+
+	delete physSys;
+	delete charPerfSys;
+	delete charPhysSys;
 }
 
 void OverworldGameState::pause()
@@ -192,6 +197,8 @@ void OverworldGameState::update(irr::f32 tpf) {
 	dynamicsWorld->stepSimulation(tpf, 6); // Resolve all collisions, velocities, and forces
 	entityWorld.process(*charPhysSys); // Do special physics
 	entityWorld.process(*physSys); // Update scenenodes
+	charPerfSys->setTpf(tpf);
+	entityWorld.process(*charPerfSys);
 
 	// Move the camera around
 

@@ -45,7 +45,7 @@ bool CharacterTaskSit::fulfills(const CharacterTaskCondition& condition) const {
 
 void CharacterTaskSit::process(CharacterState& state, irr::f32 tpf) {
 	std::cout << "you sit down" << std::endl;
-    return state.body->sitting = true;
+    state.body->sitting = true;
 }
 
 bool CharacterTaskSit::isCompleted(const CharacterState& state) const {

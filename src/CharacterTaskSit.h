@@ -23,7 +23,7 @@ public:
 	virtual void process(CharacterState& state, irr::f32 tpf);
 	virtual bool isCompleted(const CharacterState& state) const;
 
-	virtual Difficulty getDifficulty() const;
+	// virtual Difficulty getDifficulty() const;
 };
 
 #endif // CHARACTERTASKSIT_H

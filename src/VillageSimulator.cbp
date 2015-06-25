@@ -5,7 +5,7 @@
 		<Option title="Village Simulator 7C" />
 		<Option pch_mode="0" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="Components\;GameStates\;Utility\;Managers\;Data\;Entity System\;Components\Character\;Character Task Definitions\;" />
+		<Option virtualFolders="Character Task Engine\;Character Task Engine\;Character Task Engine\Types\;Character Task Engine\Types\Atomic\;Character Task Engine\;Character Task Engine\Types\;Character Task Engine\Types\Atomic\;Character Task Engine\;Utility\;Data\;Components\;Entity System\;GameStates\;Components\Character\;Managers\;" />
 		<Build>
 			<Target title="Linux">
 				<Option platforms="Unix;" />
@@ -93,16 +93,16 @@
 			<Option virtualFolder="Components/Character/" />
 		</Unit>
 		<Unit filename="CharacterPerformerComponent.cpp">
-			<Option virtualFolder="Character Task Definitions/" />
+			<Option virtualFolder="Character Task Engine/" />
 		</Unit>
 		<Unit filename="CharacterPerformerComponent.h">
-			<Option virtualFolder="Character Task Definitions/" />
+			<Option virtualFolder="Character Task Engine/" />
 		</Unit>
 		<Unit filename="CharacterPerformerSystem.cpp">
-			<Option virtualFolder="Character Task Definitions/" />
+			<Option virtualFolder="Character Task Engine/" />
 		</Unit>
 		<Unit filename="CharacterPerformerSystem.h">
-			<Option virtualFolder="Character Task Definitions/" />
+			<Option virtualFolder="Character Task Engine/" />
 		</Unit>
 		<Unit filename="CharacterPhysicsComponent.cpp">
 			<Option virtualFolder="Components/Character/" />
@@ -111,46 +111,46 @@
 			<Option virtualFolder="Components/Character/" />
 		</Unit>
 		<Unit filename="CharacterTask.cpp">
-			<Option virtualFolder="Character Task Definitions/" />
+			<Option virtualFolder="Character Task Engine/Types/" />
 		</Unit>
 		<Unit filename="CharacterTask.h">
-			<Option virtualFolder="Character Task Definitions/" />
+			<Option virtualFolder="Character Task Engine/Types/" />
 		</Unit>
 		<Unit filename="CharacterTaskAtomic.cpp">
-			<Option virtualFolder="Character Task Definitions/" />
+			<Option virtualFolder="Character Task Engine/Types/" />
 		</Unit>
 		<Unit filename="CharacterTaskAtomic.h">
-			<Option virtualFolder="Character Task Definitions/" />
+			<Option virtualFolder="Character Task Engine/Types/" />
 		</Unit>
 		<Unit filename="CharacterTaskComplex.cpp">
-			<Option virtualFolder="Character Task Definitions/" />
+			<Option virtualFolder="Character Task Engine/Types/" />
 		</Unit>
 		<Unit filename="CharacterTaskComplex.h">
-			<Option virtualFolder="Character Task Definitions/" />
+			<Option virtualFolder="Character Task Engine/Types/" />
 		</Unit>
 		<Unit filename="CharacterTaskCondition.cpp">
-			<Option virtualFolder="Character Task Definitions/" />
+			<Option virtualFolder="Character Task Engine/" />
 		</Unit>
 		<Unit filename="CharacterTaskCondition.h">
-			<Option virtualFolder="Character Task Definitions/" />
+			<Option virtualFolder="Character Task Engine/" />
 		</Unit>
 		<Unit filename="CharacterTaskPathfinding.cpp">
-			<Option virtualFolder="Character Task Definitions/" />
+			<Option virtualFolder="Character Task Engine/Types/" />
 		</Unit>
 		<Unit filename="CharacterTaskPathfinding.h">
-			<Option virtualFolder="Character Task Definitions/" />
+			<Option virtualFolder="Character Task Engine/Types/" />
 		</Unit>
 		<Unit filename="CharacterTaskRegistry.cpp">
-			<Option virtualFolder="Character Task Definitions/" />
+			<Option virtualFolder="Character Task Engine/" />
 		</Unit>
 		<Unit filename="CharacterTaskRegistry.h">
-			<Option virtualFolder="Character Task Definitions/" />
+			<Option virtualFolder="Character Task Engine/" />
 		</Unit>
 		<Unit filename="CharacterTaskSit.cpp">
-			<Option virtualFolder="Character Task Definitions/" />
+			<Option virtualFolder="Character Task Engine/Types/Atomic/" />
 		</Unit>
 		<Unit filename="CharacterTaskSit.h">
-			<Option virtualFolder="Character Task Definitions/" />
+			<Option virtualFolder="Character Task Engine/Types/Atomic/" />
 		</Unit>
 		<Unit filename="Chunk.cpp" />
 		<Unit filename="Chunk.h" />

@@ -16,6 +16,7 @@
 #include "CharacterBodyComponent.h"
 #include "CharacterPhysicsComponent.h"
 #include "CharacterPerformerComponent.h"
+#include "CharacterPerformerSystem.h"
 #include "InteractionComponent.h"
 #include "PhysicsComponent.h"
 #include "SceneNodeComponent.h"
@@ -54,6 +55,7 @@ private:
 
 	PhysicsSystem* physSys;
 	CharacterPhysicsSystem* charPhysSys;
+	CharacterPerformerSystem* charPerfSys;
 
 	irr::core::position2di centerOfScreen;
 	irr::f32 maxPitch;
