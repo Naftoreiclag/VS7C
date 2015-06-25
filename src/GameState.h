@@ -9,7 +9,7 @@
 
 #include "irrlicht.h"
 
-class GameState : public irr::IReferenceCounted {
+class GameState {
 public:
 	GameState(irr::IrrlichtDevice* irrlicht);
 	virtual ~GameState();

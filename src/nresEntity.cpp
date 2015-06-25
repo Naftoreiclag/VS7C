@@ -10,6 +10,8 @@
 #include <vector>
 #include "nresWorld.h"
 
+#include <iostream>
+
 namespace nres {
 
 	Entity::Entity(World& world)
@@ -18,9 +20,15 @@ namespace nres {
 	}
 
 	Entity::~Entity() {
+
+		std::cout << "deleting components in ent" << std::endl;
 		for(std::map<ComponentID, ComponentData*>::iterator it = componentDataMap.begin(); it != componentDataMap.end(); ++ it) {
+
+			std::cout << it->first.getHumanReadableID() << std::endl;
+
 			delete it->second;
 		}
+		std::cout << "done deleting components" << std::endl;
 	}
 
 	void Entity::addComponent(const ComponentID& compID, ComponentData* data) {

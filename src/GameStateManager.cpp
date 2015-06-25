@@ -39,7 +39,6 @@ GameStateManager::~GameStateManager() {
 void GameStateManager::attachState(GameState* state) {
 	managedStates.push_back(state);
 	state->init();
-	state->grab();
 }
 
 void GameStateManager::detachAll() {
@@ -52,7 +51,7 @@ void GameStateManager::detachAll() {
 		// Properly manage lifecycle
 		GameState* gs = *it;
 		gs->cleanup();
-		gs->drop();
+		delete gs;
 		std::cout << "dropped." << std::endl;
 	}
 
@@ -69,7 +68,7 @@ void GameStateManager::detachState(GameState* state) {
 		GameState* gs = *it;
 		if(gs == state) {
 			gs->cleanup();
-			gs->drop();
+			delete gs;
 		}
 	}
 

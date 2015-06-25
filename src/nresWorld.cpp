@@ -11,6 +11,8 @@
 #include <algorithm>
 #include <iterator>
 
+#include <iostream>
+
 namespace nres {
 
 	World::World()
@@ -19,9 +21,11 @@ namespace nres {
 	}
 
 	World::~World() {
+		std::cout << "deleting all entities" << std::endl;
 		for(std::vector<Entity*>::iterator it = knownEntities.begin(); it != knownEntities.end(); ++ it) {
 			delete *it;
 		}
+		std::cout << "done deleting " << std::endl;
 	}
 
 	void World::process(System& system) {

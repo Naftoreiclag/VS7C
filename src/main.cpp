@@ -54,7 +54,7 @@ int main()
 	CharacterTaskRegistry::addTask(new CharacterTaskSit());
 
 	// Get the preferred driver type
-	video::E_DRIVER_TYPE driverType=driverChoiceConsole();
+	video::E_DRIVER_TYPE driverType = video::EDT_OPENGL; //driverChoiceConsole();
 	if(driverType == video::EDT_COUNT) { return 1; }
 
 	// Create input manager
@@ -83,8 +83,6 @@ int main()
 	// Initial state
 	GameState* initialState = new OverworldGameState(device);
 	gsmgr.attachState(initialState);
-	initialState->drop();
-	initialState = 0;
 
 	// Initialize tpf calculator
 	u32 then = device->getTimer()->getTime();

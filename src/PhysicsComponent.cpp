@@ -7,6 +7,7 @@
 #include "PhysicsComponent.h"
 
 #include "ReiMath.h"
+#include <iostream>
 
 PhysicsComponent::BulletCallback::BulletCallback(const btTransform &initialLoc, PhysicsComponent* const sendTo)
 : sendTo(sendTo),
@@ -55,11 +56,17 @@ velocity(btVector3(0, 0, 0)) {
 }
 
 PhysicsComponent::~PhysicsComponent() {
-	world->removeRigidBody(rigidBody);
+	std::cout << "phys remove rigid body" << std::endl;
+	std::cout << rigidBody << std::endl;
+	//world->removeRigidBody(rigidBody);
 
+	std::cout << "phys delete shape" << std::endl;
 	delete collisionShape; // Deletes the shape. If you want to have a re-usable shape, then use shared_ptr<btCollisionShape>
+	std::cout << "phys motion" << std::endl;
 	delete motionState; // Not deleted by rigid body.
+	std::cout << "phys rigid" << std::endl;
 	delete rigidBody;
+	std::cout << "phys userd" << std::endl;
 	delete userData;
 }
 

@@ -23,8 +23,8 @@ public:
 	RID(std::string humanReadableID);
 	~RID();
 
-	const std::string& getHumanReadableID();
-	const std::string& getHumanDesc();
+	const std::string& getHumanReadableID() const;
+	const std::string& getHumanDesc() const;
 
 	RID& operator=(const RID& arg);
 	bool operator==(const RID& arg);

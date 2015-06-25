@@ -19,10 +19,10 @@ RID::RID(const RID& arg) {
 RID::~RID() {
 }
 
-const std::string& RID::getHumanReadableID() {
+const std::string& RID::getHumanReadableID() const {
 	return RIDDatabase::getMetadata(value).humanReadableID;
 }
-const std::string& RID::getHumanDesc() {
+const std::string& RID::getHumanDesc() const {
 	return RIDDatabase::getMetadata(value).humanDesc;
 }
 
