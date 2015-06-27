@@ -8,7 +8,7 @@
 #define CHARACTERPERFORMERCOMPONENT_H
 
 #include "NREntitySystem.h"
-#include "CharacterTaskCondition.h"
+#include "CharacterObjective.h"
 #include "CharacterTask.h"
 
 /*
@@ -17,7 +17,7 @@ TODO: add support for doing multiple things at once
 */
 class CharacterPerformerComponent : public nres::ComponentData {
 public:
-	CharacterTaskCondition* currentObjective;
+	CharacterObjective currentObjective;
 	CharacterTask* currentAction;
 
 	CharacterPerformerComponent();

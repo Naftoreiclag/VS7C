@@ -29,8 +29,12 @@ using namespace irr;
 
 #include "RID.h"
 
+#include "easylogging++.h"
+INITIALIZE_EASYLOGGINGPP
+
 int main()
 {
+	LOG(INFO) << "Registering RIDs";
 	RIDDatabase::addRID(0, "ERROR", "Returned when accessing an invalid RID.");
 
 	RIDDatabase::addRID(0x44b961e67d501b91, "comp scene");
@@ -56,7 +60,7 @@ int main()
 	CharacterTaskRegistry::addTask(new CharacterTaskStand());
 
 	// Get the preferred driver type
-	video::E_DRIVER_TYPE driverType = video::EDT_OPENGL; //driverChoiceConsole();
+	video::E_DRIVER_TYPE driverType = driverChoiceConsole(); // video::EDT_OPENGL; //
 	if(driverType == video::EDT_COUNT) { return 1; }
 
 	// Create input manager

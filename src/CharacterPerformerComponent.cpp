@@ -7,8 +7,7 @@
 #include "CharacterPerformerComponent.h"
 
 CharacterPerformerComponent::CharacterPerformerComponent()
-: currentObjective(0),
-currentAction(0)
+: currentAction(0)
 {
 	//ctor
 }

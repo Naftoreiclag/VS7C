@@ -15,6 +15,8 @@
 #include "ReiMath.h"
 #include "ReiBullet.h"
 
+#include "easylogging++.h"
+
 using namespace irr;
 
 OverworldGameState::OverworldGameState(irr::IrrlichtDevice *irrlicht)
@@ -175,31 +177,24 @@ OverworldGameState::~OverworldGameState() {
 	chunkNode->drop();
 	chunkNode = 0;
 
-
-	std::cout << "delete dynamics world" << std::endl;
-
 	// delete world before deleting bullet physics
+	delete physSys;
+	delete charPerfSys;
+	delete charPhysSys;
+	LOG(INFO) << "Entity systems deleted.";
+
 	delete entityWorld;
+	LOG(INFO) << "Entity world deleted.";
 
 	delete dynamicsWorld;
-	std::cout << "delete solver" << std::endl;
 	delete solver;
-	std::cout << "delete dispatcher" << std::endl;
 	delete dispatcher;
-	std::cout << "delete coll" << std::endl;
 	delete collisionConfiguration;
-	std::cout << "delete broad" << std::endl;
 	delete broadphase;
-	std::cout << "delete debug drawer" << std::endl;
-	delete bulletDebugDrawer;
+	LOG(INFO) << "Bullet physics simulation deleted.";
 
-	std::cout << "delete physs" << std::endl;
-	delete physSys;
-	std::cout << "delete charperfs" << std::endl;
-	delete charPerfSys;
-	std::cout << "delete charphyss" << std::endl;
-	delete charPhysSys;
-	std::cout << "done" << std::endl;
+	delete bulletDebugDrawer;
+	LOG(INFO) << "Bullet physics debug drawer.";
 }
 
 void OverworldGameState::pause()
@@ -280,7 +275,7 @@ void OverworldGameState::keyPressed(irr::EKEY_CODE key) {
 		CharacterTaskCondition* aaa = new CharacterTaskCondition();
 		aaa->sitting = true;
 		std::cout << "set current objective" << std::endl;
-		charPerf->currentObjective = aaa;
+		charPerf->currentObjective.conditionToFulfill = aaa;
 
 	}
 	if(key == irr::KEY_KEY_B) {
@@ -289,7 +284,7 @@ void OverworldGameState::keyPressed(irr::EKEY_CODE key) {
 		CharacterTaskCondition* aaa = new CharacterTaskCondition();
 		aaa->sitting = false;
 		std::cout << "set current objective" << std::endl;
-		charPerf->currentObjective = aaa;
+		charPerf->currentObjective.conditionToFulfill = aaa;
 
 	}
 	if(key == irr::KEY_KEY_F) {

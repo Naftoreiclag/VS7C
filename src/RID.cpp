@@ -5,6 +5,7 @@
  */
 
 #include "RID.h"
+#include "easylogging++.h"
 
 RID::RID(RIDValue value)
 : value(value) { }
@@ -52,6 +53,8 @@ humanReadableID(humanReadableID),
 humanDesc(humanDesc) { }
 
 void RIDDatabase::addRID(const RIDValue& value, const std::string& humanReadableID, const std::string& humanDesc) {
+	LOG(INFO) << "New RID added with humanID = " << humanReadableID;
+
 	if(value == 0) {
 		errorData = new RIDMetadata(value, humanReadableID, humanDesc);
 		metadataTable.insert(*errorData);

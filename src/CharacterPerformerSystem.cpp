@@ -7,7 +7,7 @@
 #include "CharacterPerformerSystem.h"
 
 #include "CharacterTaskRegistry.h"
-#include <iostream>
+#include "easylogging++.h"
 
 CharacterPerformerSystem::CharacterPerformerSystem() {
 	accessedComponents[0] = RID("comp character performer");
@@ -29,163 +29,152 @@ void CharacterPerformerSystem::process(nres::Entity& entity) {
     CharacterPerformerComponent* perf = (CharacterPerformerComponent*) entity.getComponentData(RID("comp character performer"));
     CharacterBodyComponent* body = (CharacterBodyComponent*) entity.getComponentData(RID("comp character body"));
 
-
 	CharacterState state(body);
-    if(perf->currentAction) {
-        // Perform current action
-		bool success = perf->currentAction->process(state, tpf);
-
-		// Check for completion, delete if completed
-		if(perf->currentAction->isCompleted(state)) {
-			delete perf->currentAction;
+	if(perf->currentAction) {
+		// If this task has something else that needs to be done first, do that
+		// TODO: keep track of redirection count
+		TaskMetadata nextTask = getNextTask(state, perf->currentAction);
+		// This task has something else that needs to be done first
+		if(nextTask.subject) {
 			perf->currentAction = 0;
+			delete perf->currentAction;
+			perf->currentAction = nextTask.subject->clone();
 		}
-    } else if(perf->currentObjective) {
-    	ConditionReport report = analyzeCondition(state, perf->currentObjective);
 
-		// Fulfilled already
-    	if(report.fulfilled) {
-			perf->currentObjective = 0;
-    	}
+		// This task has nothing else that needs to be done first
+		else if(nextTask.except.noSubtaskNeeded) {
+			bool success = perf->currentAction->process(state, tpf);
+			if(success) {
+				if(perf->currentAction->isCompleted(state)) {
+					LOG(INFO) << "Task completed.";
+					if(perf->currentAction == perf->currentObjective.taskToPerform) {
+						perf->currentObjective.taskToPerform = 0;
+					}
+					perf->currentAction = 0;
+					delete perf->currentAction;
+					LOG(INFO) << "Deleted task.";
+				}
+			}
+			else {
+				LOG(INFO) << "Task interrupted.";
+				if(perf->currentAction == perf->currentObjective.taskToPerform) {
+					perf->currentObjective.taskToPerform = 0;
+				}
+				perf->currentAction = 0;
+				delete perf->currentAction;
+				LOG(INFO) << "Deleted task.";
+			}
+		}
 
-    	// Setup action
-    	else {
-			perf->currentAction = report.idealNextStep->clone();
-    	}
-    }
+		// Some other problem happened
+		else {
+			LOG(INFO) << "Exception while locating next task.";
+			if(nextTask.except.noFulfillmentExists) {
+				LOG(INFO) << "No task exists that can fulfill objective condition.";
+			}
+			perf->currentObjective.taskToPerform = 0;
+			delete perf->currentObjective.taskToPerform;
+			LOG(INFO) << "Deleted objective task.";
+		}
+	}
+	else if(perf->currentObjective.conditionToFulfill) {
+        if(perf->currentObjective.conditionToFulfill->isFulfilled(state)) {
+			LOG(INFO) << "Objective condtion fulfilled.";
+			perf->currentObjective.conditionToFulfill = 0;
+			delete perf->currentObjective.conditionToFulfill;
+				LOG(INFO) << "Deleted objective condition.";
+        }
+        else {
+			LOG(INFO) << "Performer has condition to fulfill.";
+        	TaskMetadata nextTask = getNextTask(state, *(perf->currentObjective.conditionToFulfill));
+        	if(nextTask.subject) {
+				LOG(INFO) << "Next task located for objective. Setting as next action...";
+				perf->currentAction = nextTask.subject->clone();
+        	}
+        	else {
+				LOG(INFO) << "Exception while locating next task.";
+				if(nextTask.except.noFulfillmentExists) {
+					LOG(INFO) << "No task exists that can fulfill objective condition.";
+				}
+				perf->currentObjective.conditionToFulfill = 0;
+				delete perf->currentObjective.conditionToFulfill;
+				LOG(INFO) << "Deleted objective condition.";
+        	}
+        }
+	}
+	else if(perf->currentObjective.taskToPerform) {
+		TaskMetadata nextTask = getNextTask(state, perf->currentObjective.taskToPerform);
+		if(nextTask.subject) {
+			LOG(INFO) << "Next task located for objective. Setting as next action...";
+			perf->currentAction = nextTask.subject->clone();
+		}
+		else if(nextTask.except.noSubtaskNeeded) {
+			LOG(INFO) << "All conditions met for objective task. Setting as next action...";
+			perf->currentAction = perf->currentObjective.taskToPerform;
+		}
+		else {
+			LOG(INFO) << "Exception while locating next task.";
+			if(nextTask.except.noFulfillmentExists) {
+				LOG(INFO) << "No task exists that can fulfill objective condition.";
+			}
+			perf->currentObjective.taskToPerform = 0;
+			delete perf->currentObjective.taskToPerform;
+			LOG(INFO) << "Deleted objective task.";
+		}
+	}
 }
 
+CharacterPerformerSystem::TaskMetadata CharacterPerformerSystem::getNextTask(CharacterState state, CharacterTask* taskToPerform) {
+	std::vector<CharacterTaskCondition> prerequisites = taskToPerform->getPrerequisites();
 
-// Analyze a condition, and determine which immediate task should be performed, compares using analyzeTask()
-CharacterPerformerSystem::ConditionReport CharacterPerformerSystem::analyzeCondition(CharacterState state, CharacterTaskCondition* condition) {
+	if(prerequisites.empty()) {
+		TaskMetadata retVal;
+		retVal.subject = 0;
+		retVal.except.noSubtaskNeeded = true;
 
-	// The report about this condition, including which of task could best fulfill it
-	ConditionReport retVal;
-
-	std::cout << "checking fulfillment" << std::endl;
-
-	// If condition does not exist for some reason
-	if(!condition) {
-		retVal.fulfilled = true;
 		return retVal;
 	}
 
-	// If the condition is already fulfilled
-	if(condition->isFulfilled(state)) {
-		retVal.fulfilled = true;
-		return retVal;
-	}
+	for(std::vector<CharacterTaskCondition>::iterator it = prerequisites.begin(); it != prerequisites.end(); ++ it) {
+		CharacterTaskCondition& cond = *it;
 
-	// Get all possible tasks that can fufill this condition
-    std::vector<CharacterTask*> taskCandidates = CharacterTaskRegistry::getTasks(*condition);
-
-    // If there are no candidates, throw an exception
-    if(taskCandidates.empty()) {
-		retVal.idealNextStep = 0;
-		retVal.error.message = "Does not know how to fulfill %condition%";
-		return retVal;
-    }
-
-	// Keep track of reports for each candidate so that the optimal task can be chosen
-    std::vector<TaskReport> taskReports;
-	for(std::vector<CharacterTask*>::iterator it = taskCandidates.begin(); it != taskCandidates.end(); ++ it) {
-		CharacterTask* candidate = *it;
-
-		// Generate a report for each potential task, most importantly evaluating the difficulty of each
-		TaskReport report;
-		analyzeTask(state, candidate, report, 5);
-		report.subject = candidate;
-
-		// Keep track of reports
-		taskReports.push_back(report);
-	}
-
-	// Find the ideal task
-	TaskReport* idealTask;
-	idealTask = findIdealTask(state, taskReports, true, true); // Including only possible ones and sure ones
-
-	// No certain task exists
-	if(!idealTask) {
-		// Try find a task that is not certain but might still be possible
-		idealTask = findIdealTask(state, taskReports, false, true);
-
-		// No task exists
-		if(!idealTask) {
-			// Find the best task to do, if it were possible
-			idealTask = findIdealTask(state, taskReports, false, false);
-
-			// (idealTask must exist here, since we know the number of candidates > 0 from the previous check)
-			retVal.idealNextStep = 0;
-			retVal.error.message = "Cannot do %task% because %reasons%"; // use some info from idealTask up there
-			return retVal;
+		if(cond.isFulfilled(state)) {
+			continue;
 		}
+
+		return getNextTask(state, cond);
 	}
 
-	// Everything is okay and the ideal next step has been determined
-	retVal.idealNextStep = idealTask->subject;
+	TaskMetadata retVal;
+	retVal.subject = 0;
+	retVal.except.noSubtaskNeeded = true;
+
 	return retVal;
 }
 
-CharacterPerformerSystem::TaskReport* CharacterPerformerSystem::findIdealTask(CharacterState state, std::vector<TaskReport>& reports, bool onlySure, bool onlyPossible) {
-	TaskReport* idealTask = 0;
-	for(std::vector<TaskReport>::iterator it = reports.begin(); it != reports.end(); ++ it) {
-		TaskReport& report = *it;
+CharacterPerformerSystem::TaskMetadata CharacterPerformerSystem::getNextTask(CharacterState state, CharacterTaskCondition conditionToFulfill) {
+	std::vector<CharacterTask*> candidates = CharacterTaskRegistry::getTasks(conditionToFulfill);
 
-		// If there are errors in this task and we only accept possible ones
-		if(onlyPossible && !report.conditionErrors.empty()) { continue; }
+	if(candidates.empty()) {
+		TaskMetadata retVal;
+		retVal.subject = 0;
+		retVal.except.noFulfillmentExists = true;
 
-		// If the certainty of this report is not acceptable
-		if(onlySure && !report.unsure) { continue; }
-
-		// If this is the first task we examine, then it is the best one so far
-		if(!idealTask) {
-			idealTask = &report;
-		}
-
-		// If this new task has a lower difficulty
-		if(idealTask->difficulty > report.difficulty) {
-			idealTask = &report;
-		}
+		return retVal;
 	}
 
-	return idealTask;
+	for(std::vector<CharacterTask*>::iterator it = candidates.begin(); it != candidates.end(); ++ it) {
+		CharacterTask* task = *it;
+
+		TaskMetadata retVal;
+		retVal.subject = task;
+		return retVal;
+	}
+
+	TaskMetadata retVal;
+	retVal.subject = 0;
+	retVal.except.noFulfillmentExists = true;
+	return retVal;
 }
 
-// Find the total difficulty of this task and all sub-tasks, assuming all sub-tasks determined by analyzeCondition()
-void CharacterPerformerSystem::analyzeTask(CharacterState state, CharacterTask* task, TaskReport& report, int layer) {
 
-	// If the remaining layers of depth reaches zero, then skip analysis and flag report as uncertain (since we never completed the analysis)
-	if(layer == 0) {
-		report.unsure = true;
-		return;
-	}
-
-	// Add this task's difficulty
-	report.difficulty += task->getDifficulty();
-
-	// Get all the requirements for this condition
-	std::vector<CharacterTaskCondition> conditions = task->getPrerequisites();
-
-	// Iterate through all requirements
-	for(std::vector<CharacterTaskCondition>::iterator it = conditions.begin(); it != conditions.end(); ++ it) {
-		CharacterTaskCondition& condition = *it;
-
-		// Determine what we would hypothetically do in this situation to meet this condition
-		ConditionReport condRep = analyzeCondition(state, &condition);
-
-		// If the condition is already fulfilled, then obviously there is no task to be done
-		if(condRep.fulfilled) {
-			continue;
-		}
-
-		// If the condition is unfulfillable
-		if(!condRep.idealNextStep) {
-			report.unsure = true;
-			report.conditionErrors.push_back(condRep.error);
-			continue;
-		}
-
-		// Look ahead further
-		analyzeTask(state, condRep.idealNextStep, report, layer - 1);
-	}
-}

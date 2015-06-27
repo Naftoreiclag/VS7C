@@ -6,6 +6,8 @@
 
 #include "InputManager.h"
 
+#include "easylogging++.h"
+
 InputManager::InputManager() {
 	for(irr::u32 i = 0; i < irr::KEY_KEY_CODES_COUNT; ++ i) {
 		isKeyDownMap[i] = false;
@@ -96,6 +98,29 @@ void InputManager::notifyMe(InputReceiver* receiver) const {
 }
 
 bool InputManager::OnEvent(const irr::SEvent& event) {
+
+	// Logging
+	if(event.EventType == irr::EET_LOG_TEXT_EVENT) {
+		const irr::c8* text = event.LogEvent.Text;
+		switch(event.LogEvent.Level) {
+		case irr::ELOG_LEVEL::ELL_DEBUG:
+			LOG(DEBUG) << text;
+		break;
+		case irr::ELOG_LEVEL::ELL_INFORMATION:
+			LOG(INFO) << text;
+		break;
+		case irr::ELOG_LEVEL::ELL_WARNING:
+			LOG(WARNING) << text;
+		break;
+		case irr::ELOG_LEVEL::ELL_ERROR:
+			LOG(ERROR) << text;
+		break;
+		default:
+		break;
+		}
+		return true;
+	}
+
 	// Keys
 	if(event.EventType == irr::EET_KEY_INPUT_EVENT) {
 		isKeyDownMap[event.KeyInput.Key] = event.KeyInput.PressedDown;
