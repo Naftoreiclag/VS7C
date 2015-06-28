@@ -7,7 +7,7 @@
 #include "CTaskSit.h"
 
 #include "CTConditionSitting.h"
-#include <iostream>
+#include "easylogging++.h"
 
 CharacterTaskSit::CharacterTaskSit()
 {
@@ -40,7 +40,7 @@ bool CharacterTaskSit::fulfills(const CharacterTaskCondition* condition) const {
 }
 
 bool CharacterTaskSit::process(CharacterState& state, irr::f32 tpf) {
-	std::cout << "you sit down" << std::endl;
+	LOG(INFO) << "you sit down";
     state.body->sitting = true;
     return true;
 }

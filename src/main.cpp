@@ -25,6 +25,7 @@ using namespace irr;
 #include "CTaskSit.h"
 #include "CTaskStand.h"
 #include "CharacterTaskRegistry.h"
+#include "CTaskPathfind.h"
 
 #include "RID.h"
 
@@ -57,6 +58,7 @@ int main()
 
 	CharacterTaskRegistry::addTask(new CharacterTaskSit());
 	CharacterTaskRegistry::addTask(new CharacterTaskStand());
+	CharacterTaskRegistry::addTask(new CTaskPathfind());
 
 	// Get the preferred driver type
 	video::E_DRIVER_TYPE driverType = driverChoiceConsole(); // video::EDT_OPENGL; //

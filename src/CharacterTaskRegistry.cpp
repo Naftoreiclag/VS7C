@@ -5,6 +5,7 @@
  */
 
 #include "CharacterTaskRegistry.h"
+#include "easylogging++.h"
 
 namespace CharacterTaskRegistry {
 
@@ -23,6 +24,8 @@ namespace CharacterTaskRegistry {
 				retVal.push_back(task);
 			}
         }
+
+        LOG(INFO) << retVal.size();
 
         return retVal;
 	}

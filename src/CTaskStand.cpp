@@ -7,7 +7,7 @@
 #include "CTaskStand.h"
 
 #include "CTConditionSitting.h"
-#include <iostream>
+#include "easylogging++.h"
 
 CharacterTaskStand::CharacterTaskStand() {
 }
@@ -36,7 +36,7 @@ bool CharacterTaskStand::fulfills(const CharacterTaskCondition* condition) const
 }
 
 bool CharacterTaskStand::process(CharacterState& state, irr::f32 tpf) {
-	std::cout << "you stand up" << std::endl;
+	LOG(INFO) << "you stand up";
     state.body->sitting = false;
     return true;
 }

@@ -30,7 +30,7 @@ bool CTConditionLocation::isFulfilled(const CharacterState& state) const {
 		return state.phys->location.distance2(loc) <= dist * dist;
 	}
 
-	return true;
+	return false;
 }
 
 bool CTConditionLocation::isPossible(const CharacterState& state) {

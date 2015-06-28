@@ -16,6 +16,7 @@
 #include "ReiBullet.h"
 
 #include "CTConditionSitting.h"
+#include "CTConditionLocation.h"
 
 #include "easylogging++.h"
 
@@ -283,6 +284,14 @@ void OverworldGameState::keyPressed(irr::EKEY_CODE key) {
 		CharacterPerformerComponent* charPerf = (CharacterPerformerComponent*) playerEnt->getComponentData(RID("comp character performer"));
 
 		CharacterTaskCondition* aaa = new CTConditionSitting(false);
+		std::cout << "set current objective" << std::endl;
+		charPerf->currentObjective.conditionToFulfill = aaa;
+
+	}
+	if(key == irr::KEY_KEY_R) {
+		CharacterPerformerComponent* charPerf = (CharacterPerformerComponent*) playerEnt->getComponentData(RID("comp character performer"));
+
+		CharacterTaskCondition* aaa = new CTConditionLocation(2, btVector3(0, 0, 0));
 		std::cout << "set current objective" << std::endl;
 		charPerf->currentObjective.conditionToFulfill = aaa;
 
