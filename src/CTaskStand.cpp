@@ -27,7 +27,7 @@ CharacterTaskStand* CharacterTaskStand::newWhichFulfills(const CharacterTaskCond
 }
 
 bool CharacterTaskStand::fulfills(const CharacterTaskCondition* condition) const {
-	const CTConditionSitting* sitting = static_cast<const CTConditionSitting*>(condition);
+	const CTConditionSitting* sitting = dynamic_cast<const CTConditionSitting*>(condition);
 	if(sitting) {
 		return sitting->sitting == false;
 	}

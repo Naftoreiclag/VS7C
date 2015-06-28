@@ -22,6 +22,9 @@ public:
 	virtual bool process(CharacterState& state, irr::f32 tpf);
 	virtual bool isCompleted(const CharacterState& state) const;
 
+	virtual std::string getDebug() {
+		return "sit";
+	}
 	// virtual Difficulty getDifficulty() const;
 };
 

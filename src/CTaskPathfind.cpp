@@ -25,7 +25,7 @@ std::vector<CharacterTaskCondition*> CTaskPathfind::getPrerequisites() const {
 }
 
 bool CTaskPathfind::fulfills(const CharacterTaskCondition* condition) const {
-	const CTConditionLocation* location = static_cast<const CTConditionLocation*>(condition);
+	const CTConditionLocation* location = dynamic_cast<const CTConditionLocation*>(condition);
 	return location != 0;
 }
 
