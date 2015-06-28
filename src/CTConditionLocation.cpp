@@ -6,17 +6,38 @@
 
 #include "CTConditionLocation.h"
 
-CTConditionLocation::CTConditionLocation()
-{
-	//ctor
+CTConditionLocation::CTConditionLocation(const btScalar dist, nres::Entity& other)
+: dist(dist),
+entity(&other),
+type(NEXT_TO_ENTITY) {
+    otherPhys = (PhysicsComponent*) entity->getComponentData(RID("comp physics"));
+}
+CTConditionLocation::CTConditionLocation(const btScalar dist, const btVector3 loc)
+: dist(dist),
+loc(loc),
+type(NEXT_TO_POINT) {
 }
 
-CTConditionLocation::~CTConditionLocation()
-{
-	//dtor
+CTConditionLocation::~CTConditionLocation() {
+
 }
 
 bool CTConditionLocation::isFulfilled(CharacterState state) const {
+	if(type == NEXT_TO_ENTITY) {
+		return state.phys->location.distance2(otherPhys->location) <= dist * dist;
+	}
+	else if(type == NEXT_TO_POINT) {
+		return state.phys->location.distance2(loc) <= dist * dist;
+	}
+
 	return true;
 }
 
+bool CTConditionLocation::isPossible(CharacterState state) {
+	if(type == NEXT_TO_ENTITY) {
+		return otherPhys != 0;
+	}
+	else {
+		return true;
+	}
+}

@@ -8,3 +8,6 @@
 
 CharacterTaskCondition::CharacterTaskCondition() {}
 CharacterTaskCondition::~CharacterTaskCondition() {}
+bool CharacterTaskCondition::isPossible(CharacterState state) {
+	return true;
+}

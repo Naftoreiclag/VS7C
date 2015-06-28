@@ -12,12 +12,14 @@
 CharacterPerformerSystem::CharacterPerformerSystem() {
 	accessedComponents[0] = RID("comp character performer");
 	accessedComponents[1] = RID("comp character body");
+	accessedComponents[2] = RID("comp character physics");
+	accessedComponents[3] = RID("comp physics");
 }
 CharacterPerformerSystem::~CharacterPerformerSystem() {
 }
 
 const nres::ComponentID* CharacterPerformerSystem::getComponentIDs(std::size_t& numComponentIDs) const {
-	numComponentIDs = 2;
+	numComponentIDs = 4;
     return accessedComponents;
 }
 
@@ -28,8 +30,10 @@ void CharacterPerformerSystem::setTpf(irr::f32 value) {
 void CharacterPerformerSystem::process(nres::Entity& entity) {
     CharacterPerformerComponent* perf = (CharacterPerformerComponent*) entity.getComponentData(RID("comp character performer"));
     CharacterBodyComponent* body = (CharacterBodyComponent*) entity.getComponentData(RID("comp character body"));
+    CharacterPhysicsComponent* charPhys = (CharacterPhysicsComponent*) entity.getComponentData(RID("comp character physics"));
+    PhysicsComponent* phys = (PhysicsComponent*) entity.getComponentData(RID("comp physics"));
 
-	CharacterState state(body);
+	CharacterState state(body, charPhys, phys);
 	if(perf->currentAction) {
 		// If this task has something else that needs to be done first, do that
 		// TODO: keep track of redirection count

@@ -36,7 +36,7 @@ private:
 	//
 	irr::f32 tpf;
 private:
-	nres::ComponentID accessedComponents[2];
+	nres::ComponentID accessedComponents[4];
 public:
 	CharacterPerformerSystem();
 	~CharacterPerformerSystem();
