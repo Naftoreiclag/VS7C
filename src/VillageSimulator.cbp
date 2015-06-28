@@ -100,6 +100,12 @@
 		<Unit filename="CTaskConversation.h">
 			<Option virtualFolder="Character Task Engine/Tasks/Concrete/" />
 		</Unit>
+		<Unit filename="CTaskPathfind.cpp">
+			<Option virtualFolder="Character Task Engine/Tasks/Concrete/" />
+		</Unit>
+		<Unit filename="CTaskPathfind.h">
+			<Option virtualFolder="Character Task Engine/Tasks/Concrete/" />
+		</Unit>
 		<Unit filename="CTaskSit.cpp">
 			<Option virtualFolder="Character Task Engine/Tasks/Concrete/" />
 		</Unit>

@@ -87,7 +87,7 @@ void CharacterPerformerSystem::process(nres::Entity& entity) {
 			LOG(INFO) << "Objective condtion fulfilled.";
 			perf->currentObjective.conditionToFulfill = 0;
 			delete perf->currentObjective.conditionToFulfill;
-				LOG(INFO) << "Deleted objective condition.";
+			LOG(INFO) << "Deleted objective condition.";
         }
         else {
 			LOG(INFO) << "Performer has condition to fulfill.";
