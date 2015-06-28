@@ -31,8 +31,8 @@ class CharacterTaskCondition {
 public:
 	CharacterTaskCondition();
 	virtual ~CharacterTaskCondition();
-	virtual bool isFulfilled(CharacterState state) const = 0;
-	virtual bool isPossible(CharacterState state);
+	virtual bool isFulfilled(const CharacterState& state) const = 0;
+	virtual bool isPossible(const CharacterState& state);
 };
 
 #endif // CHARACTERTASKCONDITION_H

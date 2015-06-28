@@ -14,7 +14,6 @@ public:
 	CharacterTaskStand();
 	virtual ~CharacterTaskStand();
 
-
 	virtual std::vector<CharacterTaskCondition*> getPrerequisites()const ;
 	virtual bool fulfills(const CharacterTaskCondition* condition) const;
 	virtual CharacterTaskStand* newWhichFulfills(const CharacterTaskCondition* condition) const;

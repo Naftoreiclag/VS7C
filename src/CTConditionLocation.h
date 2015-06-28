@@ -31,8 +31,10 @@ public:
 	CTConditionLocation(const btScalar dist, const btVector3 loc);
 
 	virtual ~CTConditionLocation();
-	virtual bool isFulfilled(CharacterState state) const;
-	virtual bool isPossible(CharacterState state);
+	virtual bool isFulfilled(const CharacterState& state) const;
+	virtual bool isPossible(const CharacterState& state);
+
+	const btVector3& getClosestPoint(const btVector3& other) const;
 
 	const Type type;
 

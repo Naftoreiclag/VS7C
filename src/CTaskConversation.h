@@ -15,7 +15,6 @@ public:
 	CTaskConversation(nres::Entity& talkTo);
 	virtual ~CTaskConversation();
 
-
 	virtual std::vector<CharacterTaskCondition*> getPrerequisites()const;
 	virtual bool fulfills(const CharacterTaskCondition* condition) const;
 	virtual CTaskConversation* newWhichFulfills(const CharacterTaskCondition* condition) const;

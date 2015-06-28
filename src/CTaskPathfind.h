@@ -17,9 +17,7 @@ public:
 	CTaskPathfind(const CTConditionLocation* locationCondition = 0);
 	virtual ~CTaskPathfind();
 
-
 	const CTConditionLocation* locationCondition;
-
 
 	virtual std::vector<CharacterTaskCondition*> getPrerequisites()const;
 	virtual bool fulfills(const CharacterTaskCondition* condition) const;

@@ -22,7 +22,7 @@ CTConditionLocation::~CTConditionLocation() {
 
 }
 
-bool CTConditionLocation::isFulfilled(CharacterState state) const {
+bool CTConditionLocation::isFulfilled(const CharacterState& state) const {
 	if(type == NEXT_TO_ENTITY) {
 		return state.phys->location.distance2(otherPhys->location) <= dist * dist;
 	}
@@ -33,11 +33,24 @@ bool CTConditionLocation::isFulfilled(CharacterState state) const {
 	return true;
 }
 
-bool CTConditionLocation::isPossible(CharacterState state) {
+bool CTConditionLocation::isPossible(const CharacterState& state) {
 	if(type == NEXT_TO_ENTITY) {
 		return otherPhys != 0;
 	}
 	else {
 		return true;
+	}
+}
+
+const btVector3& CTConditionLocation::getClosestPoint(const btVector3& other) const {
+	switch(type) {
+	case NEXT_TO_ENTITY:
+		return otherPhys->location;
+	break;
+
+	case NEXT_TO_POINT:
+		return loc;
+	break;
+
 	}
 }

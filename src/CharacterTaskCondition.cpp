@@ -8,6 +8,6 @@
 
 CharacterTaskCondition::CharacterTaskCondition() {}
 CharacterTaskCondition::~CharacterTaskCondition() {}
-bool CharacterTaskCondition::isPossible(CharacterState state) {
+bool CharacterTaskCondition::isPossible(const CharacterState& state) {
 	return true;
 }

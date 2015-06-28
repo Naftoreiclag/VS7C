@@ -8,7 +8,6 @@
 
 CTaskPathfind::CTaskPathfind(const CTConditionLocation* locationCondition)
 : locationCondition(locationCondition) {
-//	prerequisites.push_back(new ...);
 }
 
 CTaskPathfind::~CTaskPathfind() {
@@ -31,7 +30,18 @@ bool CTaskPathfind::fulfills(const CharacterTaskCondition* condition) const {
 }
 
 bool CTaskPathfind::process(CharacterState& state, irr::f32 tpf) {
+	CharacterPhysicsComponent* charPhys = state.charPhys;
+	PhysicsComponent* phys = state.phys;
+
+	btVector3 disp = locationCondition->getClosestPoint(phys->location) - phys->location;
+	disp.normalize();
+	disp *= 5;
+
+	charPhys->targetVelocityRelativeToGround = disp;
+
+	return true;
 }
 
 bool CTaskPathfind::isCompleted(const CharacterState& state) const {
+	return locationCondition->isFulfilled(state);
 }

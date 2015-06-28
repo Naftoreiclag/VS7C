@@ -16,7 +16,7 @@ public:
 
 	const bool sitting;
 
-	virtual bool isFulfilled(CharacterState state) const;
+	virtual bool isFulfilled(const CharacterState& state) const;
 };
 
 #endif // CTCONDITIONSITTING_H

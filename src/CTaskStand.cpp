@@ -9,14 +9,10 @@
 #include "CTConditionSitting.h"
 #include <iostream>
 
-CharacterTaskStand::CharacterTaskStand()
-{
-	//ctor
+CharacterTaskStand::CharacterTaskStand() {
 }
 
-CharacterTaskStand::~CharacterTaskStand()
-{
-	//dtor
+CharacterTaskStand::~CharacterTaskStand() {
 }
 
 std::vector<CharacterTaskCondition*> CharacterTaskStand::getPrerequisites() const {

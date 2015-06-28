@@ -13,6 +13,6 @@ CTConditionSitting::CTConditionSitting(bool sitting)
 CTConditionSitting::~CTConditionSitting() {
 }
 
-bool CTConditionSitting::isFulfilled(CharacterState state) const {
+bool CTConditionSitting::isFulfilled(const CharacterState& state) const {
 	return state.body->sitting == sitting;
 }
