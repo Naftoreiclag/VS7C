@@ -5,10 +5,13 @@
  */
 
 #include "CTaskPathfind.h"
+#include "CTConditionSitting.h"
 #include "easylogging++.h"
 
 CTaskPathfind::CTaskPathfind(const CTConditionLocation* locationCondition)
 : locationCondition(locationCondition) {
+	CTConditionSitting* sitt = new CTConditionSitting(false);
+	prerequisites.push_back(sitt);
 }
 
 CTaskPathfind::~CTaskPathfind() {
@@ -38,8 +41,7 @@ bool CTaskPathfind::process(CharacterState& state, irr::f32 tpf) {
 	disp.normalize();
 	disp *= 5;
 
-	phys->rigidBody->applyForce(btVector3(0, 40, 0), btVector3(0, 0, 0));
-	charPhys->targetVelocityRelativeToGround = btVector3(5, 0, 5);
+	charPhys->targetVelocityRelativeToGround = disp;
 	charPhys->isWalking = true;
 
 	return true;

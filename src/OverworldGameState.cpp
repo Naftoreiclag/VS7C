@@ -244,24 +244,27 @@ void OverworldGameState::update(irr::f32 tpf) {
 
 	btVector3 charRight(std::cos(-newYaw * reim::degToRad), 0, std::sin(-newYaw * reim::degToRad));
 	btVector3 charForward(-charRight.z(), 0, charRight.x());
-	charPhys->targetVelocityRelativeToGround.setZero();
+
+	btVector3 movem = btVector3(0, 0, 0);
+
 	if(inputMgr->isKeyDown(irr::KEY_KEY_W)) {
-		charPhys->targetVelocityRelativeToGround += charForward;
+		movem += charForward;
 	}
 	if(inputMgr->isKeyDown(irr::KEY_KEY_S)) {
-		charPhys->targetVelocityRelativeToGround -= charForward;
+		movem -= charForward;
 	}
 	if(inputMgr->isKeyDown(irr::KEY_KEY_A)) {
-		charPhys->targetVelocityRelativeToGround -= charRight;
+		movem -= charRight;
 	}
 	if(inputMgr->isKeyDown(irr::KEY_KEY_D)) {
-		charPhys->targetVelocityRelativeToGround += charRight;
+		movem += charRight;
 	}
-	if(!charPhys->targetVelocityRelativeToGround.isZero()) {
-		charPhys->targetVelocityRelativeToGround.normalize();
+	if(!movem.isZero()) {
+		movem.normalize();
+		movem *= 5;
+		charPhys->targetVelocityRelativeToGround = movem;
 		charPhys->isWalking = true;
 	}
-	charPhys->targetVelocityRelativeToGround *= 5;
 
 	device->getCursorControl()->setPosition(centerOfScreen);
 }
@@ -288,14 +291,6 @@ void OverworldGameState::keyPressed(irr::EKEY_CODE key) {
 		charPerf->currentObjective.conditionToFulfill = aaa;
 
 	}
-	if(key == irr::KEY_KEY_R) {
-		CharacterPerformerComponent* charPerf = (CharacterPerformerComponent*) playerEnt->getComponentData(RID("comp character performer"));
-
-		CharacterTaskCondition* aaa = new CTConditionLocation(2, btVector3(0, 0, 0));
-		std::cout << "set current objective" << std::endl;
-		charPerf->currentObjective.conditionToFulfill = aaa;
-
-	}
 	if(key == irr::KEY_KEY_F) {
 		core::line3df picker = smgr->getSceneCollisionManager()->getRayFromScreenCoordinates(inputMgr->getMouseLoc(), cam);
 		// (length of picker ray is between 2999 and 3001)
@@ -305,11 +300,12 @@ void OverworldGameState::keyPressed(irr::EKEY_CODE key) {
 		nres::Entity* picked = reib::entityRaycast(dynamicsWorld, startPt, endPt);
 
 		if(picked) {
+			LOG(INFO) << "picked";
+			CharacterPerformerComponent* charPerf = (CharacterPerformerComponent*) playerEnt->getComponentData(RID("comp character performer"));
 
-		nres::ComponentData* data = picked->getComponentData(RID("comp interaction"));
-		if(data) {
-			InteractionComponent* interData = (InteractionComponent*) data;
-		}
+			CharacterTaskCondition* aaa = new CTConditionLocation(5, *picked);
+			std::cout << "set current objective" << std::endl;
+			charPerf->currentObjective.conditionToFulfill = aaa;
 
 		}
 

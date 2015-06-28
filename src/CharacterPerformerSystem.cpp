@@ -49,7 +49,7 @@ void CharacterPerformerSystem::process(nres::Entity& entity) {
 
 		// This task has nothing else that needs to be done first
 		else if(nextTask.except.noSubtaskNeeded) {
-			LOG_EVERY_N(100, INFO) << "No subtask needed. Performing...";
+			LOG_EVERY_N(1000, INFO) << "No subtask needed. Performing...";
 			bool success = perf->currentAction->process(state, tpf);
 			if(success) {
 				if(perf->currentAction->isCompleted(state)) {
