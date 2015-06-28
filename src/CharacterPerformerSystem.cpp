@@ -43,7 +43,7 @@ void CharacterPerformerSystem::process(nres::Entity& entity) {
 			// Replace the current action with the next one
 			perf->currentAction = 0;
 			delete perf->currentAction;
-			perf->currentAction = nextTask.subject->clone();
+			perf->currentAction = nextTask.subject->newWhichFulfills(nextTask.fulfills);
 		}
 
 		// This task has nothing else that needs to be done first
@@ -82,6 +82,8 @@ void CharacterPerformerSystem::process(nres::Entity& entity) {
 			LOG(INFO) << "Deleted objective task.";
 		}
 	}
+
+	// Objective is a condition
 	else if(perf->currentObjective.conditionToFulfill) {
         if(perf->currentObjective.conditionToFulfill->isFulfilled(state)) {
 			LOG(INFO) << "Objective condtion fulfilled.";
@@ -94,7 +96,7 @@ void CharacterPerformerSystem::process(nres::Entity& entity) {
         	TaskMetadata nextTask = getNextTask(state, perf->currentObjective.conditionToFulfill);
         	if(nextTask.subject) {
 				LOG(INFO) << "Next task located for objective. Setting as next action...";
-				perf->currentAction = nextTask.subject->clone();
+				perf->currentAction = nextTask.subject->newWhichFulfills(nextTask.fulfills);
         	}
         	else {
 				LOG(INFO) << "Exception while locating next task.";
@@ -107,11 +109,13 @@ void CharacterPerformerSystem::process(nres::Entity& entity) {
         	}
         }
 	}
+
+	// Objective is a task
 	else if(perf->currentObjective.taskToPerform) {
 		TaskMetadata nextTask = getNextTask(state, perf->currentObjective.taskToPerform);
 		if(nextTask.subject) {
 			LOG(INFO) << "Next task located for objective. Setting as next action...";
-			perf->currentAction = nextTask.subject->clone();
+			perf->currentAction = nextTask.subject->newWhichFulfills(nextTask.fulfills);
 		}
 		else if(nextTask.except.noSubtaskNeeded) {
 			LOG(INFO) << "All conditions met for objective task. Setting as next action...";
@@ -132,14 +136,6 @@ void CharacterPerformerSystem::process(nres::Entity& entity) {
 CharacterPerformerSystem::TaskMetadata CharacterPerformerSystem::getNextTask(CharacterState state, CharacterTask* taskToPerform) {
 	std::vector<CharacterTaskCondition*> prerequisites = taskToPerform->getPrerequisites();
 
-	if(prerequisites.empty()) {
-		TaskMetadata retVal;
-		retVal.subject = 0;
-		retVal.except.noSubtaskNeeded = true;
-
-		return retVal;
-	}
-
 	for(std::vector<CharacterTaskCondition*>::iterator it = prerequisites.begin(); it != prerequisites.end(); ++ it) {
 		CharacterTaskCondition* cond = *it;
 
@@ -152,6 +148,7 @@ CharacterPerformerSystem::TaskMetadata CharacterPerformerSystem::getNextTask(Cha
 
 	TaskMetadata retVal;
 	retVal.subject = 0;
+	retVal.fulfills = 0;
 	retVal.except.noSubtaskNeeded = true;
 
 	return retVal;
@@ -163,6 +160,7 @@ CharacterPerformerSystem::TaskMetadata CharacterPerformerSystem::getNextTask(Cha
 	if(candidates.empty()) {
 		TaskMetadata retVal;
 		retVal.subject = 0;
+		retVal.fulfills = conditionToFulfill;
 		retVal.except.noFulfillmentExists = true;
 
 		return retVal;
@@ -173,11 +171,13 @@ CharacterPerformerSystem::TaskMetadata CharacterPerformerSystem::getNextTask(Cha
 
 		TaskMetadata retVal;
 		retVal.subject = task;
+		retVal.fulfills = conditionToFulfill;
 		return retVal;
 	}
 
 	TaskMetadata retVal;
 	retVal.subject = 0;
+	retVal.fulfills = conditionToFulfill;
 	retVal.except.noFulfillmentExists = true;
 	return retVal;
 }

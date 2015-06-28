@@ -14,28 +14,14 @@ CTaskX::~CTaskX() {
 	for(std::vector<CharacterTaskCondition*>::iterator it = prerequisites.begin(); it != prerequisites.end(); ++ it) {
 		delete *it;
 	}
-	for(std::vector<CharacterTaskCondition*>::iterator it = effects.begin(); it != effects.end(); ++ it) {
-		delete *it;
-	}
 }
 
-CTaskX* CTaskX::clone() const {
+CTaskX* CTaskX::newWhichFulfills(const CharacterTaskCondition* condition) const {
 	return new CTaskX();
 }
 
-
 std::vector<CharacterTaskCondition*> CTaskX::getPrerequisites() const {
-	std::vector<CharacterTaskCondition*> retVal;
-	CharacterTaskCondition* condition = new CTConditionSitting(true);
-	retVal.push_back(condition);
-	return retVal;
-}
-
-std::vector<CharacterTaskCondition*> CTaskX::getEffects() const {
-	std::vector<CharacterTaskCondition*> retVal;
-	CharacterTaskCondition* condition = new CTConditionSitting(false);
-	retVal.push_back(condition);
-	return retVal;
+	return prerequisites;
 }
 
 bool CTaskX::fulfills(const CharacterTaskCondition* condition) const {

@@ -15,11 +15,10 @@ public:
 	CTaskConversation(nres::Entity& talkTo);
 	virtual ~CTaskConversation();
 
-	virtual CTaskConversation* clone() const;
 
-	virtual std::vector<CharacterTaskCondition*> getPrerequisites()const ;
-	virtual std::vector<CharacterTaskCondition*> getEffects() const;
+	virtual std::vector<CharacterTaskCondition*> getPrerequisites()const;
 	virtual bool fulfills(const CharacterTaskCondition* condition) const;
+	virtual CTaskConversation* newWhichFulfills(const CharacterTaskCondition* condition) const;
 
 	virtual bool process(CharacterState& state, irr::f32 tpf);
 	virtual bool isCompleted(const CharacterState& state) const;

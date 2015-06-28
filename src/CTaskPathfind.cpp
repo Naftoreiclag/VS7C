@@ -6,7 +6,8 @@
 
 #include "CTaskPathfind.h"
 
-CTaskPathfind::CTaskPathfind() {
+CTaskPathfind::CTaskPathfind(const CTConditionLocation* locationCondition)
+: locationCondition(locationCondition) {
 //	prerequisites.push_back(new ...);
 }
 
@@ -14,31 +15,19 @@ CTaskPathfind::~CTaskPathfind() {
 	for(std::vector<CharacterTaskCondition*>::iterator it = prerequisites.begin(); it != prerequisites.end(); ++ it) {
 		delete *it;
 	}
-	for(std::vector<CharacterTaskCondition*>::iterator it = effects.begin(); it != effects.end(); ++ it) {
-		delete *it;
-	}
 }
 
-CTaskPathfind* CTaskPathfind::clone() const {
+CTaskPathfind* CTaskPathfind::newWhichFulfills(const CharacterTaskCondition* condition) const {
 	return new CTaskPathfind();
 }
 
-
 std::vector<CharacterTaskCondition*> CTaskPathfind::getPrerequisites() const {
-	std::vector<CharacterTaskCondition*> retVal;
-	CharacterTaskCondition* condition = new CTConditionSitting(true);
-	retVal.push_back(condition);
-	return retVal;
-}
-
-std::vector<CharacterTaskCondition*> CTaskPathfind::getEffects() const {
-	std::vector<CharacterTaskCondition*> retVal;
-	CharacterTaskCondition* condition = new CTConditionSitting(false);
-	retVal.push_back(condition);
-	return retVal;
+	return prerequisites;
 }
 
 bool CTaskPathfind::fulfills(const CharacterTaskCondition* condition) const {
+	const CTConditionLocation* location = static_cast<const CTConditionLocation*>(condition);
+	return location != 0;
 }
 
 bool CTaskPathfind::process(CharacterState& state, irr::f32 tpf) {

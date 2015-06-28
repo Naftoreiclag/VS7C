@@ -14,11 +14,10 @@ public:
 	CharacterTaskStand();
 	virtual ~CharacterTaskStand();
 
-	virtual CharacterTaskStand* clone() const;
 
 	virtual std::vector<CharacterTaskCondition*> getPrerequisites()const ;
-	virtual std::vector<CharacterTaskCondition*> getEffects() const;
 	virtual bool fulfills(const CharacterTaskCondition* condition) const;
+	virtual CharacterTaskStand* newWhichFulfills(const CharacterTaskCondition* condition) const;
 
 	virtual bool process(CharacterState& state, irr::f32 tpf);
 	virtual bool isCompleted(const CharacterState& state) const;

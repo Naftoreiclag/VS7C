@@ -8,21 +8,22 @@
 #define CTASKX_H
 
 #include "CharacterTask.h"
+#include "CTConditionLocation.h"
 
 class CTaskPathfind : public CharacterTask {
 private:
 	std::vector<CharacterTaskCondition*> prerequisites;
-	std::vector<CharacterTaskCondition*> effects;
 public:
-	CTaskPathfind();
+	CTaskPathfind(const CTConditionLocation* locationCondition = 0);
 	virtual ~CTaskPathfind();
 
-	virtual CTaskPathfind* clone() const;
+
+	const CTConditionLocation* locationCondition;
 
 
 	virtual std::vector<CharacterTaskCondition*> getPrerequisites()const;
-	virtual std::vector<CharacterTaskCondition*> getEffects() const;
 	virtual bool fulfills(const CharacterTaskCondition* condition) const;
+	virtual CTaskPathfind* newWhichFulfills(const CharacterTaskCondition* condition) const;
 
 	virtual bool process(CharacterState& state, irr::f32 tpf);
 	virtual bool isCompleted(const CharacterState& state) const;

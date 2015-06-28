@@ -17,17 +17,13 @@ CTaskConversation::~CTaskConversation()
 	//dtor
 }
 
-CTaskConversation* CTaskConversation::clone() const {
+CTaskConversation* CTaskConversation::newWhichFulfills(const CharacterTaskCondition* condition) const {
+
 	return new CTaskConversation(talkTo);
 }
 
 
 std::vector<CharacterTaskCondition*> CTaskConversation::getPrerequisites() const {
-	std::vector<CharacterTaskCondition*> retVal;
-	return retVal;
-}
-
-std::vector<CharacterTaskCondition*> CTaskConversation::getEffects() const {
 	std::vector<CharacterTaskCondition*> retVal;
 	return retVal;
 }

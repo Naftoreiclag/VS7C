@@ -24,13 +24,10 @@ public:
 	CharacterTask();
 	virtual ~CharacterTask();
 
-	virtual CharacterTask* clone() const = 0;
 
 	virtual std::vector<CharacterTaskCondition*> getPrerequisites() const = 0; // What conditions are required before this task can begin
-	virtual std::vector<CharacterTaskCondition*> getEffects() const = 0; // What are the expected effects of doing this task
 	virtual bool fulfills(const CharacterTaskCondition* condition) const = 0; // Would doing this task fufill this condition
-
-	// newWhichFulfills()
+	virtual CharacterTask* newWhichFulfills(const CharacterTaskCondition* condition) const = 0; // Creates a new instance of this class constructed specifically to fulfill given condition
 
 	virtual bool process(CharacterState& state, irr::f32 tpf) = 0; // Returns true iff there was no interruption
 	virtual bool isCompleted(const CharacterState& state) const = 0;

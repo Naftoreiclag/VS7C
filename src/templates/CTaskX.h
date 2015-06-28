@@ -12,16 +12,13 @@
 class CTaskX : public CharacterTask {
 private:
 	std::vector<CharacterTaskCondition*> prerequisites;
-	std::vector<CharacterTaskCondition*> effects;
 public:
 	CTaskX();
 	virtual ~CTaskX();
 
-	virtual CTaskX* clone() const;
-	
+	virtual CTaskX* newWhichFulfills(const CharacterTaskCondition* condition) const;
 
 	virtual std::vector<CharacterTaskCondition*> getPrerequisites()const;
-	virtual std::vector<CharacterTaskCondition*> getEffects() const;
 	virtual bool fulfills(const CharacterTaskCondition* condition) const;
 
 	virtual bool process(CharacterState& state, irr::f32 tpf);

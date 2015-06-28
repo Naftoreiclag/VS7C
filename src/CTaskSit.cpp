@@ -19,11 +19,6 @@ CharacterTaskSit::~CharacterTaskSit()
 	//dtor
 }
 
-CharacterTaskSit* CharacterTaskSit::clone() const {
-	return new CharacterTaskSit();
-}
-
-
 std::vector<CharacterTaskCondition*> CharacterTaskSit::getPrerequisites() const {
 	std::vector<CharacterTaskCondition*> retVal;
 	CharacterTaskCondition* condition = new CTConditionSitting(false);
@@ -31,11 +26,8 @@ std::vector<CharacterTaskCondition*> CharacterTaskSit::getPrerequisites() const 
 	return retVal;
 }
 
-std::vector<CharacterTaskCondition*> CharacterTaskSit::getEffects() const {
-	std::vector<CharacterTaskCondition*> retVal;
-	CharacterTaskCondition* condition = new CTConditionSitting(true);
-	retVal.push_back(condition);
-	return retVal;
+CharacterTaskSit* CharacterTaskSit::newWhichFulfills(const CharacterTaskCondition* condition) const {
+	return new CharacterTaskSit();
 }
 
 bool CharacterTaskSit::fulfills(const CharacterTaskCondition* condition) const {

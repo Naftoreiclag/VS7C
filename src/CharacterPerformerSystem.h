@@ -17,7 +17,6 @@
 
 class CharacterPerformerSystem : public nres::System {
 private:
-	// If a TaskMetadata has subject == 0, then this details why
 	struct TaskException {
 		// When a task is asked to give another task to be done beforehand, but no subtask is necessary
 		bool noSubtaskNeeded = false;
@@ -25,9 +24,12 @@ private:
 		// When a condition cannot return a task because none exists
 		bool noFulfillmentExists = false;
 	};
+
 	struct TaskMetadata {
 		CharacterTask* subject = 0;
-		TaskException except;
+
+		CharacterTaskCondition* fulfills = 0; // What is this task supposed to fulfill
+		TaskException except; // If there is no task, this explains why
 	};
 
 	TaskMetadata getNextTask(CharacterState state, CharacterTask* taskToPerform);
