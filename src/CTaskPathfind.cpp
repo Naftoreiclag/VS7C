@@ -5,6 +5,7 @@
  */
 
 #include "CTaskPathfind.h"
+#include "easylogging++.h"
 
 CTaskPathfind::CTaskPathfind(const CTConditionLocation* locationCondition)
 : locationCondition(locationCondition) {
@@ -17,7 +18,7 @@ CTaskPathfind::~CTaskPathfind() {
 }
 
 CTaskPathfind* CTaskPathfind::newWhichFulfills(const CharacterTaskCondition* condition) const {
-	return new CTaskPathfind();
+	return new CTaskPathfind(dynamic_cast<const CTConditionLocation*>(condition));
 }
 
 std::vector<CharacterTaskCondition*> CTaskPathfind::getPrerequisites() const {

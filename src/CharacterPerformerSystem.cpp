@@ -40,14 +40,16 @@ void CharacterPerformerSystem::process(nres::Entity& entity) {
 		TaskMetadata nextTask = getNextTask(state, perf->currentAction);
 		// This task has something else that needs to be done first
 		if(nextTask.subject) {
+			LOG(INFO) << "Switching to subtask.";
 			// Replace the current action with the next one
-			perf->currentAction = 0;
 			delete perf->currentAction;
+			perf->currentAction = 0;
 			perf->currentAction = nextTask.subject->newWhichFulfills(nextTask.fulfills);
 		}
 
 		// This task has nothing else that needs to be done first
 		else if(nextTask.except.noSubtaskNeeded) {
+			LOG(INFO) << "No subtask needed. Performing...";
 			bool success = perf->currentAction->process(state, tpf);
 			if(success) {
 				if(perf->currentAction->isCompleted(state)) {
@@ -55,8 +57,8 @@ void CharacterPerformerSystem::process(nres::Entity& entity) {
 					if(perf->currentAction == perf->currentObjective.taskToPerform) {
 						perf->currentObjective.taskToPerform = 0;
 					}
-					perf->currentAction = 0;
 					delete perf->currentAction;
+					perf->currentAction = 0;
 					LOG(INFO) << "Deleted task.";
 				}
 			}
@@ -65,8 +67,8 @@ void CharacterPerformerSystem::process(nres::Entity& entity) {
 				if(perf->currentAction == perf->currentObjective.taskToPerform) {
 					perf->currentObjective.taskToPerform = 0;
 				}
-				perf->currentAction = 0;
 				delete perf->currentAction;
+				perf->currentAction = 0;
 				LOG(INFO) << "Deleted task.";
 			}
 		}
@@ -77,8 +79,8 @@ void CharacterPerformerSystem::process(nres::Entity& entity) {
 			if(nextTask.except.noFulfillmentExists) {
 				LOG(INFO) << "No task exists that can fulfill objective condition.";
 			}
-			perf->currentObjective.taskToPerform = 0;
 			delete perf->currentObjective.taskToPerform;
+			perf->currentObjective.taskToPerform = 0;
 			LOG(INFO) << "Deleted objective task.";
 		}
 	}
@@ -87,8 +89,8 @@ void CharacterPerformerSystem::process(nres::Entity& entity) {
 	else if(perf->currentObjective.conditionToFulfill) {
         if(perf->currentObjective.conditionToFulfill->isFulfilled(state)) {
 			LOG(INFO) << "Objective condtion fulfilled.";
-			perf->currentObjective.conditionToFulfill = 0;
 			delete perf->currentObjective.conditionToFulfill;
+			perf->currentObjective.conditionToFulfill = 0;
 			LOG(INFO) << "Deleted objective condition.";
         }
         else {
@@ -103,8 +105,8 @@ void CharacterPerformerSystem::process(nres::Entity& entity) {
 				if(nextTask.except.noFulfillmentExists) {
 					LOG(INFO) << "No task exists that can fulfill objective condition.";
 				}
-				perf->currentObjective.conditionToFulfill = 0;
 				delete perf->currentObjective.conditionToFulfill;
+				perf->currentObjective.conditionToFulfill = 0;
 				LOG(INFO) << "Deleted objective condition.";
         	}
         }
