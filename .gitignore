@@ -6,3 +6,4 @@ lib/*
 .objs/*
 *ReleaseSingleLib*
 *example_*
+logs/*

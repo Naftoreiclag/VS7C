@@ -6,16 +6,5 @@
 
 #include "CharacterTaskCondition.h"
 
-CharacterTaskCondition::CharacterTaskCondition()
-{
-	//ctor
-}
-
-bool CharacterTaskCondition::isFulfilled(CharacterState state) {
-	return state.body->sitting == sitting;
-}
-
-CharacterTaskCondition::~CharacterTaskCondition()
-{
-	//dtor
-}
+CharacterTaskCondition::CharacterTaskCondition() {}
+CharacterTaskCondition::~CharacterTaskCondition() {}

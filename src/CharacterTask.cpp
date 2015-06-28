@@ -6,11 +6,7 @@
 
 #include "CharacterTask.h"
 
-CharacterTask::CharacterTask(CharacterTaskType type)
-: type(type) {
-}
-CharacterTask::CharacterTask()
-: type(UNDEF) {
+CharacterTask::CharacterTask() {
 }
 
 CharacterTask::~CharacterTask()

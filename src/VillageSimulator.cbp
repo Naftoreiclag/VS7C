@@ -5,7 +5,7 @@
 		<Option title="Village Simulator 7C" />
 		<Option pch_mode="0" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="Character Task Engine\;Character Task Engine\;Character Task Engine\Types\;Character Task Engine\Types\Atomic\;Character Task Engine\;Character Task Engine\Types\;Character Task Engine\Types\Atomic\;Character Task Engine\;Utility\;Data\;Components\;Entity System\;GameStates\;Managers\;Character Components\;" />
+		<Option virtualFolders="Character Task Engine\;Character Task Engine\;Character Task Engine\;Character Task Engine\;Utility\;Data\;Components\;Entity System\;GameStates\;Managers\;Character Components\;Character Task Engine\Conditions\;Character Task Engine\Conditions\Concrete\;Character Task Engine\Tasks\;Character Task Engine\Tasks\Concrete\;" />
 		<Build>
 			<Target title="Linux">
 				<Option platforms="Unix;" />
@@ -82,23 +82,35 @@
 		<Unit filename="Array2d.h">
 			<Option virtualFolder="Data/" />
 		</Unit>
+		<Unit filename="CTConditionLocation.cpp">
+			<Option virtualFolder="Character Task Engine/Conditions/Concrete/" />
+		</Unit>
+		<Unit filename="CTConditionLocation.h">
+			<Option virtualFolder="Character Task Engine/Conditions/Concrete/" />
+		</Unit>
+		<Unit filename="CTConditionSitting.cpp">
+			<Option virtualFolder="Character Task Engine/Conditions/Concrete/" />
+		</Unit>
+		<Unit filename="CTConditionSitting.h">
+			<Option virtualFolder="Character Task Engine/Conditions/Concrete/" />
+		</Unit>
 		<Unit filename="CTaskConversation.cpp">
-			<Option virtualFolder="Character Task Engine/Types/Atomic/" />
+			<Option virtualFolder="Character Task Engine/Tasks/Concrete/" />
 		</Unit>
 		<Unit filename="CTaskConversation.h">
-			<Option virtualFolder="Character Task Engine/Types/Atomic/" />
-		</Unit>
-		<Unit filename="CTaskSTand.h">
-			<Option virtualFolder="Character Task Engine/Types/Atomic/" />
+			<Option virtualFolder="Character Task Engine/Tasks/Concrete/" />
 		</Unit>
 		<Unit filename="CTaskSit.cpp">
-			<Option virtualFolder="Character Task Engine/Types/Atomic/" />
+			<Option virtualFolder="Character Task Engine/Tasks/Concrete/" />
 		</Unit>
 		<Unit filename="CTaskSit.h">
-			<Option virtualFolder="Character Task Engine/Types/Atomic/" />
+			<Option virtualFolder="Character Task Engine/Tasks/Concrete/" />
 		</Unit>
 		<Unit filename="CTaskStand.cpp">
-			<Option virtualFolder="Character Task Engine/Types/Atomic/" />
+			<Option virtualFolder="Character Task Engine/Tasks/Concrete/" />
+		</Unit>
+		<Unit filename="CTaskStand.h">
+			<Option virtualFolder="Character Task Engine/Tasks/Concrete/" />
 		</Unit>
 		<Unit filename="CharacterBodyComponent.cpp">
 			<Option virtualFolder="Character Components/" />
@@ -136,41 +148,17 @@
 		<Unit filename="CharacterPhysicsComponent.h">
 			<Option virtualFolder="Character Components/" />
 		</Unit>
-		<Unit filename="CharacterState.cpp">
-			<Option virtualFolder="Character Components/" />
-		</Unit>
-		<Unit filename="CharacterState.h">
-			<Option virtualFolder="Character Components/" />
-		</Unit>
 		<Unit filename="CharacterTask.cpp">
-			<Option virtualFolder="Character Task Engine/Types/" />
+			<Option virtualFolder="Character Task Engine/Tasks/" />
 		</Unit>
 		<Unit filename="CharacterTask.h">
-			<Option virtualFolder="Character Task Engine/Types/" />
-		</Unit>
-		<Unit filename="CharacterTaskAtomic.cpp">
-			<Option virtualFolder="Character Task Engine/Types/" />
-		</Unit>
-		<Unit filename="CharacterTaskAtomic.h">
-			<Option virtualFolder="Character Task Engine/Types/" />
-		</Unit>
-		<Unit filename="CharacterTaskComplex.cpp">
-			<Option virtualFolder="Character Task Engine/Types/" />
-		</Unit>
-		<Unit filename="CharacterTaskComplex.h">
-			<Option virtualFolder="Character Task Engine/Types/" />
+			<Option virtualFolder="Character Task Engine/Tasks/" />
 		</Unit>
 		<Unit filename="CharacterTaskCondition.cpp">
-			<Option virtualFolder="Character Task Engine/" />
+			<Option virtualFolder="Character Task Engine/Conditions/" />
 		</Unit>
 		<Unit filename="CharacterTaskCondition.h">
-			<Option virtualFolder="Character Task Engine/" />
-		</Unit>
-		<Unit filename="CharacterTaskPathfinding.cpp">
-			<Option virtualFolder="Character Task Engine/Types/" />
-		</Unit>
-		<Unit filename="CharacterTaskPathfinding.h">
-			<Option virtualFolder="Character Task Engine/Types/" />
+			<Option virtualFolder="Character Task Engine/Conditions/" />
 		</Unit>
 		<Unit filename="CharacterTaskRegistry.cpp">
 			<Option virtualFolder="Character Task Engine/" />

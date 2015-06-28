@@ -18,28 +18,18 @@ Base class for all tasks
 
 */
 
-enum CharacterTaskType {
-	ATOMIC, // Indivisible, hard-programmed tasks, favored over others for changing states
-	PATHFINDING, // Specialty task that involves moving from one place to another
-	COMPLEX, // Scripted or otherwise complicated tasks that can be interrrupted
-	UNDEF
-};
-
 // Note:: atomic tasks are derived from this class
 class CharacterTask {
 public:
-	CharacterTask(CharacterTaskType type);
 	CharacterTask();
 	virtual ~CharacterTask();
 
-	const CharacterTaskType type;
 	virtual CharacterTask* clone() const = 0;
 
-	virtual std::vector<CharacterTaskCondition> getPrerequisites() const = 0; // What conditions are required before this task can begin
-	virtual std::vector<CharacterTaskCondition> getEffects() const = 0; // What are the expected effects of doing this task
-	virtual bool fulfills(const CharacterTaskCondition& condition) const = 0; // Would doing this task fufill this condition
+	virtual std::vector<CharacterTaskCondition*> getPrerequisites() const = 0; // What conditions are required before this task can begin
+	virtual std::vector<CharacterTaskCondition*> getEffects() const = 0; // What are the expected effects of doing this task
+	virtual bool fulfills(const CharacterTaskCondition* condition) const = 0; // Would doing this task fufill this condition
 
-	typedef CharacterTaskCondition::CharacterState CharacterState;
 	virtual bool process(CharacterState& state, irr::f32 tpf) = 0; // Returns true iff there was no interruption
 	virtual bool isCompleted(const CharacterState& state) const = 0;
 

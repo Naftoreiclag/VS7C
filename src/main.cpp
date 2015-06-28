@@ -22,7 +22,6 @@ using namespace irr;
 #pragma comment(lib, "Irrlicht.lib")
 #endif
 
-#include <iostream>
 #include "CTaskSit.h"
 #include "CTaskStand.h"
 #include "CharacterTaskRegistry.h"
@@ -127,12 +126,13 @@ int main()
 			frames = 0;
 		}
 	}
-	std::cout << "end game" << std::endl;
 
+	LOG(INFO) << "Detaching all gamestates.";
 	gsmgr.detachAll();
-	std::cout << "end detach" << std::endl;
 
+	LOG(INFO) << "Dropping Irrlicht device.";
 	device->drop(); device = 0;
-	std::cout << "complete" << std::endl;
+
+	LOG(INFO) << "Ending program.";
 	return 0;
 }

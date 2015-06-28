@@ -15,6 +15,8 @@
 #include "ReiMath.h"
 #include "ReiBullet.h"
 
+#include "CTConditionSitting.h"
+
 #include "easylogging++.h"
 
 using namespace irr;
@@ -272,8 +274,7 @@ void OverworldGameState::keyPressed(irr::EKEY_CODE key) {
 	if(key == irr::KEY_KEY_K) {
 		CharacterPerformerComponent* charPerf = (CharacterPerformerComponent*) playerEnt->getComponentData(RID("comp character performer"));
 
-		CharacterTaskCondition* aaa = new CharacterTaskCondition();
-		aaa->sitting = true;
+		CharacterTaskCondition* aaa = new CTConditionSitting(true);
 		std::cout << "set current objective" << std::endl;
 		charPerf->currentObjective.conditionToFulfill = aaa;
 
@@ -281,8 +282,7 @@ void OverworldGameState::keyPressed(irr::EKEY_CODE key) {
 	if(key == irr::KEY_KEY_B) {
 		CharacterPerformerComponent* charPerf = (CharacterPerformerComponent*) playerEnt->getComponentData(RID("comp character performer"));
 
-		CharacterTaskCondition* aaa = new CharacterTaskCondition();
-		aaa->sitting = false;
+		CharacterTaskCondition* aaa = new CTConditionSitting(false);
 		std::cout << "set current objective" << std::endl;
 		charPerf->currentObjective.conditionToFulfill = aaa;
 

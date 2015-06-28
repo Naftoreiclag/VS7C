@@ -36,6 +36,7 @@ void CharacterPerformerSystem::process(nres::Entity& entity) {
 		TaskMetadata nextTask = getNextTask(state, perf->currentAction);
 		// This task has something else that needs to be done first
 		if(nextTask.subject) {
+			// Replace the current action with the next one
 			perf->currentAction = 0;
 			delete perf->currentAction;
 			perf->currentAction = nextTask.subject->clone();
@@ -86,7 +87,7 @@ void CharacterPerformerSystem::process(nres::Entity& entity) {
         }
         else {
 			LOG(INFO) << "Performer has condition to fulfill.";
-        	TaskMetadata nextTask = getNextTask(state, *(perf->currentObjective.conditionToFulfill));
+        	TaskMetadata nextTask = getNextTask(state, perf->currentObjective.conditionToFulfill);
         	if(nextTask.subject) {
 				LOG(INFO) << "Next task located for objective. Setting as next action...";
 				perf->currentAction = nextTask.subject->clone();
@@ -125,7 +126,7 @@ void CharacterPerformerSystem::process(nres::Entity& entity) {
 }
 
 CharacterPerformerSystem::TaskMetadata CharacterPerformerSystem::getNextTask(CharacterState state, CharacterTask* taskToPerform) {
-	std::vector<CharacterTaskCondition> prerequisites = taskToPerform->getPrerequisites();
+	std::vector<CharacterTaskCondition*> prerequisites = taskToPerform->getPrerequisites();
 
 	if(prerequisites.empty()) {
 		TaskMetadata retVal;
@@ -135,10 +136,10 @@ CharacterPerformerSystem::TaskMetadata CharacterPerformerSystem::getNextTask(Cha
 		return retVal;
 	}
 
-	for(std::vector<CharacterTaskCondition>::iterator it = prerequisites.begin(); it != prerequisites.end(); ++ it) {
-		CharacterTaskCondition& cond = *it;
+	for(std::vector<CharacterTaskCondition*>::iterator it = prerequisites.begin(); it != prerequisites.end(); ++ it) {
+		CharacterTaskCondition* cond = *it;
 
-		if(cond.isFulfilled(state)) {
+		if(cond->isFulfilled(state)) {
 			continue;
 		}
 
@@ -152,7 +153,7 @@ CharacterPerformerSystem::TaskMetadata CharacterPerformerSystem::getNextTask(Cha
 	return retVal;
 }
 
-CharacterPerformerSystem::TaskMetadata CharacterPerformerSystem::getNextTask(CharacterState state, CharacterTaskCondition conditionToFulfill) {
+CharacterPerformerSystem::TaskMetadata CharacterPerformerSystem::getNextTask(CharacterState state, CharacterTaskCondition* conditionToFulfill) {
 	std::vector<CharacterTask*> candidates = CharacterTaskRegistry::getTasks(conditionToFulfill);
 
 	if(candidates.empty()) {

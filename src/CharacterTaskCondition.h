@@ -14,20 +14,19 @@ Specifies a particular condition that a characterstate might be in.
 Atomic condition, such as sitting down, standing, located somewhere, etc...
 */
 
+struct CharacterState {
+	CharacterState(CharacterBodyComponent* body)
+	:body(body) {
+	}
+	CharacterBodyComponent* body;
+};
+
 class CharacterTaskCondition {
 public:
-	struct CharacterState {
-		CharacterState(CharacterBodyComponent* body)
-		:body(body) {
-		}
-		CharacterBodyComponent* body;
-	};
 public:
-	bool sitting = false;
-
 	CharacterTaskCondition();
 	virtual ~CharacterTaskCondition();
-	bool isFulfilled(CharacterState state);
+	virtual bool isFulfilled(CharacterState state) const = 0;
 };
 
 #endif // CHARACTERTASKCONDITION_H

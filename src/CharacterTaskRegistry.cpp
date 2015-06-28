@@ -14,7 +14,7 @@ namespace CharacterTaskRegistry {
 		knownTasks.push_back(task);
 	}
 
-	std::vector<CharacterTask*> getTasks(const CharacterTaskCondition& fulfillThis) {
+	std::vector<CharacterTask*> getTasks(const CharacterTaskCondition* fulfillThis) {
 		std::vector<CharacterTask*> retVal;
         for(std::vector<CharacterTask*>::iterator it = knownTasks.begin(); it != knownTasks.end(); ++ it) {
 			CharacterTask* task = *it;

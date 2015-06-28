@@ -4,14 +4,19 @@
  * See accompanying file LICENSE
  */
 
-#include "CharacterTaskPathfinding.h"
+#include "CTConditionLocation.h"
 
-CharacterTaskPathfinding::CharacterTaskPathfinding()
-: CharacterTask::CharacterTask(PATHFINDING) {
+CTConditionLocation::CTConditionLocation()
+{
 	//ctor
 }
 
-CharacterTaskPathfinding::~CharacterTaskPathfinding()
+CTConditionLocation::~CTConditionLocation()
 {
 	//dtor
 }
+
+bool CTConditionLocation::isFulfilled(CharacterState state) const {
+	return true;
+}
+

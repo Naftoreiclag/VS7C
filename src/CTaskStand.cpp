@@ -6,6 +6,7 @@
 
 #include "CTaskStand.h"
 
+#include "CTConditionSitting.h"
 #include <iostream>
 
 CharacterTaskStand::CharacterTaskStand()
@@ -23,24 +24,27 @@ CharacterTaskStand* CharacterTaskStand::clone() const {
 }
 
 
-std::vector<CharacterTaskCondition> CharacterTaskStand::getPrerequisites() const {
-	std::vector<CharacterTaskCondition> retVal;
-	CharacterTaskCondition condition;
-	condition.sitting = true;
+std::vector<CharacterTaskCondition*> CharacterTaskStand::getPrerequisites() const {
+	std::vector<CharacterTaskCondition*> retVal;
+	CharacterTaskCondition* condition = new CTConditionSitting(true);
 	retVal.push_back(condition);
 	return retVal;
 }
 
-std::vector<CharacterTaskCondition> CharacterTaskStand::getEffects() const {
-	std::vector<CharacterTaskCondition> retVal;
-	CharacterTaskCondition condition;
-	condition.sitting = false;
+std::vector<CharacterTaskCondition*> CharacterTaskStand::getEffects() const {
+	std::vector<CharacterTaskCondition*> retVal;
+	CharacterTaskCondition* condition = new CTConditionSitting(false);
 	retVal.push_back(condition);
 	return retVal;
 }
 
-bool CharacterTaskStand::fulfills(const CharacterTaskCondition& condition) const {
-	return condition.sitting == false;
+bool CharacterTaskStand::fulfills(const CharacterTaskCondition* condition) const {
+	const CTConditionSitting* sitting = static_cast<const CTConditionSitting*>(condition);
+	if(sitting) {
+		return sitting->sitting == false;
+	}
+
+	return false;
 }
 
 bool CharacterTaskStand::process(CharacterState& state, irr::f32 tpf) {

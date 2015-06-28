@@ -7,18 +7,18 @@
 #ifndef CHARACTERTASKSTAND_H
 #define CHARACTERTASKSTAND_H
 
-#include "CharacterTaskAtomic.h"
+#include "CharacterTask.h"
 
-class CharacterTaskStand : public CharacterTaskAtomic {
+class CharacterTaskStand : public CharacterTask {
 public:
 	CharacterTaskStand();
 	virtual ~CharacterTaskStand();
 
 	virtual CharacterTaskStand* clone() const;
 
-	virtual std::vector<CharacterTaskCondition> getPrerequisites()const ;
-	virtual std::vector<CharacterTaskCondition> getEffects() const;
-	virtual bool fulfills(const CharacterTaskCondition& condition) const;
+	virtual std::vector<CharacterTaskCondition*> getPrerequisites()const ;
+	virtual std::vector<CharacterTaskCondition*> getEffects() const;
+	virtual bool fulfills(const CharacterTaskCondition* condition) const;
 
 	virtual bool process(CharacterState& state, irr::f32 tpf);
 	virtual bool isCompleted(const CharacterState& state) const;

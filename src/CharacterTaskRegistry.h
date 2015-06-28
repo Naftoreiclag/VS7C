@@ -15,7 +15,7 @@ namespace CharacterTaskRegistry {
 	void addTask(CharacterTask* task);
 
 	// Get a vector of all the tasks that have that effect
-	std::vector<CharacterTask*> getTasks(const CharacterTaskCondition& fulfillThis);
+	std::vector<CharacterTask*> getTasks(const CharacterTaskCondition* fulfillThis);
 };
 
 #endif // CHARACTERTASKREGISTRY_H

@@ -16,8 +16,6 @@
 #include "CharacterPerformerComponent.h"
 
 class CharacterPerformerSystem : public nres::System {
-public:
-	typedef CharacterTaskCondition::CharacterState CharacterState;
 private:
 	// If a TaskMetadata has subject == 0, then this details why
 	struct TaskException {
@@ -25,7 +23,6 @@ private:
 		bool noSubtaskNeeded = false;
 
 		// When a condition cannot return a task because none exists
-		CharacterTaskCondition unfufillable;
 		bool noFulfillmentExists = false;
 	};
 	struct TaskMetadata {
@@ -34,7 +31,7 @@ private:
 	};
 
 	TaskMetadata getNextTask(CharacterState state, CharacterTask* taskToPerform);
-	TaskMetadata getNextTask(CharacterState state, CharacterTaskCondition conditionToFulfill);
+	TaskMetadata getNextTask(CharacterState state, CharacterTaskCondition* conditionToFulfill);
 
 	//
 	irr::f32 tpf;

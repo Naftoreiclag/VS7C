@@ -8,9 +8,8 @@
 
 #include <iostream>
 
-CTaskConversation::CTaskConversation()
-{
-	//ctor
+CTaskConversation::CTaskConversation(nres::Entity& talkTo)
+: talkTo(talkTo) {
 }
 
 CTaskConversation::~CTaskConversation()
@@ -19,28 +18,22 @@ CTaskConversation::~CTaskConversation()
 }
 
 CTaskConversation* CTaskConversation::clone() const {
-	return new CTaskConversation();
+	return new CTaskConversation(talkTo);
 }
 
 
-std::vector<CharacterTaskCondition> CTaskConversation::getPrerequisites() const {
-	std::vector<CharacterTaskCondition> retVal;
-	CharacterTaskCondition condition;
-	condition.sitting = false;
-	retVal.push_back(condition);
+std::vector<CharacterTaskCondition*> CTaskConversation::getPrerequisites() const {
+	std::vector<CharacterTaskCondition*> retVal;
 	return retVal;
 }
 
-std::vector<CharacterTaskCondition> CTaskConversation::getEffects() const {
-	std::vector<CharacterTaskCondition> retVal;
-	CharacterTaskCondition condition;
-	condition.sitting = true;
-	retVal.push_back(condition);
+std::vector<CharacterTaskCondition*> CTaskConversation::getEffects() const {
+	std::vector<CharacterTaskCondition*> retVal;
 	return retVal;
 }
 
-bool CTaskConversation::fulfills(const CharacterTaskCondition& condition) const {
-	return condition.sitting == true;
+bool CTaskConversation::fulfills(const CharacterTaskCondition* condition) const {
+	return false;
 }
 
 bool CTaskConversation::process(CharacterState& state, irr::f32 tpf) {
