@@ -38,7 +38,9 @@ bool CTaskPathfind::process(CharacterState& state, irr::f32 tpf) {
 	disp.normalize();
 	disp *= 5;
 
-	charPhys->targetVelocityRelativeToGround = disp;
+	phys->rigidBody->applyForce(btVector3(0, 40, 0), btVector3(0, 0, 0));
+	charPhys->targetVelocityRelativeToGround = btVector3(5, 0, 5);
+	charPhys->isWalking = true;
 
 	return true;
 }
