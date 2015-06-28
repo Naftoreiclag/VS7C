@@ -17,6 +17,7 @@
 
 #include "CTConditionSitting.h"
 #include "CTConditionLocation.h"
+#include "CTaskConversation.h"
 
 #include "easylogging++.h"
 
@@ -303,9 +304,15 @@ void OverworldGameState::keyPressed(irr::EKEY_CODE key) {
 			LOG(INFO) << "picked";
 			CharacterPerformerComponent* charPerf = (CharacterPerformerComponent*) playerEnt->getComponentData(RID("comp character performer"));
 
+/*
 			CharacterTaskCondition* aaa = new CTConditionLocation(5, *picked);
 			std::cout << "set current objective" << std::endl;
 			charPerf->currentObjective.conditionToFulfill = aaa;
+			*/
+
+
+			CTaskConversation* conv = new CTaskConversation(*picked);
+			charPerf->currentObjective.taskToPerform = conv;
 
 		}
 

@@ -5,40 +5,41 @@
  */
 
 #include "CTaskConversation.h"
+#include "CTConditionLocation.h"
 
 #include <iostream>
 
 CTaskConversation::CTaskConversation(nres::Entity& talkTo)
 : talkTo(talkTo) {
+	prerequisites.push_back(new CTConditionLocation(5, talkTo));
+	converationDone = false;
 }
 
-CTaskConversation::~CTaskConversation()
-{
-	//dtor
+CTaskConversation::~CTaskConversation() {
+	for(std::vector<CharacterTaskCondition*>::iterator it = prerequisites.begin(); it != prerequisites.end(); ++ it) {
+		delete *it;
+	}
 }
 
+// Should not be called
 CTaskConversation* CTaskConversation::newWhichFulfills(const CharacterTaskCondition* condition) const {
-
 	return new CTaskConversation(talkTo);
 }
 
-
 std::vector<CharacterTaskCondition*> CTaskConversation::getPrerequisites() const {
-	std::vector<CharacterTaskCondition*> retVal;
-	return retVal;
+	return prerequisites;
 }
 
 bool CTaskConversation::fulfills(const CharacterTaskCondition* condition) const {
-	return false;
+	return false; // No associated condition
 }
 
 bool CTaskConversation::process(CharacterState& state, irr::f32 tpf) {
-	std::cout << "you sit down" << std::endl;
-    state.body->sitting = true;
-    return true;
+	converationDone = true;
+	return true;
 }
 
 bool CTaskConversation::isCompleted(const CharacterState& state) const {
-    return state.body->sitting;
+	return converationDone;
 }
 
