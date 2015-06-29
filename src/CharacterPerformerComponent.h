@@ -7,6 +7,9 @@
 #ifndef CHARACTERPERFORMERCOMPONENT_H
 #define CHARACTERPERFORMERCOMPONENT_H
 
+#include <stack>
+#include <vector>
+
 #include "NREntitySystem.h"
 #include "CharacterObjective.h"
 #include "CharacterTask.h"
@@ -17,8 +20,15 @@ TODO: add support for doing multiple things at once
 */
 class CharacterPerformerComponent : public nres::ComponentData {
 public:
-	CharacterObjective currentObjective;
-	CharacterTask* currentAction;
+	struct TaskLayer {
+		CharacterTask* parent;
+		bool finishedContinuous;
+		std::vector<CharacterTaskCondition> continuousComponents;
+	};
+public:
+	CharacterObjective currentObjective; // Objective
+	CharacterTask* currentAction; // Task which we should be performing right now
+	std::stack<TaskLayer> taskLayers; // Big stack of tasks
 
 	CharacterPerformerComponent();
 	virtual CharacterPerformerComponent* clone() const;

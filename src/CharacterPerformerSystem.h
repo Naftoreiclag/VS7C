@@ -7,6 +7,7 @@
 #ifndef CHARACTERPERFORMERSYSTEM_H
 #define CHARACTERPERFORMERSYSTEM_H
 
+
 #include "NREntitySystem.h"
 
 #include "CharacterTaskCondition.h"
@@ -15,8 +16,11 @@
 
 #include "CharacterPerformerComponent.h"
 
+
 class CharacterPerformerSystem : public nres::System {
 private:
+	typedef CharacterPerformerComponent::TaskLayer TaskLayer;
+
 	struct TaskException {
 		// When a task is asked to give another task to be done beforehand, but no subtask is necessary
 		bool noSubtaskNeeded = false;

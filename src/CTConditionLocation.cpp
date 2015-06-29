@@ -33,7 +33,7 @@ bool CTConditionLocation::isFulfilled(const CharacterState& state) const {
 	return false;
 }
 
-bool CTConditionLocation::isPossible(const CharacterState& state) {
+bool CTConditionLocation::isPossible(const CharacterState& state) const {
 	if(type == NEXT_TO_ENTITY) {
 		return otherPhys != 0;
 	}

@@ -32,7 +32,7 @@ public:
 
 	virtual ~CTConditionLocation();
 	virtual bool isFulfilled(const CharacterState& state) const;
-	virtual bool isPossible(const CharacterState& state);
+	virtual bool isPossible(const CharacterState& state) const;
 
 	const btVector3& getClosestPoint(const btVector3& other) const;
 

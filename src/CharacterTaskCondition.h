@@ -7,6 +7,8 @@
 #ifndef CHARACTERTASKCONDITION_H
 #define CHARACTERTASKCONDITION_H
 
+#include "irrlicht.h"
+
 #include "CharacterBodyComponent.h"
 #include "CharacterPhysicsComponent.h"
 #include "PhysicsComponent.h"
@@ -32,7 +34,22 @@ public:
 	CharacterTaskCondition();
 	virtual ~CharacterTaskCondition();
 	virtual bool isFulfilled(const CharacterState& state) const = 0;
-	virtual bool isPossible(const CharacterState& state);
+	virtual bool isPossible(const CharacterState& state) const;
+
+	/*
+	If true, the performer attempts to fulfill this condition
+	only once before fulfilling any sibling conditions.
+	If ever this condition becomes unfulfilled, then the
+	whole task is counted as interrupted.
+	*/
+	bool continuous = false;
+
+	/*
+	If the performer cannot fulfill this condition for whatever reason,
+	rather than instantly cancelling the objective, the performer can
+	wait for some amount of seconds.
+	*/
+	irr::f32 waitTimeout = 0;
 };
 
 #endif // CHARACTERTASKCONDITION_H
