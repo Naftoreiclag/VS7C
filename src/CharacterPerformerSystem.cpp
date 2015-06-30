@@ -34,54 +34,52 @@ void CharacterPerformerSystem::process(nres::Entity& entity) {
     PhysicsComponent* phys = (PhysicsComponent*) entity.getComponentData(RID("comp physics"));
 
 	CharacterState state(body, charPhys, phys);
-	if(perf->currentAction) {
+	if(perf->taskLayers.size() > 0) {
 		// If this task has something else that needs to be done first, do that
 		// TODO: keep track of redirection count
-		TaskMetadata nextTask = getNextTask(state, perf->currentAction);
-		// This task has something else that needs to be done first
+		TaskMetadata nextTask = getNextTask(state, perf->taskLayers.top().task);
+
+		// Something else needs to be done first
 		if(nextTask.subject) {
-			LOG(INFO) << "Switching to subtask.";
-			// Replace the current action with the next one
-			delete perf->currentAction;
-			perf->currentAction = 0;
-			perf->currentAction = nextTask.subject->newWhichFulfills(nextTask.fulfills);
+			LOG(INFO) << "Pushing new subtask onto stack";
+			perf->taskLayers.push(nextTask.subject->newWhichFulfills(nextTask.fulfills));
 		}
 
-		// This task has nothing else that needs to be done first
+		// Nothing else needs to be done first, i.e. do it
 		else if(nextTask.except.noSubtaskNeeded) {
 			LOG_EVERY_N(1000, INFO) << "No subtask needed. Performing...";
-			bool success = perf->currentAction->process(state, tpf);
+			bool success = perf->taskLayers.top().task->process(state, tpf);
+
+			// Task stepped successfully
 			if(success) {
-				if(perf->currentAction->isCompleted(state)) {
+
+				// Task is complete
+				if(perf->taskLayers.top().task->isCompleted(state)) {
 					LOG(INFO) << "Task completed.";
-					if(perf->currentAction == perf->currentObjective.taskToPerform) {
-						perf->currentObjective.taskToPerform = 0;
-					}
-					delete perf->currentAction;
-					perf->currentAction = 0;
+					delete perf->taskLayers.top().task;
+					perf->taskLayers.pop();
 					LOG(INFO) << "Deleted task.";
 				}
 			}
+
+			// There was an interruption
 			else {
 				LOG(INFO) << "Task interrupted.";
-				if(perf->currentAction == perf->currentObjective.taskToPerform) {
-					perf->currentObjective.taskToPerform = 0;
-				}
-				delete perf->currentAction;
-				perf->currentAction = 0;
+				delete perf->taskLayers.top().task;
+				perf->taskLayers.pop();
 				LOG(INFO) << "Deleted task.";
 			}
 		}
 
-		// Some other problem happened
+		// Some problem happened when trying to find the next step in the program
 		else {
 			LOG(INFO) << "Exception while locating next task.";
 			if(nextTask.except.noFulfillmentExists) {
-				LOG(INFO) << "No task exists that can fulfill objective condition.";
+				LOG(INFO) << "No task exists that can fulfill prerequisites.";
 			}
-			delete perf->currentObjective.taskToPerform;
-			perf->currentObjective.taskToPerform = 0;
-			LOG(INFO) << "Deleted objective task.";
+			delete perf->taskLayers.top().task;
+			perf->taskLayers.pop();
+			LOG(INFO) << "Deleted task.";
 		}
 	}
 
@@ -98,7 +96,7 @@ void CharacterPerformerSystem::process(nres::Entity& entity) {
         	TaskMetadata nextTask = getNextTask(state, perf->currentObjective.conditionToFulfill);
         	if(nextTask.subject) {
 				LOG(INFO) << "Next task located for objective. Setting as next action...";
-				perf->currentAction = nextTask.subject->newWhichFulfills(nextTask.fulfills);
+				perf->taskLayers.push(TaskLayer(nextTask.subject->newWhichFulfills(nextTask.fulfills)));
         	}
         	else {
 				LOG(INFO) << "Exception while locating next task.";
@@ -114,6 +112,11 @@ void CharacterPerformerSystem::process(nres::Entity& entity) {
 
 	// Objective is a task
 	else if(perf->currentObjective.taskToPerform) {
+		LOG(INFO) << "Performer objective task set as current task";
+		perf->taskLayers.push(TaskLayer(perf->currentObjective.taskToPerform));
+		perf->currentObjective.taskToPerform = 0;
+
+		/*
 		TaskMetadata nextTask = getNextTask(state, perf->currentObjective.taskToPerform);
 		if(nextTask.subject) {
 			LOG(INFO) << "Next task located for objective. Setting as next action...";
@@ -132,6 +135,7 @@ void CharacterPerformerSystem::process(nres::Entity& entity) {
 			delete perf->currentObjective.taskToPerform;
 			LOG(INFO) << "Deleted objective task.";
 		}
+		*/
 	}
 }
 

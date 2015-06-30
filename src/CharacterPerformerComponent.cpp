@@ -7,7 +7,6 @@
 #include "CharacterPerformerComponent.h"
 
 CharacterPerformerComponent::CharacterPerformerComponent()
-: currentAction(0)
 {
 	//ctor
 }
@@ -18,4 +17,8 @@ CharacterPerformerComponent* CharacterPerformerComponent::clone() const {
 CharacterPerformerComponent::~CharacterPerformerComponent()
 {
 	//dtor
+}
+
+CharacterPerformerComponent::TaskLayer::TaskLayer(CharacterTask* const task)
+: task(task) {
 }
