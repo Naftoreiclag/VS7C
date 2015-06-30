@@ -6,7 +6,7 @@
 
 #include "CTConditionSomeoneElse.h"
 
-CTConditionSomeoneElse::CTConditionSomeoneElse(CharacterTaskCondition* const wrapped, nres::Entity& entity)
+CTConditionSomeoneElse::CTConditionSomeoneElse(nres::Entity& entity, CharacterTaskCondition* const wrapped)
 : wrapped(wrapped),
 entity(entity) {
 

@@ -10,17 +10,19 @@ CharacterTaskCondition::CharacterTaskCondition() {}
 CharacterTaskCondition::~CharacterTaskCondition() {}
 bool CharacterTaskCondition::isValid(const CharacterState& state) const { return true; }
 
-CharacterState::CharacterState(CharacterBodyComponent* body, CharacterPhysicsComponent* charPhys, PhysicsComponent* phys)
-:body(body),
+CharacterState::CharacterState(CharacterPerformerComponent* perf, CharacterBodyComponent* body, CharacterPhysicsComponent* charPhys, PhysicsComponent* phys)
+: perf(perf),
+body(body),
 charPhys(charPhys),
 phys(phys) {
-    valid = body != 0 && charPhys != 0 && phys != 0;
+    valid = perf != 0 && body != 0 && charPhys != 0 && phys != 0;
 }
 
 CharacterState::CharacterState(nres::Entity& entity) {
+    perf = (CharacterPerformerComponent*) entity.getComponentData(RID("comp character performer"));
 	body = (CharacterBodyComponent*) entity.getComponentData(RID("comp character body"));
 	charPhys = (CharacterPhysicsComponent*) entity.getComponentData(RID("comp character physics"));
 	phys = (PhysicsComponent*) entity.getComponentData(RID("comp physics"));
 
-    valid = body != 0 && charPhys != 0 && phys != 0;
+    valid = perf != 0 && body != 0 && charPhys != 0 && phys != 0;
 }

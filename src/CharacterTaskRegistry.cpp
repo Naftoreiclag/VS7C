@@ -21,12 +21,9 @@ namespace CharacterTaskRegistry {
 			CharacterTask* task = *it;
 
 			if(task->fulfills(fulfillThis)) {
-				LOG(INFO) << task->getDebug();
 				retVal.push_back(task);
 			}
         }
-
-		LOG(INFO) << retVal.size();
 
         return retVal;
 	}

@@ -32,10 +32,6 @@ public:
 	virtual bool process(CharacterState& state, irr::f32 tpf) = 0; // Returns true iff there was no interruption
 	virtual bool isCompleted(const CharacterState& state) const = 0;
 
-	virtual std::string getDebug() {
-		return "errr";
-	}
-
 	/*
 	Example difficulty levels:
 	0. blinking, turning head, breathing, chewing

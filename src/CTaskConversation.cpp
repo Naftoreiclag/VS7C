@@ -6,12 +6,22 @@
 
 #include "CTaskConversation.h"
 #include "CTConditionLocation.h"
+#include "CTConditionSomeoneElse.h"
+#include "CTConditionNotBusy.h"
 
 #include <iostream>
 
 CTaskConversation::CTaskConversation(nres::Entity& talkTo)
 : talkTo(talkTo) {
+	// Target must not be busy doing something else
+	CTConditionSomeoneElse* otherIsNotBusy = new CTConditionSomeoneElse(talkTo, new CTConditionNotBusy());
+	otherIsNotBusy->continuous = true;
+	prerequisites.push_back(otherIsNotBusy);
+
+	// Must be within 5 feet of target
 	prerequisites.push_back(new CTConditionLocation(5, talkTo));
+
+	// Mispelt temp var
 	converationDone = false;
 }
 

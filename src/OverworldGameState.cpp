@@ -280,7 +280,6 @@ void OverworldGameState::keyPressed(irr::EKEY_CODE key) {
 		CharacterPerformerComponent* charPerf = (CharacterPerformerComponent*) playerEnt->getComponentData(RID("comp character performer"));
 
 		CharacterTaskCondition* aaa = new CTConditionSitting(true);
-		std::cout << "set current objective" << std::endl;
 		charPerf->currentObjective.conditionToFulfill = aaa;
 
 	}
@@ -288,7 +287,6 @@ void OverworldGameState::keyPressed(irr::EKEY_CODE key) {
 		CharacterPerformerComponent* charPerf = (CharacterPerformerComponent*) playerEnt->getComponentData(RID("comp character performer"));
 
 		CharacterTaskCondition* aaa = new CTConditionSitting(false);
-		std::cout << "set current objective" << std::endl;
 		charPerf->currentObjective.conditionToFulfill = aaa;
 
 	}
@@ -318,7 +316,6 @@ void OverworldGameState::keyPressed(irr::EKEY_CODE key) {
 
 
 	}
-	std::cout << key << std::endl;
 }
 
 void OverworldGameState::keyDown(irr::EKEY_CODE key) {

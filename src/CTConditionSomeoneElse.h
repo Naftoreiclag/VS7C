@@ -19,7 +19,7 @@ Will delete wrapped condition automatically.
 
 class CTConditionSomeoneElse : public CharacterTaskCondition {
 public:
-	CTConditionSomeoneElse(CharacterTaskCondition* const wrapped, nres::Entity& entity);
+	CTConditionSomeoneElse(nres::Entity& entity, CharacterTaskCondition* const wrapped);
 	virtual ~CTConditionSomeoneElse();
 
 	CharacterTaskCondition* const wrapped;

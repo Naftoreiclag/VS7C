@@ -14,12 +14,12 @@
 #include "NREntitySystem.h"
 
 #include "CharacterObjective.h"
-#include "CharacterTask.h"
 
 /*
 Includes only data about what the character is doing at any one time
 TODO: add support for doing multiple things at once
 */
+class CharacterTask;
 class CharacterPerformerComponent : public nres::ComponentData {
 public:
 	struct TaskLayer {
@@ -33,6 +33,8 @@ public:
 	std::stack<TaskLayer> taskLayers; // Big stack of tasks
 	CharacterTaskCondition* waitingFor = 0; // Waiting for this to be fulfilled first
 	irr::f32 timeWaiting = 0; // How long we have been waiting for
+
+	bool isBusy() const;
 
 	CharacterPerformerComponent();
 	virtual CharacterPerformerComponent* clone() const;

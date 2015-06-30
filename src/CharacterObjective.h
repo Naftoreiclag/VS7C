@@ -7,9 +7,8 @@
 #ifndef CHARACTEROBJECTIVE_H
 #define CHARACTEROBJECTIVE_H
 
-#include "CharacterTaskCondition.h"
-#include "CharacterTask.h"
-
+class CharacterTask;
+class CharacterTaskCondition;
 class CharacterObjective {
 public:
 	CharacterObjective();

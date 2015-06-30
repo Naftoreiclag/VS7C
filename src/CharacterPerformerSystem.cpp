@@ -32,9 +32,8 @@ void CharacterPerformerSystem::setTpf(irr::f32 value) {
 }
 
 void CharacterPerformerSystem::process(nres::Entity& entity) {
-    CharacterPerformerComponent* perf = (CharacterPerformerComponent*) entity.getComponentData(RID("comp character performer"));
-
 	CharacterState state(entity);
+	CharacterPerformerComponent* perf = state.perf;
 	// Performer is waiting for a condition to be fulfilled
 	if(perf->waitingFor) {
 

@@ -13,4 +13,5 @@ CTConditionNotBusy::~CTConditionNotBusy() {
 }
 
 bool CTConditionNotBusy::isFulfilled(const CharacterState& state) const {
+	return !state.perf->isBusy();
 }

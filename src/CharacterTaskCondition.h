@@ -11,6 +11,7 @@
 
 #include "nresEntity.h"
 
+#include "CharacterPerformerComponent.h"
 #include "CharacterBodyComponent.h"
 #include "CharacterPhysicsComponent.h"
 #include "PhysicsComponent.h"
@@ -21,10 +22,11 @@ Atomic condition, such as sitting down, standing, located somewhere, etc...
 */
 
 struct CharacterState {
-	CharacterState(CharacterBodyComponent* body, CharacterPhysicsComponent* charPhys, PhysicsComponent* phys);
+	CharacterState(CharacterPerformerComponent* perf, CharacterBodyComponent* body, CharacterPhysicsComponent* charPhys, PhysicsComponent* phys);
 
 	CharacterState(nres::Entity& entity);
 
+	CharacterPerformerComponent* perf;
 	CharacterBodyComponent* body;
 	CharacterPhysicsComponent* charPhys;
 	PhysicsComponent* phys;

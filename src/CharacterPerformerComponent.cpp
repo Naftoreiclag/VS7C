@@ -19,6 +19,22 @@ CharacterPerformerComponent::~CharacterPerformerComponent()
 	//dtor
 }
 
+bool CharacterPerformerComponent::isBusy() const {
+	if(currentObjective.conditionToFulfill != 0) {
+		return true;
+	}
+	if(currentObjective.taskToPerform != 0) {
+		return true;
+	}
+	if(!taskLayers.empty()) {
+		return true;
+	}
+	if(waitingFor != 0) {
+		return true;
+	}
+	return false;
+}
+
 CharacterPerformerComponent::TaskLayer::TaskLayer(CharacterTask* const task)
 : task(task) {
 }

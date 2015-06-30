@@ -11,6 +11,7 @@
 
 /*
 The character is currently doing nothing
+i.e. not performing a task, and has no objective, and not waiting for anything
 */
 
 class CTConditionNotBusy : public CharacterTaskCondition {
