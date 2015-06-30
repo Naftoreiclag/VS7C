@@ -6,6 +6,9 @@
 
 #include "CharacterPerformerSystem.h"
 
+#include <vector>
+#include <algorithm>
+
 #include "CharacterTaskRegistry.h"
 #include "easylogging++.h"
 
@@ -34,15 +37,74 @@ void CharacterPerformerSystem::process(nres::Entity& entity) {
     PhysicsComponent* phys = (PhysicsComponent*) entity.getComponentData(RID("comp physics"));
 
 	CharacterState state(body, charPhys, phys);
-	if(perf->taskLayers.size() > 0) {
+	// Performer is waiting for a condition to be fulfilled
+	if(perf->waitingFor) {
+
+		// If waiting is successful
+		if(perf->waitingFor->isFulfilled(state)) {
+			perf->waitingFor = 0;
+		}
+
+		// Condition has not been fulfilled yet
+		else {
+			// If we have been waiting for too long
+			perf->timeWaiting += tpf;
+			if(perf->timeWaiting >= perf->waitingFor->waitTimeout) {
+				// The whole task tree has failed
+				LOG(INFO) << "Condition timed out.";
+				perf->waitingFor = 0;
+				perf->timeWaiting = 0;
+				while(!perf->taskLayers.empty()) {
+					delete perf->taskLayers.top().task;
+					perf->taskLayers.pop();
+				}
+				LOG(INFO) << "Deleted task tree.";
+			}
+
+			else {
+				// [Wait some more...]
+				LOG_EVERY_N(1000, INFO) << "Waiting for condition to be fulfilled...";
+			}
+		}
+	}
+
+	// Performer has something to do
+	else if(perf->taskLayers.size() > 0) {
 		// If this task has something else that needs to be done first, do that
 		// TODO: keep track of redirection count
 		TaskMetadata nextTask = getNextTask(state, perf->taskLayers.top().task);
 
 		// Something else needs to be done first
 		if(nextTask.subject) {
-			LOG(INFO) << "Pushing new subtask onto stack";
-			perf->taskLayers.push(nextTask.subject->newWhichFulfills(nextTask.fulfills));
+
+			// If the next task fulfills a continuous condition
+			if(nextTask.fulfills->continuous) {
+				// Get all the continuous conditions we have fulfilled already
+				std::vector<CharacterTaskCondition*> contConds = perf->taskLayers.top().continuousConditions;
+
+				// If we have already tried to fulfill this condition
+				if(std::find(contConds.begin(), contConds.end(), nextTask.fulfills) != contConds.end()) {
+					// (Then clearly it has been violated, so therefore the task is interrupted)
+
+					LOG(INFO) << "Task interrupted.";
+					perf->waitingFor = nextTask.fulfills;
+				}
+
+				// This is the first time this continuous condition was fulfilled
+				else {
+					contConds.push_back(nextTask.fulfills);
+
+					// Do it then
+					LOG(INFO) << "Pushing new subtask onto stack";
+					perf->taskLayers.push(nextTask.subject->newWhichFulfills(nextTask.fulfills));
+				}
+			}
+
+			// Next task fulfills something else
+			else {
+				LOG(INFO) << "Pushing new subtask onto stack";
+				perf->taskLayers.push(nextTask.subject->newWhichFulfills(nextTask.fulfills));
+			}
 		}
 
 		// Nothing else needs to be done first, i.e. do it
@@ -65,9 +127,7 @@ void CharacterPerformerSystem::process(nres::Entity& entity) {
 			// There was an interruption
 			else {
 				LOG(INFO) << "Task interrupted.";
-				delete perf->taskLayers.top().task;
-				perf->taskLayers.pop();
-				LOG(INFO) << "Deleted task.";
+				perf->waitingFor = nextTask.fulfills;
 			}
 		}
 
@@ -77,20 +137,22 @@ void CharacterPerformerSystem::process(nres::Entity& entity) {
 			if(nextTask.except.noFulfillmentExists) {
 				LOG(INFO) << "No task exists that can fulfill prerequisites.";
 			}
-			delete perf->taskLayers.top().task;
-			perf->taskLayers.pop();
-			LOG(INFO) << "Deleted task.";
+			perf->waitingFor = nextTask.fulfills;
 		}
 	}
 
-	// Objective is a condition
+	// Performer's objective is to fulfill condition
 	else if(perf->currentObjective.conditionToFulfill) {
+
+		// If objective has been fuliflled
         if(perf->currentObjective.conditionToFulfill->isFulfilled(state)) {
 			LOG(INFO) << "Objective condtion fulfilled.";
 			delete perf->currentObjective.conditionToFulfill;
 			perf->currentObjective.conditionToFulfill = 0;
 			LOG(INFO) << "Deleted objective condition.";
         }
+
+		// Objective not yet fulfilled
         else {
 			LOG(INFO) << "Performer has condition to fulfill.";
         	TaskMetadata nextTask = getNextTask(state, perf->currentObjective.conditionToFulfill);
@@ -115,27 +177,6 @@ void CharacterPerformerSystem::process(nres::Entity& entity) {
 		LOG(INFO) << "Performer objective task set as current task";
 		perf->taskLayers.push(TaskLayer(perf->currentObjective.taskToPerform));
 		perf->currentObjective.taskToPerform = 0;
-
-		/*
-		TaskMetadata nextTask = getNextTask(state, perf->currentObjective.taskToPerform);
-		if(nextTask.subject) {
-			LOG(INFO) << "Next task located for objective. Setting as next action...";
-			perf->currentAction = nextTask.subject->newWhichFulfills(nextTask.fulfills);
-		}
-		else if(nextTask.except.noSubtaskNeeded) {
-			LOG(INFO) << "All conditions met for objective task. Setting as next action...";
-			perf->currentAction = perf->currentObjective.taskToPerform;
-		}
-		else {
-			LOG(INFO) << "Exception while locating next task.";
-			if(nextTask.except.noFulfillmentExists) {
-				LOG(INFO) << "No task exists that can fulfill objective condition.";
-			}
-			perf->currentObjective.taskToPerform = 0;
-			delete perf->currentObjective.taskToPerform;
-			LOG(INFO) << "Deleted objective task.";
-		}
-		*/
 	}
 }
 

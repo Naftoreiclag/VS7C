@@ -10,7 +10,9 @@
 #include <stack>
 #include <vector>
 
+#include "irrlicht.h"
 #include "NREntitySystem.h"
+
 #include "CharacterObjective.h"
 #include "CharacterTask.h"
 
@@ -24,12 +26,13 @@ public:
 		TaskLayer(CharacterTask* const task);
 
 		CharacterTask* const task;
-		bool finishedContinuous;
-		std::vector<CharacterTaskCondition> continuousComponents;
+		std::vector<CharacterTaskCondition*> continuousConditions;
 	};
 public:
 	CharacterObjective currentObjective; // Objective
 	std::stack<TaskLayer> taskLayers; // Big stack of tasks
+	CharacterTaskCondition* waitingFor = 0; // Waiting for this to be fulfilled first
+	irr::f32 timeWaiting = 0; // How long we have been waiting for
 
 	CharacterPerformerComponent();
 	virtual CharacterPerformerComponent* clone() const;
