@@ -37,8 +37,6 @@ public:
 	CharacterPerformerComponent();
 	virtual CharacterPerformerComponent* clone() const;
 	virtual ~CharacterPerformerComponent();
-protected:
-private:
 };
 
 #endif // CHARACTERPERFORMERCOMPONENT_H

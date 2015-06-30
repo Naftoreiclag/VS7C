@@ -88,10 +88,22 @@
 		<Unit filename="CTConditionLocation.h">
 			<Option virtualFolder="Character Task Engine/Conditions/Concrete/" />
 		</Unit>
+		<Unit filename="CTConditionNotBusy.cpp">
+			<Option virtualFolder="Character Task Engine/Conditions/Concrete/" />
+		</Unit>
+		<Unit filename="CTConditionNotBusy.h">
+			<Option virtualFolder="Character Task Engine/Conditions/Concrete/" />
+		</Unit>
 		<Unit filename="CTConditionSitting.cpp">
 			<Option virtualFolder="Character Task Engine/Conditions/Concrete/" />
 		</Unit>
 		<Unit filename="CTConditionSitting.h">
+			<Option virtualFolder="Character Task Engine/Conditions/Concrete/" />
+		</Unit>
+		<Unit filename="CTConditionSomeoneElse.cpp">
+			<Option virtualFolder="Character Task Engine/Conditions/Concrete/" />
+		</Unit>
+		<Unit filename="CTConditionSomeoneElse.h">
 			<Option virtualFolder="Character Task Engine/Conditions/Concrete/" />
 		</Unit>
 		<Unit filename="CTaskConversation.cpp">

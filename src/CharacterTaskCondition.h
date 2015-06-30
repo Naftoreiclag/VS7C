@@ -9,6 +9,8 @@
 
 #include "irrlicht.h"
 
+#include "nresEntity.h"
+
 #include "CharacterBodyComponent.h"
 #include "CharacterPhysicsComponent.h"
 #include "PhysicsComponent.h"
@@ -19,14 +21,15 @@ Atomic condition, such as sitting down, standing, located somewhere, etc...
 */
 
 struct CharacterState {
-	CharacterState(CharacterBodyComponent* body, CharacterPhysicsComponent* charPhys, PhysicsComponent* phys)
-	:body(body),
-	charPhys(charPhys),
-	phys(phys) {
-	}
+	CharacterState(CharacterBodyComponent* body, CharacterPhysicsComponent* charPhys, PhysicsComponent* phys);
+
+	CharacterState(nres::Entity& entity);
+
 	CharacterBodyComponent* body;
 	CharacterPhysicsComponent* charPhys;
 	PhysicsComponent* phys;
+
+	bool valid;
 };
 
 class CharacterTaskCondition {
@@ -34,7 +37,7 @@ public:
 	CharacterTaskCondition();
 	virtual ~CharacterTaskCondition();
 	virtual bool isFulfilled(const CharacterState& state) const = 0;
-	virtual bool isPossible(const CharacterState& state) const;
+	virtual bool isValid(const CharacterState& state) const;
 
 	/*
 	If true, the performer attempts to fulfill this condition

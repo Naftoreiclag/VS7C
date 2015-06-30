@@ -10,6 +10,7 @@
 #include <algorithm>
 
 #include "CharacterTaskRegistry.h"
+
 #include "easylogging++.h"
 
 CharacterPerformerSystem::CharacterPerformerSystem() {
@@ -32,11 +33,8 @@ void CharacterPerformerSystem::setTpf(irr::f32 value) {
 
 void CharacterPerformerSystem::process(nres::Entity& entity) {
     CharacterPerformerComponent* perf = (CharacterPerformerComponent*) entity.getComponentData(RID("comp character performer"));
-    CharacterBodyComponent* body = (CharacterBodyComponent*) entity.getComponentData(RID("comp character body"));
-    CharacterPhysicsComponent* charPhys = (CharacterPhysicsComponent*) entity.getComponentData(RID("comp character physics"));
-    PhysicsComponent* phys = (PhysicsComponent*) entity.getComponentData(RID("comp physics"));
 
-	CharacterState state(body, charPhys, phys);
+	CharacterState state(entity);
 	// Performer is waiting for a condition to be fulfilled
 	if(perf->waitingFor) {
 
