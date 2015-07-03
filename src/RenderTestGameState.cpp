@@ -73,8 +73,8 @@ void RenderTestGameState::init() {
 	MyShaderCallback* mc = new MyShaderCallback(device);
 
 	customMaterialType = (irr::video::E_MATERIAL_TYPE) gpu->addHighLevelShaderMaterialFromFiles(
-		"example_media/opengl.vert", "vertexMain", irr::video::EVST_VS_1_1,
-		"example_media/opengl.frag", "pixelMain", irr::video::EPST_PS_1_1,
+		"assets/shaders/testShader.vert", "vertexMain", irr::video::EVST_VS_1_1,
+		"assets/shaders/testShader.frag", "pixelMain", irr::video::EPST_PS_1_1,
 		mc, irr::video::EMT_SOLID, 0, irr::video::EGSL_DEFAULT);
 
 	mc->drop();
