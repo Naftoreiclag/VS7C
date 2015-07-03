@@ -120,7 +120,7 @@ void OverworldGameState::init() {
 	yawPivot->setParent(playerSceneNode->sceneNode);
 
 	// Cool skybox
-	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
+	driver->setTextureCreationFlag(irr::video::ETCF_CREATE_MIP_MAPS, false);
 	smgr->addSkyBoxSceneNode(
 		driver->getTexture("example_media/irrlicht2_up.jpg"),
 		driver->getTexture("example_media/irrlicht2_dn.jpg"),
@@ -128,7 +128,7 @@ void OverworldGameState::init() {
 		driver->getTexture("example_media/irrlicht2_rt.jpg"),
 		driver->getTexture("example_media/irrlicht2_ft.jpg"),
 		driver->getTexture("example_media/irrlicht2_bk.jpg"));
-	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
+	driver->setTextureCreationFlag(irr::video::ETCF_CREATE_MIP_MAPS, true);
 }
 
 nres::Entity& OverworldGameState::makeEmptyCharEnt(btVector3 origin) {

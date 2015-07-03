@@ -9,6 +9,16 @@
 
 #include "GameState.h"
 
+class MyShaderCallback : public irr::video::IShaderConstantSetCallBack {
+public:
+	irr::IrrlichtDevice* device;
+
+	MyShaderCallback(irr::IrrlichtDevice* device);
+	virtual ~MyShaderCallback();
+
+	virtual void OnSetConstants(irr::video::IMaterialRendererServices* services, irr::s32 userData);
+};
+
 class RenderTestGameState : public GameState {
 public:
 	RenderTestGameState(irr::IrrlichtDevice *irrlicht);
@@ -27,6 +37,7 @@ private:
 	irr::scene::ISceneManager* smgr;
 	irr::scene::ICameraSceneNode* cam;
 	irr::IrrlichtDevice* device;
+	irr::video::IGPUProgrammingServices* gpu;
 };
 
 #endif // RENDERTESTGAMESTATE_H
