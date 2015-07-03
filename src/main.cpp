@@ -6,7 +6,6 @@
 
 #include "irrlicht.h"
 #include "driverChoice.h"
-#include "Artemis/Artemis.h"
 #include "lua.h"
 #include "lualib.h"
 #include "lauxlib.h"
@@ -14,6 +13,7 @@
 #include "ChunkNode.h"
 #include "GameStateManager.h"
 #include "OverworldGameState.h"
+#include "RenderTestGameState.h"
 #include "InputManager.h"
 
 using namespace irr;
@@ -88,7 +88,7 @@ int main()
 	GameStateManager gsmgr;
 
 	// Initial state
-	GameState* initialState = new OverworldGameState(device);
+	GameState* initialState = new RenderTestGameState(device);//new OverworldGameState(device);
 	gsmgr.attachState(initialState);
 
 	// Initialize tpf calculator

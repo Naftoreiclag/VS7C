@@ -88,10 +88,20 @@ void OverworldGameState::init() {
 	//chunkNode = new ChunkNode(test->getChunk(0, 0), smgr->getRootSceneNode(), smgr, 1337);
 	//
 
+
+	irr::scene::IAnimatedMesh* mesh = smgr->getMesh("example_media/ninja.b3d");
+	if(!mesh) {
+		LOG(ERROR) << "error";
+	}
+	irr::scene::IAnimatedMeshSceneNode* node = smgr->addAnimatedMeshSceneNode(mesh);
+	node->setFrameLoop(0, 30);
+	node->setAnimationSpeed(15);
+
 	chunkNode = smgr->addCubeSceneNode(100);
 	chunkNode->getMaterial(0).setTexture(0, driver->getTexture("assets/grass.png"));
 	chunkNode->setPosition(irr::core::vector3df(0, -50, 0));
 	chunkNode->addShadowVolumeSceneNode();
+
 
 	// Phys test floor
 	btStaticPlaneShape* planeShape = new btStaticPlaneShape(btVector3(0, 1, 0), 0);
