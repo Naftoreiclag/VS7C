@@ -8,7 +8,6 @@ lib/*
 logs/*
 *.x
 thirdparty/bu*
-thirdparty/ea*
 thirdparty/lu*
 thirdparty/SF*
 
