@@ -1,21 +1,20 @@
 Village Simulator 7
 ===
-"Why am I remaking this!?"
+*to be renamed*
 
-Project setup
----
-1. Compile Irrlicht using Code::Blocks.
-2. Place Irrlicht.dll into the /bin/ folder.
-3. Place the /include/ and /lib/ folders into the /irrlicht/ folder.
-4. Open project with .cbp file located in /src/
+Code::Blocks project file located under /src/
 
-Code Used
+Libraries
 ---
+- Boost 1.58.0
+- Bullet 3-2.83.4
+- Easylogging++
 - Irrlicht Engine 1.8.1
-- Artemis-Cpp from GAMADU.COM
-- zlib
-- libPng
-- The Independent JPEG Group
-- Open Dynamics Engine
+  - zlib
+  - libPng
+  - The Independent JPEG Group
 - Lua 5.3
+- Naftoreiclag's Entity System
+- SFML 2.3
+
 

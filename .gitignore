@@ -1,5 +1,4 @@
 bin/*
-thirdparty/*
 lib/*
 *.depend
 *.layout
@@ -7,3 +6,10 @@ lib/*
 *ReleaseSingleLib*
 *example_*
 logs/*
+*.x
+thirdparty/bu*
+thirdparty/ea*
+thirdparty/lu*
+thirdparty/SF*
+
+thirdparty/boost*
