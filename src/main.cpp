@@ -88,7 +88,7 @@ int main()
 	GameStateManager gsmgr;
 
 	// Initial state
-	GameState* initialState = new RenderTestGameState(device);//new OverworldGameState(device);
+	GameState* initialState = new OverworldGameState(device);
 	gsmgr.attachState(initialState);
 
 	// Initialize tpf calculator

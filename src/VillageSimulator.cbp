@@ -324,6 +324,13 @@
 		<Unit filename="nresWorld.h">
 			<Option virtualFolder="Entity System/" />
 		</Unit>
+		<Unit filename="nrsalList.cpp" />
+		<Unit filename="nrsalList.h" />
+		<Unit filename="nrsalMap.cpp" />
+		<Unit filename="nrsalMap.h" />
+		<Unit filename="nrsalPrimitives.h" />
+		<Unit filename="nrsalValue.cpp" />
+		<Unit filename="nrsalValue.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />

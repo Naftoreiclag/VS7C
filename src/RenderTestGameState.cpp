@@ -55,10 +55,11 @@ RenderTestGameState::~RenderTestGameState()
 
 
 void RenderTestGameState::init() {
-	cam = smgr->addCameraSceneNodeMaya();
-	cam->setPosition(irr::core::vector3df(-100, 50, 100));
+	cam = smgr->getActiveCamera();
+	//cam->setPosition(irr::core::vector3df(-100, 50, 100));
 
 	// Cool skybox
+	/*
 	driver->setTextureCreationFlag(irr::video::ETCF_CREATE_MIP_MAPS, false);
 	smgr->addSkyBoxSceneNode(
 		driver->getTexture("example_media/irrlicht2_up.jpg"),
@@ -68,6 +69,7 @@ void RenderTestGameState::init() {
 		driver->getTexture("example_media/irrlicht2_ft.jpg"),
 		driver->getTexture("example_media/irrlicht2_bk.jpg"));
 	driver->setTextureCreationFlag(irr::video::ETCF_CREATE_MIP_MAPS, true);
+	*/
 
 	irr::video::E_MATERIAL_TYPE customMaterialType;
 	MyShaderCallback* mc = new MyShaderCallback(device);
