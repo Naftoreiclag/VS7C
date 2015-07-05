@@ -1,4 +1,5 @@
-bin/*
+bin/donotinclude*
+bin/*.exe
 lib/*
 *.depend
 *.layout
