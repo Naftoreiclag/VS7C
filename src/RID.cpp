@@ -10,15 +10,13 @@
 RID::RID(RIDValue value)
 : value(value) { }
 
-RID::RID(std::string humanReadableID) {
-	value = RIDDatabase::getValueID(humanReadableID);
-}
+RID::RID(std::string humanReadableID)
+: value(RIDDatabase::getValueID(humanReadableID)) { }
 
-RID::RID(const RID& arg) {
-	value = arg.value;
-}
-RID::~RID() {
-}
+RID::RID(const RID& arg)
+: value(arg.value) { }
+
+RID::~RID() { }
 
 const std::string& RID::getHumanReadableID() const {
 	return RIDDatabase::getMetadata(value).humanReadableID;
@@ -43,6 +41,11 @@ bool RID::operator<(const RID& arg) {
 RID::operator RIDValue() const {
 	return value;
 }
+
+RID::RIDValue RID::getValue() const {
+	return value;
+}
+
 
 RIDDatabase::RIDMetadataTable metadataTable;
 RIDDatabase::RIDMetadata* errorData = 0;

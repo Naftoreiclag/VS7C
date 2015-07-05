@@ -17,3 +17,11 @@ CharacterBodyComponent* CharacterBodyComponent::clone() const {
 CharacterBodyComponent::~CharacterBodyComponent() {
 
 }
+
+ComponentData* CharacterBodySerializer::read(Json::Value data) {
+
+}
+
+Json::Value CharacterBodySerializer::write(ComponentData* data) {
+
+}

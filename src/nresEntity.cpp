@@ -57,15 +57,20 @@ namespace nres {
 	}
 
 
-	ComponentData* Entity::getComponentData(const ComponentID& compID) {
+	ComponentData* Entity::getComponentData(const ComponentID& compID) const {
 
-		std::map<ComponentID, ComponentData*>::iterator location = componentDataMap.find(compID);
+		std::map<ComponentID, ComponentData*>::const_iterator location = componentDataMap.find(compID);
 
 		if(location == componentDataMap.end()) {
 			return 0;
 		}
 
 		return location->second;
+	}
+
+	const std::map<ComponentID, ComponentData*>& Entity::getComponentDataMap() const {
+
+		return componentDataMap;
 	}
 
 	void Entity::deleteSelf() {

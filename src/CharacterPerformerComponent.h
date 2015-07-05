@@ -13,6 +13,7 @@
 #include "irrlicht.h"
 #include "NREntitySystem.h"
 
+#include "BaseComponent.h"
 #include "CharacterObjective.h"
 
 /*
@@ -20,7 +21,7 @@ Includes only data about what the character is doing at any one time
 TODO: add support for doing multiple things at once
 */
 class CharacterTask;
-class CharacterPerformerComponent : public nres::ComponentData {
+class CharacterPerformerComponent : public BaseComponent {
 public:
 	struct TaskLayer {
 		TaskLayer(CharacterTask* const task);

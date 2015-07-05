@@ -7,6 +7,7 @@
 #ifndef PHYSICSCOMPONENT_H
 #define PHYSICSCOMPONENT_H
 
+#include "BaseComponent.h"
 #include "NREntitySystem.h"
 #include "irrlicht.h"
 #include "SceneNodeComponent.h"
@@ -19,7 +20,7 @@ Adds bullet dynamics to an entity.
 Associated PhysicsSystem updates the sceneNode's orientation to match the rigid body's.
 Note: physics shapes given to this component are deleted. To add resuable shapes, use shared_ptr<> instead.
 */
-class PhysicsComponent : public nres::ComponentData {
+class PhysicsComponent : public BaseComponent {
 public:
 	static signed short int const COLL_PLAYER = 1 << 0;
 	static signed short int const COLL_ENV = 1 << 1;

@@ -7,10 +7,11 @@
 #ifndef CHARACTERIDENTITYCOMPONENT_H
 #define CHARACTERIDENTITYCOMPONENT_H
 
+#include "BaseComponent.h"
 #include <string>
 #include "NREntitySystem.h"
 
-class CharacterIdentityComponent : public nres::ComponentData {
+class CharacterIdentityComponent : public BaseComponent {
 public:
 	std::string name;
 

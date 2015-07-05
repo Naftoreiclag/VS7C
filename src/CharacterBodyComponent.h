@@ -7,10 +7,12 @@
 #ifndef CHARACTERBODYCOMPONENT_H
 #define CHARACTERBODYCOMPONENT_H
 
+#include "ComponentSerializer.h"
+#include "BaseComponent.h"
 #include "NREntitySystem.h"
 #include "RID.h"
 
-class CharacterBodyComponent : public nres::ComponentData {
+class CharacterBodyComponent : public BaseComponent {
 public:
 	RID bodyPosition;
 
@@ -21,6 +23,12 @@ public:
 	virtual ~CharacterBodyComponent();
 protected:
 private:
+};
+
+class CharacterBodySerializer : public ComponentSerializer {
+public:
+	virtual ComponentData* read(Json::Value data);
+	virtual Json::Value write(ComponentData* data);
 };
 
 #endif // CHARACTERBODYCOMPONENT_H

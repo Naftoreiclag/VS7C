@@ -22,6 +22,8 @@
 
 #include "json/json.h"
 
+#include "ReiJson.h"
+
 #include "easylogging++.h"
 
 using namespace irr;
@@ -112,9 +114,13 @@ void OverworldGameState::init() {
 	dynamicsWorld->addRigidBody(planeRigid, PhysicsComponent::COLL_ENV, PhysicsComponent::COLL_ENV | PhysicsComponent::COLL_PLAYER);
 
 
-	bool load = false;
+	std::ifstream save("saves/saveaaa.json");
+	if(save.is_open()) {
+		Json::Value root;
+		save >> root;
 
-	if(load) {
+        LOG(INFO) << root;
+
 
 	}
 	else {
@@ -202,12 +208,22 @@ void OverworldGameState::cleanup() {
 	std::ofstream save("saves/save.json");
 
 	if(save.is_open()) {
-		Json::Value root;
+		Json::Value jsonRoot;
 
-		root["test"] = "hello";
-		root["subnode"]["subnode"] = "world";
 
-		save << root;
+
+		Json::Value& jsonEntities = jsonRoot["entities"];
+
+		const std::vector<nres::Entity*>& entities = entityWorld->getAllEntities();
+
+		for(std::vector<nres::Entity*>::const_iterator it = entities.begin(); it != entities.end(); ++ it) {
+			const nres::Entity& entity = **it;
+
+			jsonEntities.append(reij::entityToValue(entity));
+
+		}
+
+		save << jsonRoot;
 		LOG(INFO) << "Saved successfully.";
 	}
 

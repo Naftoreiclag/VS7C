@@ -7,6 +7,7 @@
 #ifndef SOULCOMPONENT_H
 #define SOULCOMPONENT_H
 
+#include "BaseComponent.h"
 #include "NREntitySystem.h"
 
 /*
@@ -19,7 +20,7 @@ here is one that exists in the game's world.
 
 // Emotion and AI go here
 // This is the alternative to having a player control a character
-class SoulComponent : public nres::ComponentData
+class SoulComponent : public BaseComponent
 {
 public:
 	bool happiness;

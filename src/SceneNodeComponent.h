@@ -9,12 +9,13 @@
 
 #include "irrlicht.h"
 
+#include "BaseComponent.h"
 #include "NREntitySystem.h"
 
 /*
 Basic scene node data, nothing else really
 */
-class SceneNodeComponent : public nres::ComponentData {
+class SceneNodeComponent : public BaseComponent {
 public:
 	SceneNodeComponent(irr::scene::ISceneNode* sceneNode);
 	virtual SceneNodeComponent* clone() const;

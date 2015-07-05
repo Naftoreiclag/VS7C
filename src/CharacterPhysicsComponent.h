@@ -7,6 +7,7 @@
 #ifndef CHARACTERPHYSICSCOMPONENT_H
 #define CHARACTERPHYSICSCOMPONENT_H
 
+#include "BaseComponent.h"
 #include "irrlicht.h"
 #include "NREntitySystem.h"
 #include "btBulletDynamicsCommon.h"
@@ -25,7 +26,7 @@ Adds character-like physics behavior:
 - Handles "walking" and "friction" by moving the character relative to the ground's velocity
 */
 
-class CharacterPhysicsComponent : public nres::ComponentData {
+class CharacterPhysicsComponent : public BaseComponent {
 public:
 	btDynamicsWorld* const world;
 

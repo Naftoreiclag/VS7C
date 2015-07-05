@@ -13,6 +13,7 @@
 #include "boost/multi_index/identity.hpp"
 #include "boost/multi_index/member.hpp"
 #include "irrlicht.h"
+#include "json/json.h"
 
 // sizeof RID == sizeof irr::u64
 class RID {
@@ -30,8 +31,11 @@ public:
 	bool operator==(const RID& arg);
 	bool operator<(const RID& arg);
 	operator RIDValue() const;
+
+	RIDValue getValue() const;
+
 private:
-    RIDValue value;
+	RIDValue value;
 };
 
 namespace RIDDatabase {

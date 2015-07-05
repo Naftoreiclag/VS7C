@@ -20,7 +20,6 @@ namespace nres {
 		World();
 		virtual ~World();
 
-
 		// The creation and deletion of all entities is handled by the world, since all entities are tied to their world
 		Entity& newEntity();
 		void deleteEntity(Entity* entity);

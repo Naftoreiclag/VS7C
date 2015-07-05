@@ -5,7 +5,7 @@
 		<Option title="Village Simulator 7C" />
 		<Option pch_mode="0" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="Character Task Engine\;Character Task Engine\;Character Task Engine\;Character Task Engine\;Utility\;Data\;Components\;Entity System\;GameStates\;Managers\;Character Components\;Character Task Engine\Conditions\;Character Task Engine\Conditions\Concrete\;Character Task Engine\Tasks\;Character Task Engine\Tasks\Concrete\;" />
+		<Option virtualFolders="Character Task Engine\;Character Task Engine\;Character Task Engine\;Character Task Engine\;Utility\;Data\;Components\;Entity System\;GameStates\;Managers\;Character Components\;Character Task Engine\Conditions\;Character Task Engine\Conditions\Concrete\;Character Task Engine\Tasks\;Character Task Engine\Tasks\Concrete\;nrsal\;" />
 		<Build>
 			<Target title="Linux">
 				<Option platforms="Unix;" />
@@ -81,6 +81,12 @@
 		</Linker>
 		<Unit filename="Array2d.h">
 			<Option virtualFolder="Data/" />
+		</Unit>
+		<Unit filename="BaseComponent.cpp">
+			<Option virtualFolder="Components/" />
+		</Unit>
+		<Unit filename="BaseComponent.h">
+			<Option virtualFolder="Components/" />
 		</Unit>
 		<Unit filename="CTConditionLocation.cpp">
 			<Option virtualFolder="Character Task Engine/Conditions/Concrete/" />
@@ -233,8 +239,6 @@
 		<Unit filename="InteractionComponent.h">
 			<Option virtualFolder="Components/" />
 		</Unit>
-		<Unit filename="JSONAware.cpp" />
-		<Unit filename="JSONAware.h" />
 		<Unit filename="NREntitySystem.h">
 			<Option virtualFolder="Entity System/" />
 		</Unit>
@@ -260,6 +264,12 @@
 			<Option virtualFolder="Utility/" />
 		</Unit>
 		<Unit filename="ReiBullet.h">
+			<Option virtualFolder="Utility/" />
+		</Unit>
+		<Unit filename="ReiJson.cpp">
+			<Option virtualFolder="Utility/" />
+		</Unit>
+		<Unit filename="ReiJson.h">
 			<Option virtualFolder="Utility/" />
 		</Unit>
 		<Unit filename="ReiMath.cpp">
@@ -329,13 +339,27 @@
 		<Unit filename="nresWorld.h">
 			<Option virtualFolder="Entity System/" />
 		</Unit>
-		<Unit filename="nrsalList.cpp" />
-		<Unit filename="nrsalList.h" />
-		<Unit filename="nrsalMap.cpp" />
-		<Unit filename="nrsalMap.h" />
-		<Unit filename="nrsalPrimitives.h" />
-		<Unit filename="nrsalValue.cpp" />
-		<Unit filename="nrsalValue.h" />
+		<Unit filename="nrsalList.cpp">
+			<Option virtualFolder="nrsal/" />
+		</Unit>
+		<Unit filename="nrsalList.h">
+			<Option virtualFolder="nrsal/" />
+		</Unit>
+		<Unit filename="nrsalMap.cpp">
+			<Option virtualFolder="nrsal/" />
+		</Unit>
+		<Unit filename="nrsalMap.h">
+			<Option virtualFolder="nrsal/" />
+		</Unit>
+		<Unit filename="nrsalPrimitives.h">
+			<Option virtualFolder="nrsal/" />
+		</Unit>
+		<Unit filename="nrsalValue.cpp">
+			<Option virtualFolder="nrsal/" />
+		</Unit>
+		<Unit filename="nrsalValue.h">
+			<Option virtualFolder="nrsal/" />
+		</Unit>
 		<Extensions>
 			<code_completion />
 			<debugger />

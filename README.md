@@ -13,6 +13,7 @@ Libraries
   - zlib
   - libPng
   - The Independent JPEG Group
+- JsonCpp
 - Lua 5.3
 - Naftoreiclag's Entity System
 - SFML 2.3

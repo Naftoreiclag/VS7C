@@ -22,7 +22,9 @@ namespace nres {
 
 		void addComponent(const ComponentID& compID, ComponentData* data);
 		void removeComponent(const ComponentID& compID);
-		ComponentData* getComponentData(const ComponentID& compID);
+		ComponentData* getComponentData(const ComponentID& compID) const;
+
+		const std::map<ComponentID, ComponentData*>& getComponentDataMap() const;
 
 		// Publish component signature to world
 		void finalize();

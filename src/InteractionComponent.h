@@ -7,9 +7,10 @@
 #ifndef INTERACTIONCOMPONENT_H
 #define INTERACTIONCOMPONENT_H
 
+#include "BaseComponent.h"
 #include "NREntitySystem.h"
 
-class InteractionComponent : public nres::ComponentData {
+class InteractionComponent : public BaseComponent {
 public:
 	InteractionComponent();
 	virtual InteractionComponent* clone() const;
