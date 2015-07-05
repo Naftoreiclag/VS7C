@@ -1,5 +1,6 @@
 bin/donotinclude*
 bin/*.exe
+saves/*
 lib/*
 *.depend
 *.layout

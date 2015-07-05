@@ -55,6 +55,7 @@
 			<Add directory="../thirdparty/SFML-2.3/include" />
 			<Add directory="../thirdparty/boost_1_58_0/include" />
 			<Add directory="../thirdparty/easyloggingpp_v9.80/include" />
+			<Add directory="../thirdparty/jsoncpp-0.10.2-p1/include" />
 		</Compiler>
 		<Linker>
 			<Add library="Irrlicht" />
@@ -72,9 +73,11 @@
 			<Add library="sfml-system" />
 			<Add library="sfml-network" />
 			<Add library="sfml-audio" />
+			<Add library="libjsoncpp" />
 			<Add directory="../thirdparty/bullet3-2.83.4/lib" />
 			<Add directory="../thirdparty/SFML-2.3/lib" />
 			<Add directory="../thirdparty/lua-5.3_Win32_mingw4_lib/lib" />
+			<Add directory="../thirdparty/jsoncpp-0.10.2-p1/lib" />
 		</Linker>
 		<Unit filename="Array2d.h">
 			<Option virtualFolder="Data/" />
@@ -230,6 +233,8 @@
 		<Unit filename="InteractionComponent.h">
 			<Option virtualFolder="Components/" />
 		</Unit>
+		<Unit filename="JSONAware.cpp" />
+		<Unit filename="JSONAware.h" />
 		<Unit filename="NREntitySystem.h">
 			<Option virtualFolder="Entity System/" />
 		</Unit>

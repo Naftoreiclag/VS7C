@@ -21,8 +21,7 @@ namespace nrsal {
 			OTHER
 		};
 	public:
-		Value(Type type);
-		Value(long double number);
+		Value();
 		virtual ~Value();
 	};
 }

@@ -6,12 +6,14 @@
 
 #include "nrsalList.h"
 
-nrsalList::nrsalList()
-{
-	//ctor
-}
+namespace nrsal {
+	List::List()
+	{
+		//ctor
+	}
 
-nrsalList::~nrsalList()
-{
-	//dtor
+	List::~List()
+	{
+		//dtor
+	}
 }

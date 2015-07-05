@@ -6,12 +6,14 @@
 
 #include "nrsalValue.h"
 
-nrsalValue::nrsalValue()
-{
-	//ctor
-}
+namespace nrsal {
+	Value::Value()
+	{
+		//ctor
+	}
 
-nrsalValue::~nrsalValue()
-{
-	//dtor
+	Value::~Value()
+	{
+		//dtor
+	}
 }

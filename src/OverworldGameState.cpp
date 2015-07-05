@@ -6,10 +6,11 @@
 
 #include "OverworldGameState.h"
 
+#include <fstream>
+
 #include "irrlicht.h"
 #include "ChunkNode.h"
 #include "Chunk.h"
-#include <iostream>
 #include <cmath>
 #include "InputManager.h"
 #include "ReiMath.h"
@@ -18,6 +19,8 @@
 #include "CTConditionSitting.h"
 #include "CTConditionLocation.h"
 #include "CTaskConversation.h"
+
+#include "json/json.h"
 
 #include "easylogging++.h"
 
@@ -108,12 +111,22 @@ void OverworldGameState::init() {
 	btRigidBody* planeRigid = new btRigidBody(0, 0, planeShape);
 	dynamicsWorld->addRigidBody(planeRigid, PhysicsComponent::COLL_ENV, PhysicsComponent::COLL_ENV | PhysicsComponent::COLL_PLAYER);
 
-	playerEnt = &makeEmptyCharEnt(btVector3(5, 21, 5));
-	playerEnt->finalize();
 
-	nres::Entity& sammy = makeEmptyCharEnt(btVector3(15, 20, 5));
-    sammy.addComponent(RID("comp soul"), new SoulComponent());
-    sammy.finalize();
+	bool load = false;
+
+	if(load) {
+
+	}
+	else {
+
+		playerEnt = &makeEmptyCharEnt(btVector3(5, 21, 5));
+		playerEnt->finalize();
+
+		nres::Entity& sammy = makeEmptyCharEnt(btVector3(15, 20, 5));
+		sammy.addComponent(RID("comp soul"), new SoulComponent());
+		sammy.finalize();
+
+	}
 
 
 	SceneNodeComponent* playerSceneNode = (SceneNodeComponent*) playerEnt->getComponentData(RID("comp scene"));
@@ -185,6 +198,23 @@ nres::Entity& OverworldGameState::makeEmptyCharEnt(btVector3 origin) {
 }
 
 void OverworldGameState::cleanup() {
+
+	std::ofstream save("saves/save.json");
+
+	if(save.is_open()) {
+		Json::Value root;
+
+		root["test"] = "hello";
+		root["subnode"]["subnode"] = "world";
+
+		save << root;
+		LOG(INFO) << "Saved successfully.";
+	}
+
+	else {
+		LOG(ERROR) << "Could not open save file.";
+	}
+
 }
 
 OverworldGameState::~OverworldGameState() {

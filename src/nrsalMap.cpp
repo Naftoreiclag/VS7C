@@ -6,12 +6,14 @@
 
 #include "nrsalMap.h"
 
-nrsalMap::nrsalMap()
-{
-	//ctor
-}
+namespace nrsal {
+	Map::Map()
+	{
+		//ctor
+	}
 
-nrsalMap::~nrsalMap()
-{
-	//dtor
+	Map::~Map()
+	{
+		//dtor
+	}
 }
