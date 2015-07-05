@@ -7,7 +7,6 @@ lib/*
 *example_*
 logs/*
 *.x
-thirdparty/bu*
 thirdparty/lu*
 thirdparty/SF*
 

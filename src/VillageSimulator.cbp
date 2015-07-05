@@ -51,7 +51,7 @@
 			<Add option="-DdSINGLE" />
 			<Add directory="../thirdparty/irrlicht-1.8.1/include" />
 			<Add directory="../thirdparty/lua-5.3_Win32_mingw4_lib/include" />
-			<Add directory="../thirdparty/bullet3-2.83.4/src" />
+			<Add directory="../thirdparty/bullet3-2.83.4/include" />
 			<Add directory="../thirdparty/SFML-2.3/include" />
 			<Add directory="../thirdparty/boost_1_58_0/include" />
 			<Add directory="../thirdparty/easyloggingpp_v9.80/include" />
