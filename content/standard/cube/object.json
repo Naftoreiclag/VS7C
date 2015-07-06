@@ -1,0 +1,5 @@
+{
+	"id" : "std_cube",
+	"model" : "model_1.cae",
+	"phys" : "physics.json"
+}

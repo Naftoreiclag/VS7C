@@ -5,12 +5,12 @@
  */
 
 #include <iostream>
+#include <fstream>
+#include <string>
+
 #include "irrlicht.h"
 #include "driverChoice.h"
-
-#ifdef _MSC_VER
-#pragma comment(lib, "Irrlicht.lib")
-#endif
+#include "json/json.h"
 
 irr::video::IVideoDriver* driver;
 irr::scene::ISceneManager* smgr;
@@ -75,6 +75,17 @@ void showResourcesDialog() {
 
 }
 
+void openFile(std::string filename) {
+
+	std::ifstream stream(filename);
+	Json::Value objectData;
+
+	stream >> objectData;
+
+	std::cout << "Object opened:" << std::endl;
+	std::cout << objectData << std::endl;
+}
+
 class AppEventReceiver : public irr::IEventReceiver {
 public:
 	virtual bool OnEvent(const irr::SEvent& event) {
@@ -98,6 +109,15 @@ public:
 							break;
 						}
 					}
+				}
+
+				// File selected
+				case irr::gui::EGET_FILE_SELECTED: {
+					irr::gui::IGUIFileOpenDialog* dialog = (irr::gui::IGUIFileOpenDialog*) event.GUIEvent.Caller;
+
+					openFile(irr::core::stringc(dialog->getFileName()).c_str());
+
+
 					break;
 				}
 
@@ -194,6 +214,19 @@ int main()
 	}
 
 	showResourcesDialog();
+
+	// Cool skybox
+	driver->setTextureCreationFlag(irr::video::ETCF_CREATE_MIP_MAPS, false);
+	smgr->addSkyBoxSceneNode(
+		driver->getTexture("assets_editor/cloudy_0/bluecloud_up.jpg"),
+		driver->getTexture("assets_editor/cloudy_0/bluecloud_dn.jpg"),
+		driver->getTexture("assets_editor/cloudy_0/bluecloud_rt.jpg"),
+		driver->getTexture("assets_editor/cloudy_0/bluecloud_lf.jpg"),
+		driver->getTexture("assets_editor/cloudy_0/bluecloud_ft.jpg"),
+		driver->getTexture("assets_editor/cloudy_0/bluecloud_bk.jpg"));
+	driver->setTextureCreationFlag(irr::video::ETCF_CREATE_MIP_MAPS, true);
+
+	irr::scene::ICameraSceneNode* cam = smgr->addCameraSceneNodeMaya();
 
 
 	// Initialize tpf calculator
