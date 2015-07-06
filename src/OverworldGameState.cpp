@@ -113,6 +113,35 @@ void OverworldGameState::init() {
 	btRigidBody* planeRigid = new btRigidBody(0, 0, planeShape);
 	dynamicsWorld->addRigidBody(planeRigid, PhysicsComponent::COLL_ENV, PhysicsComponent::COLL_ENV | PhysicsComponent::COLL_PLAYER);
 
+	{
+
+		nres::Entity& ent = entityWorld->newEntity();
+
+		// SceneNode
+		SceneNodeComponent* sceneNode;
+		{
+			scene::IMeshSceneNode* cube = smgr->addSphereSceneNode(1, 16);
+			cube->getMaterial(0).GouraudShading = true;
+			sceneNode = new SceneNodeComponent(cube);
+		}
+
+		// Physics
+		PhysicsComponent* physics;
+		{
+			btTransform trans;
+			trans.setIdentity();
+			trans.setOrigin(btVector3(4, 5, 4));
+			physics =
+				new PhysicsComponent(&ent, dynamicsWorld, 1, new btSphereShape(1.0f), trans,
+									PhysicsComponent::COLL_PLAYER, PhysicsComponent::COLL_PLAYER | PhysicsComponent::COLL_ENV);
+		}
+
+		ent.addComponent(RID("comp scene"), sceneNode);
+		ent.addComponent(RID("comp physics"), physics);
+
+		ent.finalize();
+	}
+
 
 	std::ifstream save("saves/saveaaa.json");
 	if(save.is_open()) {

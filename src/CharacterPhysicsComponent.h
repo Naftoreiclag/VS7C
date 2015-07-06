@@ -11,6 +11,7 @@
 #include "irrlicht.h"
 #include "NREntitySystem.h"
 #include "btBulletDynamicsCommon.h"
+#include "ComponentSerializer.h"
 
 #include "RID.h"
 
@@ -79,6 +80,12 @@ public:
 	virtual ~CharacterPhysicsSystem();
 	virtual const nres::ComponentID* getComponentIDs(std::size_t& numComponentIDs) const;
 	virtual void process(nres::Entity& entity);
+};
+
+class CharacterPhysicsSerializer : public ComponentSerializer {
+public:
+	virtual nres::ComponentData* read(const Json::Value& data);
+	virtual Json::Value write(const nres::ComponentData* data);
 };
 
 #endif // CHARACTERPHYSICSCOMPONENT_H

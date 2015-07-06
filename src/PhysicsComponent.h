@@ -7,6 +7,7 @@
 #ifndef PHYSICSCOMPONENT_H
 #define PHYSICSCOMPONENT_H
 
+#include "ComponentSerializer.h"
 #include "BaseComponent.h"
 #include "NREntitySystem.h"
 #include "irrlicht.h"
@@ -85,6 +86,12 @@ public:
 	PhysicsSystem();
 	virtual const nres::ComponentID* getComponentIDs(std::size_t& numComponentIDs) const;
 	virtual void process(nres::Entity& e);
+};
+
+class PhysicsSerializer : public ComponentSerializer {
+public:
+	virtual nres::ComponentData* read(const Json::Value& data);
+	virtual Json::Value write(const nres::ComponentData* data);
 };
 
 #endif // PHYSICSCOMPONENT_H

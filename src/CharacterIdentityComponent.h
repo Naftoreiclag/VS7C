@@ -7,6 +7,7 @@
 #ifndef CHARACTERIDENTITYCOMPONENT_H
 #define CHARACTERIDENTITYCOMPONENT_H
 
+#include "ComponentSerializer.h"
 #include "BaseComponent.h"
 #include <string>
 #include "NREntitySystem.h"
@@ -20,6 +21,12 @@ public:
 	virtual ~CharacterIdentityComponent();
 protected:
 private:
+};
+
+class CharacterIdentitySerializer : public ComponentSerializer {
+public:
+	virtual nres::ComponentData* read(const Json::Value& data);
+	virtual Json::Value write(const nres::ComponentData* data);
 };
 
 #endif // CHARACTERIDENTITYCOMPONENT_H

@@ -15,6 +15,7 @@
 
 #include "BaseComponent.h"
 #include "CharacterObjective.h"
+#include "ComponentSerializer.h"
 
 /*
 Includes only data about what the character is doing at any one time
@@ -40,6 +41,12 @@ public:
 	CharacterPerformerComponent();
 	virtual CharacterPerformerComponent* clone() const;
 	virtual ~CharacterPerformerComponent();
+};
+
+class CharacterPerformerSerializer : public ComponentSerializer {
+public:
+	virtual nres::ComponentData* read(const Json::Value& data);
+	virtual Json::Value write(const nres::ComponentData* data);
 };
 
 #endif // CHARACTERPERFORMERCOMPONENT_H

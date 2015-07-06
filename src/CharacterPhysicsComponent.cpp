@@ -185,3 +185,16 @@ void CharacterPhysicsSystem::process(nres::Entity& e) {
 
 }
 
+nres::ComponentData* CharacterPhysicsSerializer::read(const Json::Value& data) {
+	//CharacterPhysicsComponent* comp = new CharacterPhysicsComponent();
+
+	return 0;
+}
+
+Json::Value CharacterPhysicsSerializer::write(const nres::ComponentData* compData) {
+	const CharacterPhysicsComponent* comp = static_cast<const CharacterPhysicsComponent*>(compData);
+	Json::Value data;
+
+	return data;
+}
+

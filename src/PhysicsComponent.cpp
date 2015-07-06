@@ -97,4 +97,20 @@ void PhysicsSystem::process(nres::Entity& e) {
 	}
 }
 
+nres::ComponentData* PhysicsSerializer::read(const Json::Value& data) {
+	//PhysicsComponent* comp = new PhysicsComponent();
+
+
+
+	return 0;
+}
+
+Json::Value PhysicsSerializer::write(const nres::ComponentData* compData) {
+	const PhysicsComponent* comp = static_cast<const PhysicsComponent*>(compData);
+	Json::Value data;
+
+	return data;
+}
+
+
 

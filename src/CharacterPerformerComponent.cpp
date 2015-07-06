@@ -38,3 +38,16 @@ bool CharacterPerformerComponent::isBusy() const {
 CharacterPerformerComponent::TaskLayer::TaskLayer(CharacterTask* const task)
 : task(task) {
 }
+
+nres::ComponentData* CharacterPerformerSerializer::read(const Json::Value& data) {
+	CharacterPerformerComponent* comp = new CharacterPerformerComponent();
+
+	return comp;
+}
+
+Json::Value CharacterPerformerSerializer::write(const nres::ComponentData* compData) {
+	const CharacterPerformerComponent* comp = static_cast<const CharacterPerformerComponent*>(compData);
+	Json::Value data;
+
+	return data;
+}

@@ -18,3 +18,17 @@ CharacterIdentityComponent::~CharacterIdentityComponent()
 {
 	//dtor
 }
+
+nres::ComponentData* CharacterIdentitySerializer::read(const Json::Value& data) {
+	CharacterIdentityComponent* comp = new CharacterIdentityComponent();
+
+	return comp;
+}
+
+Json::Value CharacterIdentitySerializer::write(const nres::ComponentData* compData) {
+	const CharacterIdentityComponent* comp = static_cast<const CharacterIdentityComponent*>(compData);
+	Json::Value data;
+
+	return data;
+}
+

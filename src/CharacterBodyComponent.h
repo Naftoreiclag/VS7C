@@ -21,8 +21,6 @@ public:
 	CharacterBodyComponent();
 	virtual CharacterBodyComponent* clone() const;
 	virtual ~CharacterBodyComponent();
-protected:
-private:
 };
 
 class CharacterBodySerializer : public ComponentSerializer {
