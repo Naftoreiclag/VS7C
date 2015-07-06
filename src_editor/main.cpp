@@ -4,6 +4,7 @@
  * See accompanying file LICENSE
  */
 
+#include <iostream>
 #include "irrlicht.h"
 #include "driverChoice.h"
 
@@ -19,36 +20,58 @@ enum {
 
 	GUI_ROOT_WINDOW = 0x10000,
 
-	GUI_DIALOG_RESOURCES,
+	GUI_FILE_NEW,
+	GUI_FILE_OPEN,
+	GUI_FILE_SAVE,
+	GUI_FILE_SAVE_AS,
 
-    GUI_TOGGLE_RESOURCES,
-    GUI_TOGGLE_COMPONENTS,
-    GUI_TOGGLE_MODEL,
-    GUI_TOGGLE_PHYSICS,
-    GUI_TOGGLE_ANIMATION,
+	GUI_DIALOG_RESOURCES,
+	GUI_DIALOG_COMPONENTS,
+	GUI_DIALOG_MODEL,
+	GUI_DIALOG_PHYSICS,
+	GUI_DIALOG_ANIMATION,
+
+	GUI_TREE_RESOURCES,
+
+    GUI_BUTTON_RESOURCES,
+    GUI_BUTTON_COMPONENTS,
+    GUI_BUTTON_MODEL,
+    GUI_BUTTON_PHYSICS,
+    GUI_BUTTON_ANIMATION,
 };
 
-inline irr::core::rect<irr::s32> GuiRect(irr::s32 x, irr::s32 y, irr::s32 width, irr::s32 height) {
+inline irr::core::rect<irr::s32> GuiBox(irr::s32 x, irr::s32 y, irr::s32 width, irr::s32 height) {
 	return irr::core::rect<irr::s32>(x, y, x + width, y + height);
 }
-
-void closeAllDialogs() {
-
+inline irr::core::rect<irr::s32> GuiRect(irr::s32 x1, irr::s32 y1, irr::s32 x2, irr::s32 y2) {
+	return irr::core::rect<irr::s32>(x1, y1, x2, y2);
 }
 
-void showResourcesDialog() {
-	// Remove dialog if already open
+// Remove dialog if already open
+void closeDialog(irr::s32 id) {
 	irr::gui::IGUIElement* elem = gui->getRootGUIElement()
-		->getElementFromId(GUI_DIALOG_RESOURCES, true);
+		->getElementFromId(id, true);
 	if(elem) {
 		elem->remove();
 	}
+}
+
+void closeAllDialogs() {
+	closeDialog(GUI_DIALOG_RESOURCES);
+}
+
+void showResourcesDialog() {
+	closeDialog(GUI_DIALOG_RESOURCES);
 
 	// Create dialog
-	irr::gui::IGUIWindow* dialog = gui->addWindow(GuiRect(10, 60, 150, 300), false, L"Resources", 0, GUI_DIALOG_RESOURCES);
+	irr::gui::IGUIWindow* dialog = gui->addWindow(GuiBox(10, 60, 200, 300), false, L"Resources", 0, GUI_DIALOG_RESOURCES);
 
 	// Add tree view
+	irr::gui::IGUITreeView* tree = gui->addTreeView(GuiRect(5, 25, 195, 295), dialog, GUI_TREE_RESOURCES, true, true, true);
 
+	irr::gui::IGUITreeViewNode* root = tree->getRoot();
+
+	root->addChildBack(L"Test");
 
 }
 
@@ -60,12 +83,41 @@ public:
 			irr::s32 id = event.GUIEvent.Caller->getID();
 
 			switch(event.GUIEvent.EventType) {
-			case irr::gui::EGET_BUTTON_CLICKED:
-				switch(id) {
-				case GUI_TOGGLE_RESOURCES:
-					showResourcesDialog();
+
+				// Menu item selected
+				case irr::gui::EGET_MENU_ITEM_SELECTED: {
+					irr::gui::IGUIContextMenu* menu = (irr::gui::IGUIContextMenu*) event.GUIEvent.Caller;
+					id = menu->getItemCommandId(menu->getSelectedItem());
+					switch(id) {
+						// File -> Open
+						case GUI_FILE_OPEN: {
+							gui->addFileOpenDialog(L"Open object...");
+							return true;
+						}
+						default: {
+							break;
+						}
+					}
+					break;
 				}
-			break;
+
+				// Button clicked
+				case irr::gui::EGET_BUTTON_CLICKED: {
+					switch(id) {
+						// Resource button
+						case GUI_BUTTON_RESOURCES: {
+							showResourcesDialog();
+							return true;
+						}
+						default: {
+							break;
+						}
+					}
+					break;
+				}
+				default: {
+					break;
+				}
 			}
 		}
 
@@ -115,21 +167,21 @@ int main()
 
 		// File
 		submenu = menu->getSubMenu(0);
-		submenu->addItem(L"New");
-		submenu->addItem(L"Open");
-		submenu->addItem(L"Save");
-		submenu->addItem(L"Save as...");
+		submenu->addItem(L"New", GUI_FILE_NEW);
+		submenu->addItem(L"Open", GUI_FILE_OPEN);
+		submenu->addItem(L"Save", GUI_FILE_SAVE);
+		submenu->addItem(L"Save as...", GUI_FILE_SAVE_AS);
 	}
 
 	{
 		irr::gui::IGUIToolBar* bar = gui->addToolBar();
 
 		irr::video::ITexture* image = driver->getTexture("assets/A.png");
-		bar->addButton(GUI_TOGGLE_RESOURCES, 0, L"Resources", image, 0, false, true);
-		bar->addButton(GUI_TOGGLE_COMPONENTS, 0, L"Components", image, 0, false, true);
-		bar->addButton(GUI_TOGGLE_MODEL, 0, L"Model", image, 0, false, true);
-		bar->addButton(GUI_TOGGLE_PHYSICS, 0, L"Physics", image, 0, false, true);
-		bar->addButton(GUI_TOGGLE_ANIMATION, 0, L"Animation", image, 0, false, true);
+		bar->addButton(GUI_BUTTON_RESOURCES, 0, L"Resources", image, 0, false, true);
+		bar->addButton(GUI_BUTTON_COMPONENTS, 0, L"Components", image, 0, false, true);
+		bar->addButton(GUI_BUTTON_MODEL, 0, L"Model", image, 0, false, true);
+		bar->addButton(GUI_BUTTON_PHYSICS, 0, L"Physics", image, 0, false, true);
+		bar->addButton(GUI_BUTTON_ANIMATION, 0, L"Animation", image, 0, false, true);
 
 
 	}
