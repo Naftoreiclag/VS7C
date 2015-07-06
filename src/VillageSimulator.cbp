@@ -194,6 +194,12 @@
 		<Unit filename="Chunk.h" />
 		<Unit filename="ChunkNode.cpp" />
 		<Unit filename="ChunkNode.h" />
+		<Unit filename="ComponentSerializer.cpp">
+			<Option virtualFolder="Data/" />
+		</Unit>
+		<Unit filename="ComponentSerializer.h">
+			<Option virtualFolder="Data/" />
+		</Unit>
 		<Unit filename="ConversationComponent.cpp">
 			<Option virtualFolder="Components/" />
 		</Unit>

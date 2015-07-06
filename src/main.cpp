@@ -27,6 +27,9 @@ using namespace irr;
 #include "CharacterTaskRegistry.h"
 #include "CTaskPathfind.h"
 
+#include "CharacterBodyComponent.h"
+#include "ComponentSerializer.h"
+
 #include "RID.h"
 
 #include "easylogging++.h"
@@ -55,6 +58,10 @@ int main()
 	RIDDatabase::addRID(0xf63fc1bddabc4907, "body foot left");
 	RIDDatabase::addRID(0x1ba45f15da8817d2, "body leg right");
 	RIDDatabase::addRID(0x169de19b59ea666b, "body foot right");
+
+	ComponentSerializerRegistry::setSerializer(RID("comp character body"), new CharacterBodySerializer());
+
+
 
 	CharacterTaskRegistry::addTask(new CharacterTaskSit());
 	CharacterTaskRegistry::addTask(new CharacterTaskStand());

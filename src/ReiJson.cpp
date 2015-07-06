@@ -7,6 +7,7 @@
 #include "ReiJson.h"
 
 #include "BaseComponent.h"
+#include "ComponentSerializer.h"
 
 namespace reij {
 
@@ -20,11 +21,9 @@ namespace reij {
 			const nres::ComponentID& compID = it->first;
 			const nres::ComponentData* rawData = it->second;
 
-			const BaseComponent* data = static_cast<const BaseComponent*>(rawData);
+			//const BaseComponent* data = static_cast<const BaseComponent*>(rawData);
 
-			Json::Value& jsonCompData = jsonRet[compID.getHumanReadableID()];
-
-			jsonRet[compID.getHumanReadableID()] = data->toJson();
+			jsonRet[compID.getHumanReadableID()] = ComponentSerializerRegistry::serialize(compID, rawData);
 		}
 
 		return jsonRet;

@@ -27,8 +27,8 @@ private:
 
 class CharacterBodySerializer : public ComponentSerializer {
 public:
-	virtual ComponentData* read(Json::Value data);
-	virtual Json::Value write(ComponentData* data);
+	virtual nres::ComponentData* read(const Json::Value& data);
+	virtual Json::Value write(const nres::ComponentData* data);
 };
 
 #endif // CHARACTERBODYCOMPONENT_H

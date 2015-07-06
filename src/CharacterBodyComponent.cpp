@@ -6,6 +6,8 @@
 
 #include "CharacterBodyComponent.h"
 
+#include "json/json.h"
+
 CharacterBodyComponent::CharacterBodyComponent() {
 
 }
@@ -18,10 +20,19 @@ CharacterBodyComponent::~CharacterBodyComponent() {
 
 }
 
-ComponentData* CharacterBodySerializer::read(Json::Value data) {
+nres::ComponentData* CharacterBodySerializer::read(const Json::Value& data) {
+	CharacterBodyComponent* comp = new CharacterBodyComponent();
 
+	comp->sitting = data["sitting"].asBool();
+
+	return comp;
 }
 
-Json::Value CharacterBodySerializer::write(ComponentData* data) {
+Json::Value CharacterBodySerializer::write(const nres::ComponentData* compData) {
+	const CharacterBodyComponent* comp = static_cast<const CharacterBodyComponent*>(compData);
+	Json::Value data;
 
+	data["sitting"] = comp->sitting;
+
+	return data;
 }

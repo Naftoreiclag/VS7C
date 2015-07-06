@@ -16,13 +16,14 @@ public:
 	ComponentSerializer();
 	virtual ~ComponentSerializer();
 
-	virtual ComponentData* read(Json::Value data) = 0;
-	virtual Json::Value write(ComponentData* data) = 0;
+	virtual nres::ComponentData* read(const Json::Value& data) = 0;
+	virtual Json::Value write(const nres::ComponentData* data) = 0;
 };
 
 namespace ComponentSerializerRegistry {
-	void setSerializer(RID, ComponentSerializer* serializer);
-	nres::ComponentData* deserialize(RID id, Json::Value data);
+	void setSerializer(RID id, ComponentSerializer* serializer);
+	nres::ComponentData* deserialize(RID id, const Json::Value& data);
+	Json::Value serialize(RID id, const nres::ComponentData* data);
 }
 
 #endif // COMPONENTSERIALIZER_H
