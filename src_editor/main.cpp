@@ -16,6 +16,8 @@ irr::video::IVideoDriver* driver;
 irr::scene::ISceneManager* smgr;
 irr::gui::IGUIEnvironment* gui;
 
+std::string currDir;
+
 enum {
 
 	GUI_ROOT_WINDOW = 0x10000,
@@ -60,6 +62,10 @@ void closeAllDialogs() {
 	closeDialog(GUI_DIALOG_RESOURCES);
 }
 
+inline std::string getDirectory(const std::string& filename) {
+    return filename.substr(0, filename.find_last_of("\\/"));
+}
+
 void showResourcesDialog() {
 	closeDialog(GUI_DIALOG_RESOURCES);
 
@@ -75,16 +81,44 @@ void showResourcesDialog() {
 
 }
 
+void openPhysicsShape(std::string filename) {
+
+
+}
+
+void openModel(std::string filename) {
+
+	irr::io::path path(filename.c_str());
+	irr::scene::IAnimatedMesh* mesh = smgr->getMesh(path);
+	irr::scene::IAnimatedMeshSceneNode* node = smgr->addAnimatedMeshSceneNode(mesh);
+
+
+
+}
+
 void openFile(std::string filename) {
 
 	std::ifstream stream(filename);
+
+	currDir = getDirectory(filename);
+	std::cout << "Object directory: " << currDir << std::endl;
+
 	Json::Value objectData;
 
 	stream >> objectData;
 
+	Json::Value& physData = objectData["physics"];
+	openPhysicsShape(currDir + "/" + physData.asString());
+
+	Json::Value& modelData = objectData["model"];
+	openModel(currDir + "/" + modelData.asString());
+
 	std::cout << "Object opened:" << std::endl;
 	std::cout << objectData << std::endl;
 }
+
+
+
 
 class AppEventReceiver : public irr::IEventReceiver {
 public:
@@ -109,6 +143,7 @@ public:
 							break;
 						}
 					}
+					break;
 				}
 
 				// File selected
