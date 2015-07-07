@@ -13,10 +13,18 @@
 #include "driverChoice.h"
 #include "json/json.h"
 #include "btBulletCollisionCommon.h"
+#include "ReiBullet.h"
 
 irr::video::IVideoDriver* driver;
 irr::scene::ISceneManager* smgr;
 irr::gui::IGUIEnvironment* gui;
+
+btBroadphaseInterface* broadphase;
+btDefaultCollisionConfiguration* collisionConfiguration;
+btCollisionDispatcher* dispatcher;
+
+btCollisionWorld* bulletWorld;
+reib::BulletDebugDrawer* bulletDebugDrawer;
 
 
 enum {
@@ -59,7 +67,7 @@ struct PhysicsShape {
 	irr::s32 type = PHYS_EMPTY;
 
 	btScalar radius = 0; // Sphere, Capsule, Cone
-	btVector3 halfExtents = btVector3(0, 0, 0); // Box, Cylinder
+	btVector3 dimensions = btVector3(0, 0, 0); // Box, Cylinder
 	btScalar height = 0; // Capsule, Cone
 
 	std::vector<std::pair<btVector3, btScalar>> locRadi; // MULTI_SPHERE
@@ -82,6 +90,26 @@ inline irr::core::rect<irr::s32> GuiBox(irr::s32 x, irr::s32 y, irr::s32 width, 
 }
 inline irr::core::rect<irr::s32> GuiRect(irr::s32 x1, irr::s32 y1, irr::s32 x2, irr::s32 y2) {
 	return irr::core::rect<irr::s32>(x1, y1, x2, y2);
+}
+
+btCollisionShape* newShape(PhysicsShape shape) {
+    switch(shape.type) {
+		case PHYS_SPHERE: {
+			return new btSphereShape(shape.radius);
+			break;
+		}
+		case PHYS_BOX: {
+			return new btBoxShape(shape.dimensions / 2);
+			break;
+		}
+		case PHYS_TRIANGLE_MESH: {
+			return new btConvexTriangleMeshShape(shape.triangles);
+		}
+		default: {
+			return 0;
+			break;
+		}
+    }
 }
 
 // Remove dialog if already open
@@ -144,19 +172,19 @@ void openPhysicsShape(std::string filename) {
 			Json::Value& dimen = physData["size"];
 			if(dimen != Json::nullValue) {
 				btScalar allDimen = dimen.asDouble();
-				physShape.halfExtents = btVector3(allDimen, allDimen, allDimen);
+				physShape.dimensions = btVector3(allDimen, allDimen, allDimen);
 			}
 			Json::Value& dimenX = physData["sizeX"];
 			if(dimenX != Json::nullValue) {
-				physShape.halfExtents.setX(dimenX.asDouble());
+				physShape.dimensions.setX(dimenX.asDouble());
 			}
 			Json::Value& dimenY = physData["sizeY"];
 			if(dimenY != Json::nullValue) {
-				physShape.halfExtents.setY(dimenY.asDouble());
+				physShape.dimensions.setY(dimenY.asDouble());
 			}
 			Json::Value& dimenZ = physData["sizeZ"];
 			if(dimenZ != Json::nullValue) {
-				physShape.halfExtents.setZ(dimenZ.asDouble());
+				physShape.dimensions.setZ(dimenZ.asDouble());
 			}
 		}
 		else {
@@ -173,7 +201,7 @@ void openPhysicsShape(std::string filename) {
 		const irr::u16* indices = buffer->getIndices();
 		irr::u32 indexCount = buffer->getIndexCount();
 
-		std::cout << "Loading trimesh for physics" << std::endl;
+		std::cout << "Loading trimesh for physics." << std::endl;
 		std::cout << "Indices: " << indexCount << std::endl;
 		std::cout << "Triangles: " << indexCount / 3 << std::endl;
 
@@ -189,16 +217,20 @@ void openPhysicsShape(std::string filename) {
 				true
 			);
 		}
+		std::cout << "Physics mesh successfully generated." << std::endl;
 
 	}
+//newShape(currProj->physicsShape)
+	bulletWorld->addCollisionObject(new btRigidBody(0, new btDefaultMotionState(), new btSphereShape(10), btVector3(0, 0, 0)));
 
 }
 
 void openModel(std::string filename) {
-
+/*
 	irr::io::path path(filename.c_str());
 	irr::scene::IAnimatedMesh* mesh = smgr->getMesh(path);
 	irr::scene::IAnimatedMeshSceneNode* node = smgr->addAnimatedMeshSceneNode(mesh, rootNode);
+	*/
 }
 
 void openFile(std::string filename) {
@@ -323,8 +355,15 @@ int main()
 	irr::gui::IGUIFont* font = gui->getFont("example_media/fonthaettenschweiler.bmp");
 	if (font) { skin->setFont(font); }
 
+	broadphase = new btDbvtBroadphase;
+	collisionConfiguration = new btDefaultCollisionConfiguration;
+	dispatcher = new btCollisionDispatcher(collisionConfiguration);
+	bulletWorld = new btCollisionWorld(dispatcher, broadphase, collisionConfiguration);
+	bulletDebugDrawer = new reib::BulletDebugDrawer(device);
+	bulletWorld->setDebugDrawer(bulletDebugDrawer);
+
 	rootNode = smgr->addEmptySceneNode();
-	rootNode->setScale(irr::core::vector3df(10, 10, 10));
+	//rootNode->setScale(irr::core::vector3df(10, 10, 10));
 
 	{
 		irr::gui::IGUIContextMenu* menu = gui->addMenu();
@@ -394,6 +433,9 @@ int main()
 
 		// Draw stuff
 		smgr->drawAll();
+		driver->setTransform(irr::video::ETS_WORLD, irr::core::IdentityMatrix);
+		driver->setMaterial(bulletDebugDrawer->material);
+		bulletWorld->debugDrawWorld();
 		gui->drawAll();
 
 		// Flush
@@ -413,6 +455,12 @@ int main()
 	}
 
 	device->drop(); device = 0;
+
+	delete bulletWorld;
+	delete dispatcher;
+	delete collisionConfiguration;
+	delete broadphase;
+	delete bulletDebugDrawer;
 
 	return 0;
 }

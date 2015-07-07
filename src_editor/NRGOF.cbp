@@ -78,6 +78,8 @@
 			<Add directory="../thirdparty/lua-5.3_Win32_mingw4_lib/lib" />
 			<Add directory="../thirdparty/jsoncpp-0.10.2-p1/lib" />
 		</Linker>
+		<Unit filename="ReiBullet.cpp" />
+		<Unit filename="ReiBullet.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
