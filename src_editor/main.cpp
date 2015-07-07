@@ -6,17 +6,18 @@
 
 #include <iostream>
 #include <fstream>
+#include <vector>
 #include <string>
 
 #include "irrlicht.h"
 #include "driverChoice.h"
 #include "json/json.h"
+#include "btBulletCollisionCommon.h"
 
 irr::video::IVideoDriver* driver;
 irr::scene::ISceneManager* smgr;
 irr::gui::IGUIEnvironment* gui;
 
-std::string currDir;
 
 enum {
 
@@ -40,7 +41,41 @@ enum {
     GUI_BUTTON_MODEL,
     GUI_BUTTON_PHYSICS,
     GUI_BUTTON_ANIMATION,
+
+	// Y-axis aligned where applicable
+	PHYS_EMPTY,
+    PHYS_SPHERE,
+    PHYS_BOX,
+    PHYS_CYLINDER,
+    PHYS_CAPSULE,
+    PHYS_CONE,
+    PHYS_MULTI_SPHERE,
+    PHYS_TRIANGLE_MESH,
 };
+
+struct PhysicsShape {
+	bool modified = false;
+
+	irr::s32 type = PHYS_EMPTY;
+
+	btScalar radius = 0; // Sphere, Capsule, Cone
+	btVector3 halfExtents = btVector3(0, 0, 0); // Box, Cylinder
+	btScalar height = 0; // Capsule, Cone
+
+	std::vector<std::pair<btVector3, btScalar>> locRadi; // MULTI_SPHERE
+	btTriangleMesh* triangles = 0; // TRIANGLE_MESH
+};
+
+struct Project {
+	std::string dir;
+
+	Json::Value jsonFile;
+	PhysicsShape physicsShape;
+};
+
+Project* currProj;
+
+irr::scene::ISceneNode* rootNode;
 
 inline irr::core::rect<irr::s32> GuiBox(irr::s32 x, irr::s32 y, irr::s32 width, irr::s32 height) {
 	return irr::core::rect<irr::s32>(x, y, x + width, y + height);
@@ -65,6 +100,9 @@ void closeAllDialogs() {
 inline std::string getDirectory(const std::string& filename) {
     return filename.substr(0, filename.find_last_of("\\/"));
 }
+inline std::string getExtension(const std::string& filename) {
+    return filename.substr(filename.find_last_of(".") + 1);
+}
 
 void showResourcesDialog() {
 	closeDialog(GUI_DIALOG_RESOURCES);
@@ -81,8 +119,78 @@ void showResourcesDialog() {
 
 }
 
-void openPhysicsShape(std::string filename) {
+inline btVector3 irrToBullet(irr::core::vector3df irr) {
+	return btVector3(irr.X, irr.Y, irr.Z);
+}
 
+void openPhysicsShape(std::string filename) {
+	std::string extension = getExtension(filename);
+
+	PhysicsShape& physShape = currProj->physicsShape;
+
+	if(extension == "json") {
+		std::ifstream stream(filename);
+		Json::Value physData;
+		stream >> physData;
+
+		std::string type = physData["type"].asString();
+
+		if(type == "sphere") {
+			physShape.type = PHYS_SPHERE;
+			physShape.radius = physData["radius"].asDouble();
+		}
+		else if(type == "box") {
+			physShape.type = PHYS_BOX;
+			Json::Value& dimen = physData["size"];
+			if(dimen != Json::nullValue) {
+				btScalar allDimen = dimen.asDouble();
+				physShape.halfExtents = btVector3(allDimen, allDimen, allDimen);
+			}
+			Json::Value& dimenX = physData["sizeX"];
+			if(dimenX != Json::nullValue) {
+				physShape.halfExtents.setX(dimenX.asDouble());
+			}
+			Json::Value& dimenY = physData["sizeY"];
+			if(dimenY != Json::nullValue) {
+				physShape.halfExtents.setY(dimenY.asDouble());
+			}
+			Json::Value& dimenZ = physData["sizeZ"];
+			if(dimenZ != Json::nullValue) {
+				physShape.halfExtents.setZ(dimenZ.asDouble());
+			}
+		}
+		else {
+			physShape.type = PHYS_EMPTY;
+		}
+
+	}
+	else {
+		irr::io::path path(filename.c_str());
+		irr::scene::IAnimatedMesh* mesh = smgr->getMesh(path);
+
+		irr::scene::IMeshBuffer* buffer = mesh->getMeshBuffer(0);
+
+		const irr::u16* indices = buffer->getIndices();
+		irr::u32 indexCount = buffer->getIndexCount();
+
+		std::cout << "Loading trimesh for physics" << std::endl;
+		std::cout << "Indices: " << indexCount << std::endl;
+		std::cout << "Triangles: " << indexCount / 3 << std::endl;
+
+		btTriangleMesh* triMesh = currProj->physicsShape.triangles = new btTriangleMesh();
+
+		for(irr::u32 i = 0; i < indexCount; i += 3) {
+			triMesh->addTriangle(
+				irrToBullet(buffer->getPosition(indices[i])),
+				irrToBullet(buffer->getPosition(indices[i + 1])),
+				irrToBullet(buffer->getPosition(indices[i + 2])),
+
+				// Whether or not to remove duplicate verts
+				true
+			);
+		}
+
+	}
 
 }
 
@@ -90,31 +198,32 @@ void openModel(std::string filename) {
 
 	irr::io::path path(filename.c_str());
 	irr::scene::IAnimatedMesh* mesh = smgr->getMesh(path);
-	irr::scene::IAnimatedMeshSceneNode* node = smgr->addAnimatedMeshSceneNode(mesh);
-
-
-
+	irr::scene::IAnimatedMeshSceneNode* node = smgr->addAnimatedMeshSceneNode(mesh, rootNode);
 }
 
 void openFile(std::string filename) {
 
 	std::ifstream stream(filename);
 
-	currDir = getDirectory(filename);
-	std::cout << "Object directory: " << currDir << std::endl;
+	if(currProj) {
+		delete currProj;
+	}
+	currProj = new Project();
 
-	Json::Value objectData;
+	currProj->dir = getDirectory(filename);
+	std::cout << "Object directory: " << currProj->dir << std::endl;
 
-	stream >> objectData;
+	stream >> currProj->jsonFile;
+	Json::Value& data = currProj->jsonFile;
 
-	Json::Value& physData = objectData["physics"];
-	openPhysicsShape(currDir + "/" + physData.asString());
+	Json::Value& physData = data["physics"];
+	openPhysicsShape(currProj->dir + "/" + physData.asString());
 
-	Json::Value& modelData = objectData["model"];
-	openModel(currDir + "/" + modelData.asString());
+	Json::Value& modelData = data["model"];
+	openModel(currProj->dir + "/" + modelData.asString());
 
 	std::cout << "Object opened:" << std::endl;
-	std::cout << objectData << std::endl;
+	std::cout << data << std::endl;
 }
 
 
@@ -182,6 +291,8 @@ public:
 
 int main()
 {
+	currProj = 0;
+
 	// Get the preferred driver type
 	irr::video::E_DRIVER_TYPE driverType = irr::video::EDT_OPENGL; // driverChoiceConsole(); //
 	if(driverType == irr::video::EDT_COUNT) { return 1; }
@@ -211,6 +322,9 @@ int main()
 	irr::gui::IGUISkin* skin = gui->getSkin();
 	irr::gui::IGUIFont* font = gui->getFont("example_media/fonthaettenschweiler.bmp");
 	if (font) { skin->setFont(font); }
+
+	rootNode = smgr->addEmptySceneNode();
+	rootNode->setScale(irr::core::vector3df(10, 10, 10));
 
 	{
 		irr::gui::IGUIContextMenu* menu = gui->addMenu();

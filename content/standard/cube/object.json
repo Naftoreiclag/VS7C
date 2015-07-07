@@ -1,5 +1,5 @@
 {
 	"id" : "std_cube",
 	"model" : "model.dae",
-	"physics" : "physics.json"
+	"physics" : "model.dae"
 }
