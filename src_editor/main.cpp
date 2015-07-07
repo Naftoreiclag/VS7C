@@ -96,18 +96,16 @@ btCollisionShape* newShape(PhysicsShape shape) {
     switch(shape.type) {
 		case PHYS_SPHERE: {
 			return new btSphereShape(shape.radius);
-			break;
 		}
 		case PHYS_BOX: {
+			std::cout << "Generated shape from box." << std::endl;
 			return new btBoxShape(shape.dimensions / 2);
-			break;
 		}
 		case PHYS_TRIANGLE_MESH: {
 			return new btConvexTriangleMeshShape(shape.triangles);
 		}
 		default: {
 			return 0;
-			break;
 		}
     }
 }
@@ -164,10 +162,13 @@ void openPhysicsShape(std::string filename) {
 		std::string type = physData["type"].asString();
 
 		if(type == "sphere") {
+			std::cout << "Physics shape is a sphere." << std::endl;
 			physShape.type = PHYS_SPHERE;
 			physShape.radius = physData["radius"].asDouble();
+			std::cout << "Radius = " << physShape.radius << std::endl;
 		}
 		else if(type == "box") {
+			std::cout << "Physics shape is a box." << std::endl;
 			physShape.type = PHYS_BOX;
 			Json::Value& dimen = physData["size"];
 			if(dimen != Json::nullValue) {
@@ -186,16 +187,22 @@ void openPhysicsShape(std::string filename) {
 			if(dimenZ != Json::nullValue) {
 				physShape.dimensions.setZ(dimenZ.asDouble());
 			}
+			std::cout << "Size = " << "(" << physShape.dimensions.getX() << ", " << physShape.dimensions.getY() << ", " << physShape.dimensions.getZ() << ")" << std::endl;
 		}
 		else {
+			std::cout << "Physics shape is empty." << std::endl;
 			physShape.type = PHYS_EMPTY;
 		}
 
 	}
 	else {
+		std::cout << "Physics shape is a mesh." << std::endl;
+		physShape.type = PHYS_TRIANGLE_MESH;
+
+
+		std::cout << "Loading file as mesh..." << std::endl;
 		irr::io::path path(filename.c_str());
 		irr::scene::IAnimatedMesh* mesh = smgr->getMesh(path);
-
 		irr::scene::IMeshBuffer* buffer = mesh->getMeshBuffer(0);
 
 		const irr::u16* indices = buffer->getIndices();
@@ -220,17 +227,20 @@ void openPhysicsShape(std::string filename) {
 		std::cout << "Physics mesh successfully generated." << std::endl;
 
 	}
-//newShape(currProj->physicsShape)
-	bulletWorld->addCollisionObject(new btRigidBody(0, new btDefaultMotionState(), new btSphereShape(10), btVector3(0, 0, 0)));
+	btCollisionShape* shape = newShape(currProj->physicsShape);
+
+	if(shape) {
+		bulletWorld->addCollisionObject(new btRigidBody(0, new btDefaultMotionState(), shape, btVector3(0, 0, 0)));
+	}
 
 }
 
 void openModel(std::string filename) {
-/*
 	irr::io::path path(filename.c_str());
 	irr::scene::IAnimatedMesh* mesh = smgr->getMesh(path);
 	irr::scene::IAnimatedMeshSceneNode* node = smgr->addAnimatedMeshSceneNode(mesh, rootNode);
-	*/
+	node->getMaterial(0).AmbientColor = irr::video::SColor(1, 1, 1, 1);
+	node->getMaterial(0).Lighting = false;
 }
 
 void openFile(std::string filename) {
@@ -403,6 +413,7 @@ int main()
 
 	showResourcesDialog();
 
+/*
 	// Cool skybox
 	driver->setTextureCreationFlag(irr::video::ETCF_CREATE_MIP_MAPS, false);
 	smgr->addSkyBoxSceneNode(
@@ -413,9 +424,13 @@ int main()
 		driver->getTexture("assets_editor/cloudy_0/bluecloud_ft.jpg"),
 		driver->getTexture("assets_editor/cloudy_0/bluecloud_bk.jpg"));
 	driver->setTextureCreationFlag(irr::video::ETCF_CREATE_MIP_MAPS, true);
+	*/
 
-	irr::scene::ICameraSceneNode* cam = smgr->addCameraSceneNodeMaya();
+	irr::scene::ICameraSceneNode* cam = smgr->addCameraSceneNode();
+	cam->setPosition(irr::core::vector3df(3, 3, 3));
+	cam->setTarget(irr::core::vector3df(0, 0, 0));
 
+	smgr->setAmbientLight(irr::video::SColorf(1, 1, 1, 1));
 
 	// Initialize tpf calculator
 	irr::u32 then = device->getTimer()->getTime();
@@ -429,7 +444,7 @@ int main()
         then = now;
 
 		// Clear buffers before rendering
-		driver->beginScene(true, true, irr::video::SColor(0, 255, 255, 255));
+		driver->beginScene(true, true, irr::video::SColor(0, 140, 140, 140));
 
 		// Draw stuff
 		smgr->drawAll();

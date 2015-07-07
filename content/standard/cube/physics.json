@@ -1,4 +1,4 @@
 {
-	"type" : "cube",
-	"size" : 1
+	"type" : "box",
+	"size" : 2
 }
