@@ -60,6 +60,11 @@ enum {
     GUI_EDIT_PHYSICS_OFFSET_X,
     GUI_EDIT_PHYSICS_OFFSET_Y,
     GUI_EDIT_PHYSICS_OFFSET_Z,
+    GUI_EDIT_PHYSICS_DIMENSIONS_X,
+    GUI_EDIT_PHYSICS_DIMENSIONS_Y,
+    GUI_EDIT_PHYSICS_DIMENSIONS_Z,
+    GUI_EDIT_PHYSICS_RADIUS,
+    GUI_EDIT_PHYSICS_HEIGHT,
     GUI_EMPTY_PHYSICS_TYPE_EDITOR,
 
 	// Y-axis aligned where applicable
@@ -93,6 +98,18 @@ struct Project {
 };
 
 Project* currProj;
+
+void removeAllChildren(irr::gui::IGUIElement* item) {
+	// Make a copy of the lsit to avoid concurrent modification, and to remove constness
+	irr::core::list<irr::gui::IGUIElement*> childrenList = item->getChildren();
+
+	for(irr::core::list<irr::gui::IGUIElement*>::Iterator it = childrenList.begin(); it != childrenList.end(); ++ it) {
+		irr::gui::IGUIElement* child = *it;
+
+		child->remove();
+	}
+
+}
 
 inline irr::core::rect<irr::s32> GuiBox(irr::s32 x, irr::s32 y, irr::s32 width, irr::s32 height) {
 	return irr::core::rect<irr::s32>(x, y, x + width, y + height);
@@ -182,16 +199,38 @@ inline void updatePhysicsDialog() {
 	irr::gui::IGUIComboBox* typeSel = (irr::gui::IGUIComboBox*) physicsDialog->getElementFromId(GUI_COMBO_PHYSICS_TYPE);
 	typeSel->setSelected(physicsTypeToCombo(currProj->physicsShape.type));
 
-	irr::gui::IGUIStaticText* info = (irr::gui::IGUIStaticText*) physicsDialog->getElementFromId(GUI_EMPTY_PHYSICS_TYPE_EDITOR);
+	irr::gui::IGUIStaticText* dialog = (irr::gui::IGUIStaticText*) physicsDialog->getElementFromId(GUI_EMPTY_PHYSICS_TYPE_EDITOR);
 
-	switch(currProj->physicsShape.type) {
-		case PHYS_BOX: {
-			gui->addStaticText(L"Size:", GuiBox(5, 5, 69, 69), false, true, info);
-		}
+	removeAllChildren(dialog);
+
+	irr::s32 physType = currProj->physicsShape.type;
+
+	if(physType == PHYS_BOX || physType == PHYS_CYLINDER) {
+		gui->addStaticText(L"Size:", GuiBox(5, 5, 69, 69), false, true, dialog);
+		gui->addStaticText(L"X", GuiBox(65,  5, 69, 69), false, false, dialog);
+		gui->addStaticText(L"Y", GuiBox(65, 25, 69, 69), false, false, dialog);
+		gui->addStaticText(L"Z", GuiBox(65, 45, 69, 69), false, false, dialog);
+		gui->addEditBox(L"0", GuiBox(80,  5, 115, 20), true, dialog, GUI_EDIT_PHYSICS_DIMENSIONS_X);
+		gui->addEditBox(L"0", GuiBox(80, 25, 115, 20), true, dialog, GUI_EDIT_PHYSICS_DIMENSIONS_Y);
+		gui->addEditBox(L"0", GuiBox(80, 45, 115, 20), true, dialog, GUI_EDIT_PHYSICS_DIMENSIONS_Z);
+	}
+	if(physType == PHYS_SPHERE || physType == PHYS_CAPSULE || physType == PHYS_CONE) {
+		gui->addStaticText(L"Radius:", GuiBox(5, 5, 69, 69), false, true, dialog);
+		gui->addEditBox(L"0", GuiBox(80,  5, 115, 20), true, dialog, GUI_EDIT_PHYSICS_DIMENSIONS_X);
+	}
+	if(physType == PHYS_CAPSULE || physType == PHYS_CONE) {
+		gui->addStaticText(L"Height:", GuiBox(5, 30, 69, 69), false, true, dialog);
+		gui->addEditBox(L"0", GuiBox(80, 30, 115, 20), true, dialog, GUI_EDIT_PHYSICS_DIMENSIONS_X);
+	}
+	if(physType == PHYS_TRIANGLE_MESH) {
+		gui->addStaticText(L"File:", GuiBox(5, 5, 69, 69), false, true, dialog);
+		gui->addEditBox(L"fname", GuiBox(5, 30, 190, 20), true, dialog, GUI_EDIT_PHYSICS_DIMENSIONS_X);
+
 	}
 
 
 }
+
 void showPhysicsDialog() {
 	closeDialog(GUI_DIALOG_PHYSICS);
 
@@ -202,13 +241,12 @@ void showPhysicsDialog() {
 	gui->addStaticText(L"X", GuiBox(65, 25, 69, 69), false, false, dialog);
 	gui->addStaticText(L"Y", GuiBox(65, 45, 69, 69), false, false, dialog);
 	gui->addStaticText(L"Z", GuiBox(65, 65, 69, 69), false, false, dialog);
-
 	gui->addEditBox(L"0", GuiBox(80, 25, 115, 20), true, dialog, GUI_EDIT_PHYSICS_OFFSET_X);
 	gui->addEditBox(L"0", GuiBox(80, 45, 115, 20), true, dialog, GUI_EDIT_PHYSICS_OFFSET_Y);
 	gui->addEditBox(L"0", GuiBox(80, 65, 115, 20), true, dialog, GUI_EDIT_PHYSICS_OFFSET_Z);
 
 	gui->addStaticText(L"Type:", GuiBox(5, 90, 69, 69), false, false, dialog);
-	irr::gui::IGUIComboBox* typeSel = gui->addComboBox(GuiBox(50, 90, 145, 20), dialog, GUI_COMBO_PHYSICS_TYPE);
+	irr::gui::IGUIComboBox* typeSel = gui->addComboBox(GuiBox(80, 90, 115, 20), dialog, GUI_COMBO_PHYSICS_TYPE);
 	typeSel->addItem(L"Empty");
 	typeSel->addItem(L"Sphere");
 	typeSel->addItem(L"Box");
@@ -218,7 +256,7 @@ void showPhysicsDialog() {
 	typeSel->addItem(L"Multi-Sphere");
 	typeSel->addItem(L"Trimesh");
 
-	gui->addStaticText(L"", GuiBox(0, 110, 100, 100), false, true, dialog, GUI_EMPTY_PHYSICS_TYPE_EDITOR);
+	gui->addStaticText(L"", GuiRect(0, 110, 200, 300), false, true, dialog, GUI_EMPTY_PHYSICS_TYPE_EDITOR);
 
 	updatePhysicsDialog();
 
