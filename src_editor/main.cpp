@@ -19,6 +19,12 @@ irr::video::IVideoDriver* driver;
 irr::scene::ISceneManager* smgr;
 irr::gui::IGUIEnvironment* gui;
 
+irr::gui::IGUIWindow* resourcesDialog;
+irr::gui::IGUIWindow* physicsDialog;
+irr::gui::IGUIWindow* modelDialog;
+
+irr::scene::ISceneNode* rootNode;
+
 btBroadphaseInterface* broadphase;
 btDefaultCollisionConfiguration* collisionConfiguration;
 btCollisionDispatcher* dispatcher;
@@ -51,6 +57,10 @@ enum {
     GUI_BUTTON_ANIMATION,
 
     GUI_COMBO_PHYSICS_TYPE,
+    GUI_EDIT_PHYSICS_OFFSET_X,
+    GUI_EDIT_PHYSICS_OFFSET_Y,
+    GUI_EDIT_PHYSICS_OFFSET_Z,
+    GUI_EMPTY_PHYSICS_TYPE_EDITOR,
 
 	// Y-axis aligned where applicable
 	PHYS_EMPTY,
@@ -75,7 +85,6 @@ struct PhysicsShape {
 	std::vector<std::pair<btVector3, btScalar>> locRadi; // MULTI_SPHERE
 	btTriangleMesh* triangles = 0; // TRIANGLE_MESH
 };
-
 struct Project {
 	std::string dir;
 
@@ -85,15 +94,12 @@ struct Project {
 
 Project* currProj;
 
-irr::scene::ISceneNode* rootNode;
-
 inline irr::core::rect<irr::s32> GuiBox(irr::s32 x, irr::s32 y, irr::s32 width, irr::s32 height) {
 	return irr::core::rect<irr::s32>(x, y, x + width, y + height);
 }
 inline irr::core::rect<irr::s32> GuiRect(irr::s32 x1, irr::s32 y1, irr::s32 x2, irr::s32 y2) {
 	return irr::core::rect<irr::s32>(x1, y1, x2, y2);
 }
-
 btCollisionShape* newShape(PhysicsShape shape) {
     switch(shape.type) {
 		case PHYS_SPHERE: {
@@ -111,32 +117,30 @@ btCollisionShape* newShape(PhysicsShape shape) {
 		}
     }
 }
-
-// Remove dialog if already open
 void closeDialog(irr::s32 id) {
-	irr::gui::IGUIElement* elem = gui->getRootGUIElement()
+	irr::gui::IGUIElement* dialog = gui->getRootGUIElement()
 		->getElementFromId(id, true);
-	if(elem) {
-		elem->remove();
+	if(dialog) {
+		dialog->remove();
 	}
 }
-
-void closeAllDialogs() {
+inline void closeAllDialogs() {
 	closeDialog(GUI_DIALOG_RESOURCES);
+	resourcesDialog = 0;
+	closeDialog(GUI_DIALOG_PHYSICS);
+	physicsDialog = 0;
 }
-
 inline std::string getDirectory(const std::string& filename) {
     return filename.substr(0, filename.find_last_of("\\/"));
 }
 inline std::string getExtension(const std::string& filename) {
     return filename.substr(filename.find_last_of(".") + 1);
 }
-
 void showResourcesDialog() {
 	closeDialog(GUI_DIALOG_RESOURCES);
 
 	// Create dialog
-	irr::gui::IGUIWindow* dialog = gui->addWindow(GuiBox(10, 60, 200, 300), false, L"Resources", 0, GUI_DIALOG_RESOURCES);
+	irr::gui::IGUIWindow* dialog = resourcesDialog = gui->addWindow(GuiBox(10, 60, 200, 300), false, L"Resources", 0, GUI_DIALOG_RESOURCES);
 
 	// Add tree view
 	irr::gui::IGUITreeView* tree = gui->addTreeView(GuiRect(5, 25, 195, 295), dialog, GUI_TREE_RESOURCES, true, true, true);
@@ -146,16 +150,66 @@ void showResourcesDialog() {
 	root->addChildBack(L"Test");
 
 }
+irr::s32 physicsComboToType(irr::s32 comboInput) {
+	switch(comboInput) {
+		case 1: { return PHYS_SPHERE; }
+		case 2: { return PHYS_BOX; }
+		case 3: { return PHYS_CYLINDER; }
+		case 4: { return PHYS_CAPSULE; }
+		case 5: { return PHYS_CONE; }
+		case 6: { return PHYS_MULTI_SPHERE; }
+		case 7: { return PHYS_TRIANGLE_MESH; }
+		default: { return PHYS_EMPTY; }
+	}
+}
+irr::s32 physicsTypeToCombo(irr::s32 type) {
+	switch(type) {
+		case PHYS_SPHERE: { return 1; }
+		case PHYS_BOX: { return 2; }
+		case PHYS_CYLINDER: { return 3; }
+		case PHYS_CAPSULE: { return 4; }
+		case PHYS_CONE: { return 5; }
+		case PHYS_MULTI_SPHERE: { return 6; }
+		case PHYS_TRIANGLE_MESH: { return 7; }
+		default: { return 0; }
 
+	}
+}
+inline void updatePhysicsDialog() {
+	if(physicsDialog == 0) {
+		return;
+	}
+	irr::gui::IGUIComboBox* typeSel = (irr::gui::IGUIComboBox*) physicsDialog->getElementFromId(GUI_COMBO_PHYSICS_TYPE);
+	typeSel->setSelected(physicsTypeToCombo(currProj->physicsShape.type));
+
+	irr::gui::IGUIStaticText* info = (irr::gui::IGUIStaticText*) physicsDialog->getElementFromId(GUI_EMPTY_PHYSICS_TYPE_EDITOR);
+
+	switch(currProj->physicsShape.type) {
+		case PHYS_BOX: {
+			gui->addStaticText(L"Size:", GuiBox(5, 5, 69, 69), false, true, info);
+		}
+	}
+
+
+}
 void showPhysicsDialog() {
 	closeDialog(GUI_DIALOG_PHYSICS);
 
 	// Create dialog
-	irr::gui::IGUIWindow* dialog = gui->addWindow(GuiBox(595, 60, 200, 300), false, L"Physics", 0, GUI_DIALOG_PHYSICS);
+	irr::gui::IGUIWindow* dialog = physicsDialog = gui->addWindow(GuiBox(595, 60, 200, 300), false, L"Physics", 0, GUI_DIALOG_PHYSICS);
 
-	irr::gui::IGUIStaticText* text = gui->addStaticText(L"Offset:", GuiBox(5, 25, 30, 30), false, false, dialog);
+	gui->addStaticText(L"Offset:", GuiBox(5, 25, 69, 69), false, false, dialog);
+	gui->addStaticText(L"X", GuiBox(65, 25, 69, 69), false, false, dialog);
+	gui->addStaticText(L"Y", GuiBox(65, 45, 69, 69), false, false, dialog);
+	gui->addStaticText(L"Z", GuiBox(65, 65, 69, 69), false, false, dialog);
 
-	irr::gui::IGUIComboBox* typeSel = gui->addComboBox(GuiRect(5, 50, 195, 95), dialog, GUI_COMBO_PHYSICS_TYPE);
+	gui->addEditBox(L"0", GuiBox(80, 25, 115, 20), true, dialog, GUI_EDIT_PHYSICS_OFFSET_X);
+	gui->addEditBox(L"0", GuiBox(80, 45, 115, 20), true, dialog, GUI_EDIT_PHYSICS_OFFSET_Y);
+	gui->addEditBox(L"0", GuiBox(80, 65, 115, 20), true, dialog, GUI_EDIT_PHYSICS_OFFSET_Z);
+
+	gui->addStaticText(L"Type:", GuiBox(5, 90, 69, 69), false, false, dialog);
+	irr::gui::IGUIComboBox* typeSel = gui->addComboBox(GuiBox(50, 90, 145, 20), dialog, GUI_COMBO_PHYSICS_TYPE);
+	typeSel->addItem(L"Empty");
 	typeSel->addItem(L"Sphere");
 	typeSel->addItem(L"Box");
 	typeSel->addItem(L"Cylinder");
@@ -164,6 +218,14 @@ void showPhysicsDialog() {
 	typeSel->addItem(L"Multi-Sphere");
 	typeSel->addItem(L"Trimesh");
 
+	gui->addStaticText(L"", GuiBox(0, 110, 100, 100), false, true, dialog, GUI_EMPTY_PHYSICS_TYPE_EDITOR);
+
+	updatePhysicsDialog();
+
+}
+inline void openAllDialogs() {
+	showResourcesDialog();
+	showPhysicsDialog();
 }
 
 inline btVector3 irrToBullet(irr::core::vector3df irr) {
@@ -255,7 +317,6 @@ void openPhysicsShape(std::string filename) {
 	}
 
 }
-
 void openModel(std::string filename) {
 	irr::io::path path(filename.c_str());
 	irr::scene::IAnimatedMesh* mesh = smgr->getMesh(path);
@@ -263,7 +324,6 @@ void openModel(std::string filename) {
 	node->getMaterial(0).AmbientColor = irr::video::SColor(1, 1, 1, 1);
 	node->getMaterial(0).Lighting = false;
 }
-
 void openFile(std::string filename) {
 
 	std::ifstream stream(filename);
@@ -289,9 +349,6 @@ void openFile(std::string filename) {
 	std::cout << data << std::endl;
 }
 
-
-
-
 class AppEventReceiver : public irr::IEventReceiver {
 public:
 	virtual bool OnEvent(const irr::SEvent& event) {
@@ -315,6 +372,29 @@ public:
 							break;
 						}
 					}
+					break;
+				}
+
+				// Combo box changed
+				case irr::gui::EGET_COMBO_BOX_CHANGED: {
+
+					switch(id) {
+						case GUI_COMBO_PHYSICS_TYPE: {
+
+							irr::gui::IGUIComboBox* combo = (irr::gui::IGUIComboBox*) event.GUIEvent.Caller;
+
+							currProj->physicsShape.type = physicsComboToType(combo->getSelected());
+
+							updatePhysicsDialog();
+
+							return true;
+						}
+						default: {
+							break;
+						}
+					}
+
+
 					break;
 				}
 
@@ -356,9 +436,8 @@ public:
 	}
 };
 
-int main()
-{
-	currProj = 0;
+int main() {
+	currProj = new Project();
 
 	// Get the preferred driver type
 	irr::video::E_DRIVER_TYPE driverType = irr::video::EDT_OPENGL; // driverChoiceConsole(); //
@@ -439,7 +518,7 @@ int main()
 		gui->getSkin()->setColor((irr::gui::EGUI_DEFAULT_COLOR) i, color);
 	}
 
-	showResourcesDialog();
+	openAllDialogs();
 
 /*
 	// Cool skybox
