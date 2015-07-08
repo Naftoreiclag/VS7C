@@ -50,6 +50,8 @@ enum {
     GUI_BUTTON_PHYSICS,
     GUI_BUTTON_ANIMATION,
 
+    GUI_COMBO_PHYSICS_TYPE,
+
 	// Y-axis aligned where applicable
 	PHYS_EMPTY,
     PHYS_SPHERE,
@@ -142,6 +144,25 @@ void showResourcesDialog() {
 	irr::gui::IGUITreeViewNode* root = tree->getRoot();
 
 	root->addChildBack(L"Test");
+
+}
+
+void showPhysicsDialog() {
+	closeDialog(GUI_DIALOG_PHYSICS);
+
+	// Create dialog
+	irr::gui::IGUIWindow* dialog = gui->addWindow(GuiBox(595, 60, 200, 300), false, L"Physics", 0, GUI_DIALOG_PHYSICS);
+
+	irr::gui::IGUIStaticText* text = gui->addStaticText(L"Offset:", GuiBox(5, 25, 30, 30), false, false, dialog);
+
+	irr::gui::IGUIComboBox* typeSel = gui->addComboBox(GuiRect(5, 50, 195, 95), dialog, GUI_COMBO_PHYSICS_TYPE);
+	typeSel->addItem(L"Sphere");
+	typeSel->addItem(L"Box");
+	typeSel->addItem(L"Cylinder");
+	typeSel->addItem(L"Capsule");
+	typeSel->addItem(L"Cone");
+	typeSel->addItem(L"Multi-Sphere");
+	typeSel->addItem(L"Trimesh");
 
 }
 
@@ -315,6 +336,10 @@ public:
 							showResourcesDialog();
 							return true;
 						}
+						case GUI_BUTTON_PHYSICS: {
+							showPhysicsDialog();
+							return true;
+						}
 						default: {
 							break;
 						}
@@ -362,7 +387,7 @@ int main()
 
 	// Font
 	irr::gui::IGUISkin* skin = gui->getSkin();
-	irr::gui::IGUIFont* font = gui->getFont("example_media/fonthaettenschweiler.bmp");
+	irr::gui::IGUIFont* font = gui->getFont("assets_editor/ubuntu_font/ubuntu-condensed.png");
 	if (font) { skin->setFont(font); }
 
 	broadphase = new btDbvtBroadphase;
@@ -372,6 +397,9 @@ int main()
 	bulletDebugDrawer = new reib::BulletDebugDrawer(device);
 	bulletWorld->setDebugDrawer(bulletDebugDrawer);
 
+	btStaticPlaneShape* planeShape = new btStaticPlaneShape(btVector3(0, 1, 0), 0);
+	btRigidBody* planeRigid = new btRigidBody(0, 0, planeShape);
+	bulletWorld->addCollisionObject(planeRigid);
 	rootNode = smgr->addEmptySceneNode();
 	//rootNode->setScale(irr::core::vector3df(10, 10, 10));
 
