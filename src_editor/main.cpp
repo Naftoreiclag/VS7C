@@ -33,6 +33,7 @@ btCollisionDispatcher* dispatcher;
 btCollisionWorld* bulletWorld;
 reib::BulletDebugDrawer* bulletDebugDrawer;
 
+typedef double btDouble;
 
 enum {
 
@@ -84,20 +85,25 @@ struct PhysicsShape {
 	std::string filename;
 	irr::s32 type = PHYS_EMPTY;
 
-	btScalar radius = 0; // Sphere, Capsule, Cone
+	btDouble radius = 0; // Sphere, Capsule, Cone
 	btVector3 dimensions = btVector3(0, 0, 0); // Box, Cylinder
-	btScalar height = 0; // Capsule, Cone
+	btDouble height = 0; // Capsule, Cone
 
-	std::vector<std::pair<btVector3, btScalar>> locRadi; // MULTI_SPHERE
+	std::vector<std::pair<btVector3, btDouble>> locRadi; // MULTI_SPHERE
 	btTriangleMesh* triangles = 0; // TRIANGLE_MESH
 };
 struct Project {
+
 	std::string dir;
 
 	Json::Value jsonFile;
 
 	btVector3 physicsOffset;
 	PhysicsShape physicsShape;
+
+	btCollisionShape* collShape;
+	btCollisionObject* collObj;
+	irr::scene::ISceneNode* sceneNode;
 };
 
 Project* currProj;
@@ -170,14 +176,24 @@ void showResourcesDialog() {
 	root->addChildBack(L"Test");
 
 }
+
 const wchar_t* toText(std::string value) {
 	std::wstring ws(value.begin(), value.end());
 	return ws.c_str();
 }
-const wchar_t* toText(btScalar value) {
+const wchar_t* toText(btDouble value) {
 	std::stringstream ss;
 	ss << value;
 	return toText(ss.str());
+}
+Json::Value toJson(btVector3 vector) {
+	Json::Value ret = Json::arrayValue;
+
+	ret[0] = vector.getX();
+	ret[1] = vector.getY();
+	ret[2] = vector.getZ();
+
+	return ret;
 }
 const std::string toString(const wchar_t* text) {
 	std::stringstream ss;
@@ -189,7 +205,7 @@ const std::string toString(const wchar_t* text) {
 	}
 	return ss.str();
 }
-btScalar toScalar(const wchar_t* text) {
+btDouble toScalar(const wchar_t* text) {
 	std::stringstream ss(toString(text));
 	double ret;
 	if(!(ss >> ret)) {
@@ -227,6 +243,10 @@ inline void updatePhysicsDialog() {
 	if(physicsDialog == 0) {
 		return;
 	}
+	physicsDialog->getElementFromId(GUI_EDIT_PHYSICS_OFFSET_X)->setText(toText(currProj->physicsOffset.getX()));
+	physicsDialog->getElementFromId(GUI_EDIT_PHYSICS_OFFSET_Y)->setText(toText(currProj->physicsOffset.getY()));
+	physicsDialog->getElementFromId(GUI_EDIT_PHYSICS_OFFSET_Z)->setText(toText(currProj->physicsOffset.getZ()));
+
 	irr::gui::IGUIComboBox* typeSel = (irr::gui::IGUIComboBox*) physicsDialog->getElementFromId(GUI_COMBO_PHYSICS_TYPE);
 	typeSel->setSelected(physicsTypeToCombo(currProj->physicsShape.type));
 
@@ -301,6 +321,26 @@ inline btVector3 irrToBullet(irr::core::vector3df irr) {
 	return btVector3(irr.X, irr.Y, irr.Z);
 }
 
+
+void updatePhysicsRendering() {
+	if(currProj->collObj) {
+		bulletWorld->removeCollisionObject(currProj->collObj);
+		delete currProj->collObj;
+	}
+	if(currProj->collShape) {
+		delete currProj->collShape;
+	}
+
+	currProj->collShape = newShape(currProj->physicsShape);
+
+	if(currProj->collShape) {
+		btTransform trans;
+		trans.setIdentity();
+		trans.setOrigin(currProj->physicsOffset);
+		currProj->collObj = new btRigidBody(0, new btDefaultMotionState(trans), currProj->collShape, btVector3(0, 0, 0));
+		bulletWorld->addCollisionObject(currProj->collObj);
+	}
+}
 void openPhysicsShape(std::string filename) {
 	std::string extension = getExtension(filename);
 
@@ -308,36 +348,44 @@ void openPhysicsShape(std::string filename) {
 
 	if(extension == "json") {
 		std::ifstream stream(filename);
-		Json::Value physData;
-		stream >> physData;
+		Json::Value jphysData;
+		stream >> jphysData;
 
-		std::string type = physData["type"].asString();
+		std::string type = jphysData["type"].asString();
 
+		// Load a sphere from the json file
 		if(type == "sphere") {
-			std::cout << "Physics shape is a sphere." << std::endl;
+			// Set type to be a sphere
 			physShape.type = PHYS_SPHERE;
-			physShape.radius = physData["radius"].asDouble();
+
+			// Set radius
+			physShape.radius = jphysData["radius"].asDouble();
 			std::cout << "Radius = " << physShape.radius << std::endl;
 		}
+
+		// Load a box from the json file
 		else if(type == "box") {
-			std::cout << "Physics shape is a box." << std::endl;
 			physShape.type = PHYS_BOX;
-			Json::Value& dimen = physData["size"];
-			if(dimen != Json::nullValue) {
-				btScalar allDimen = dimen.asDouble();
-				physShape.dimensions = btVector3(allDimen, allDimen, allDimen);
-			}
-			Json::Value& dimenX = physData["size-x"];
-			if(dimenX != Json::nullValue) {
-				physShape.dimensions.setX(dimenX.asDouble());
-			}
-			Json::Value& dimenY = physData["size-y"];
-			if(dimenY != Json::nullValue) {
-				physShape.dimensions.setY(dimenY.asDouble());
-			}
-			Json::Value& dimenZ = physData["size-z"];
-			if(dimenZ != Json::nullValue) {
-				physShape.dimensions.setZ(dimenZ.asDouble());
+			Json::Value& jdimen = jphysData["size"];
+			if(jdimen != Json::nullValue) {
+				if(jdimen.isDouble()) {
+					btDouble allDimen = jdimen.asDouble();
+					physShape.dimensions = btVector3(allDimen, allDimen, allDimen);
+				}
+				else {
+					Json::Value& dimenX = jdimen[0];
+					if(dimenX != Json::nullValue) {
+						physShape.dimensions.setX(dimenX.asDouble());
+					}
+					Json::Value& dimenY = jdimen[1];
+					if(dimenY != Json::nullValue) {
+						physShape.dimensions.setY(dimenY.asDouble());
+					}
+					Json::Value& dimenZ = jdimen[2];
+					if(dimenZ != Json::nullValue) {
+						physShape.dimensions.setZ(dimenZ.asDouble());
+					}
+				}
 			}
 			std::cout << "Size = " << "(" << physShape.dimensions.getX() << ", " << physShape.dimensions.getY() << ", " << physShape.dimensions.getZ() << ")" << std::endl;
 		}
@@ -379,13 +427,11 @@ void openPhysicsShape(std::string filename) {
 		std::cout << "Physics mesh successfully generated." << std::endl;
 
 	}
-	btCollisionShape* shape = newShape(currProj->physicsShape);
 
-	if(shape) {
-		bulletWorld->addCollisionObject(new btRigidBody(0, new btDefaultMotionState(), shape, btVector3(0, 0, 0)));
-	}
-
+	updatePhysicsDialog();
+	updatePhysicsRendering();
 }
+
 void openModel(std::string filename) {
 	irr::io::path path(filename.c_str());
 	irr::scene::IAnimatedMesh* mesh = smgr->getMesh(path);
@@ -398,6 +444,13 @@ void openFile(std::string filename) {
 	std::ifstream stream(filename);
 
 	if(currProj) {
+		if(currProj->collObj) {
+			bulletWorld->removeCollisionObject(currProj->collObj);
+			delete currProj->collObj;
+		}
+		if(currProj->collShape) {
+			delete currProj->collShape;
+		}
 		delete currProj;
 	}
 	currProj = new Project();
@@ -406,20 +459,33 @@ void openFile(std::string filename) {
 	std::cout << "Object directory: " << currProj->dir << std::endl;
 
 	stream >> currProj->jsonFile;
-	Json::Value& data = currProj->jsonFile;
+	Json::Value& jdata = currProj->jsonFile;
 
-	Json::Value& physData = data["physics"];
-	currProj->physicsShape.filename = currProj->dir + "/" + physData.asString();
+	Json::Value& joffset = jdata["physics-offset"];
+	currProj->physicsOffset.setX(joffset[0].asDouble());
+	currProj->physicsOffset.setY(joffset[1].asDouble());
+	currProj->physicsOffset.setZ(joffset[2].asDouble());
+	currProj->physicsShape.filename = currProj->dir + "/" + jdata["physics"].asString();
 	openPhysicsShape(currProj->physicsShape.filename);
 
-	Json::Value& modelData = data["model"];
+	Json::Value& modelData = jdata["model"];
 	openModel(currProj->dir + "/" + modelData.asString());
 
 	std::cout << "Object opened:" << std::endl;
-	std::cout << data << std::endl;
+	std::cout << jdata << std::endl;
 }
 
+std::string STD_NAME = "object.json";
+
 void saveFile() {
+	std::ofstream mainFile(currProj->dir + "/object.json");
+
+	Json::Value& jdata = currProj->jsonFile;
+	jdata["physics-offset"] = toJson(currProj->physicsOffset);
+
+
+	mainFile << jdata;
+
 	if(currProj->physicsShape.type == PHYS_TRIANGLE_MESH) {
 
 	}
@@ -463,9 +529,10 @@ void saveFile() {
 		}
 
 		if(shape.type == PHYS_BOX || shape.type == PHYS_CYLINDER) {
-			jdata["size-x"] = shape.dimensions.getX();
-			jdata["size-y"] = shape.dimensions.getY();
-			jdata["size-z"] = shape.dimensions.getZ();
+			Json::Value& size = jdata["size"];
+			size.append(shape.dimensions.getX());
+			size.append(shape.dimensions.getY());
+			size.append(shape.dimensions.getZ());
 		}
 		if(shape.type == PHYS_CAPSULE || shape.type == PHYS_CONE || shape.type == PHYS_SPHERE) {
 			jdata["radius"] = shape.radius;
@@ -517,41 +584,49 @@ public:
 				case irr::gui::EGET_EDITBOX_CHANGED: {
 					irr::gui::IGUIEditBox* box = (irr::gui::IGUIEditBox*) event.GUIEvent.Caller;
 					const wchar_t* text = box->getText();
-					btScalar scalar = toScalar(text);
+					btDouble scalar = toScalar(text);
 					std::string str = toString(text);
 
 					switch(id) {
 						case GUI_EDIT_PHYSICS_OFFSET_X: {
 							currProj->physicsOffset.setX(scalar);
+							updatePhysicsRendering();
 							return true;
 						}
 						case GUI_EDIT_PHYSICS_OFFSET_Y: {
 							currProj->physicsOffset.setY(scalar);
+							updatePhysicsRendering();
 							return true;
 						}
 						case GUI_EDIT_PHYSICS_OFFSET_Z: {
 							currProj->physicsOffset.setZ(scalar);
+							updatePhysicsRendering();
 							return true;
 						}
 						case GUI_EDIT_PHYSICS_HEIGHT: {
 							currProj->physicsShape.height = scalar;
+							updatePhysicsRendering();
 							return true;
 						}
 						case GUI_EDIT_PHYSICS_DIMENSIONS_X: {
 							currProj->physicsShape.dimensions.setX(scalar);
+							updatePhysicsRendering();
 							return true;
 						}
 						case GUI_EDIT_PHYSICS_DIMENSIONS_Y: {
 							currProj->physicsShape.dimensions.setY(scalar);
+							updatePhysicsRendering();
 							return true;
 						}
 						case GUI_EDIT_PHYSICS_DIMENSIONS_Z: {
 							currProj->physicsShape.dimensions.setZ(scalar);
+							updatePhysicsRendering();
 							return true;
 						}
 						case GUI_EDIT_PHYSICS_RADIUS: {
 							std::cout << "Radius changed to " << scalar << "." << std::endl;
 							currProj->physicsShape.radius = scalar;
+							updatePhysicsRendering();
 							return true;
 						}
 					}
@@ -563,13 +638,12 @@ public:
 
 					switch(id) {
 						case GUI_COMBO_PHYSICS_TYPE: {
-
 							irr::gui::IGUIComboBox* combo = (irr::gui::IGUIComboBox*) event.GUIEvent.Caller;
 
 							currProj->physicsShape.type = physicsComboToType(combo->getSelected());
 
 							updatePhysicsDialog();
-
+							updatePhysicsRendering();
 							return true;
 						}
 						default: {
