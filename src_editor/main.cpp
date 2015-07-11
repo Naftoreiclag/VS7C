@@ -16,8 +16,6 @@
 #include "btBulletCollisionCommon.h"
 #include "ReiBullet.h"
 
-std::string STD_NAME = "object.json";
-
 irr::video::IVideoDriver* driver;
 irr::scene::ISceneManager* smgr;
 irr::gui::IGUIEnvironment* gui;
@@ -100,11 +98,23 @@ struct PhysicsShape {
 	btTriangleMesh* triangles = 0; // TRIANGLE_MESH
 };
 
-struct Project {
+struct Setting {
+	// Original json file
+	Json::Value jVal = Json::nullValue;
 
-	std::string dir;
+	// Properties
+	std::string root = "null";
+	std::string nmsp = "null";
+	std::string desc = "null";
+};
 
-	Json::Value jsonFile;
+struct Gobject {
+	// Original json file
+	Json::Value jVal;
+
+	// Where is the file located
+	std::string filename;
+
 
 	btVector3 physicsOffset;
 	PhysicsShape physicsShape;
@@ -114,7 +124,7 @@ struct Project {
 	irr::scene::ISceneNode* sceneNode;
 };
 
-Project* loadedProject;
+Gobject* loadedProject;
 
 // UTILITY
 // =======
@@ -467,31 +477,31 @@ void openProject(std::string filename) {
 		}
 		delete loadedProject;
 	}
-	loadedProject = new Project();
+	loadedProject = new Gobject();
 
-	loadedProject->dir = getDirectory(filename);
-	std::cout << "Object directory: " << loadedProject->dir << std::endl;
+	loadedProject->filename = getDirectory(filename);
+	std::cout << "Object directory: " << loadedProject->filename << std::endl;
 
-	stream >> loadedProject->jsonFile;
-	Json::Value& jdata = loadedProject->jsonFile;
+	stream >> loadedProject->jVal;
+	Json::Value& jdata = loadedProject->jVal;
 
 	Json::Value& joffset = jdata["physics-offset"];
 	loadedProject->physicsOffset.setX(joffset[0].asDouble());
 	loadedProject->physicsOffset.setY(joffset[1].asDouble());
 	loadedProject->physicsOffset.setZ(joffset[2].asDouble());
-	loadedProject->physicsShape.filename = loadedProject->dir + "/" + jdata["physics"].asString();
+	loadedProject->physicsShape.filename = loadedProject->filename + "/" + jdata["physics"].asString();
 	openPhysicsShape(loadedProject->physicsShape.filename);
 
 	Json::Value& modelData = jdata["model"];
-	openModel(loadedProject->dir + "/" + modelData.asString());
+	openModel(loadedProject->filename + "/" + modelData.asString());
 
 	std::cout << "Object opened:" << std::endl;
 	std::cout << jdata << std::endl;
 }
 void saveProject() {
-	std::ofstream mainFile(loadedProject->dir + "/object.json");
+	std::ofstream mainFile(loadedProject->filename + "/object.json");
 
-	Json::Value& jdata = loadedProject->jsonFile;
+	Json::Value& jdata = loadedProject->jVal;
 	jdata["physics-offset"] = toJson(loadedProject->physicsOffset);
 
 
@@ -757,7 +767,7 @@ public:
 };
 
 int main() {
-	loadedProject = new Project();
+	loadedProject = new Gobject();
 
 	// Get the preferred driver type
 	irr::video::E_DRIVER_TYPE driverType = irr::video::EDT_OPENGL; // driverChoiceConsole(); //
