@@ -72,6 +72,10 @@ enum {
     GUI_EDIT_PHYSICS_FILE,
     GUI_EMPTY_PHYSICS_TYPE_EDITOR,
 
+	STATE_EDIT,
+	STATE_PAN,
+	STATE_LOOK,
+
 	// Y-axis aligned where applicable
 	PHYS_EMPTY,
     PHYS_SPHERE,
@@ -82,6 +86,7 @@ enum {
     PHYS_MULTI_SPHERE,
     PHYS_TRIANGLE_MESH,
 };
+irr::s32 appState = STATE_EDIT;
 
 struct PhysicsShape {
 	std::string filename;
@@ -553,14 +558,42 @@ void saveProject() {
 		physicsFile << jdata;
 
 	}
-
-
-
 }
 
+irr::core::position2di mouseLoc;
 class AppEventReceiver : public irr::IEventReceiver {
 public:
 	virtual bool OnEvent(const irr::SEvent& event) {
+
+		if(event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
+			switch(event.MouseInput.Event) {
+				case irr::EMIE_LMOUSE_PRESSED_DOWN: {
+					appState = STATE_LOOK;
+					break;
+				}
+				case irr::EMIE_RMOUSE_PRESSED_DOWN: {
+					appState = STATE_PAN;
+					break;
+				}
+				case irr::EMIE_LMOUSE_LEFT_UP: {
+					appState = STATE_EDIT;
+					break;
+				}
+				case irr::EMIE_RMOUSE_LEFT_UP: {
+					appState = STATE_EDIT;
+					break;
+				}
+				case irr::EMIE_MOUSE_MOVED: {
+					mouseLoc.X = event.MouseInput.X;
+					mouseLoc.Y = event.MouseInput.Y;
+					break;
+				}
+				default: {
+					break;
+				}
+			}
+
+		}
 
 		if(event.EventType == irr::EET_GUI_EVENT) {
 			irr::s32 id = event.GUIEvent.Caller->getID();
@@ -716,7 +749,7 @@ int main() {
 	params.Bits = 16;
 	params.Fullscreen = false;
 	params.Stencilbuffer = true;
-	params.Vsync = false;
+	params.Vsync = true;
 	params.EventReceiver = &appEventReceiver;
 	params.AntiAlias = 0;
 	irr::IrrlichtDevice* device = createDeviceEx(params);
@@ -767,12 +800,11 @@ int main() {
 	{
 		irr::gui::IGUIToolBar* bar = gui->addToolBar();
 
-		irr::video::ITexture* image = driver->getTexture("assets/A.png");
-		bar->addButton(GUI_BUTTON_RESOURCES, 0, L"Resources", image, 0, false, true);
-		bar->addButton(GUI_BUTTON_COMPONENTS, 0, L"Components", image, 0, false, true);
-		bar->addButton(GUI_BUTTON_MODEL, 0, L"Model", image, 0, false, true);
-		bar->addButton(GUI_BUTTON_PHYSICS, 0, L"Physics", image, 0, false, true);
-		bar->addButton(GUI_BUTTON_ANIMATION, 0, L"Animation", image, 0, false, true);
+		bar->addButton(GUI_BUTTON_RESOURCES, 0, L"Resources", driver->getTexture("assets_editor/resources.png"), 0, false, true);
+		bar->addButton(GUI_BUTTON_COMPONENTS, 0, L"Components", driver->getTexture("assets_editor/components.png"), 0, false, true);
+		bar->addButton(GUI_BUTTON_MODEL, 0, L"Model", driver->getTexture("assets_editor/model.png"), 0, false, true);
+		bar->addButton(GUI_BUTTON_PHYSICS, 0, L"Physics", driver->getTexture("assets_editor/physics.png"), 0, false, true);
+		bar->addButton(GUI_BUTTON_ANIMATION, 0, L"Animation", driver->getTexture("assets_editor/animation.png"), 0, false, true);
 
 
 	}
@@ -786,7 +818,6 @@ int main() {
 
 	openAllDialogs();
 
-/*
 	// Cool skybox
 	driver->setTextureCreationFlag(irr::video::ETCF_CREATE_MIP_MAPS, false);
 	smgr->addSkyBoxSceneNode(
@@ -797,7 +828,9 @@ int main() {
 		driver->getTexture("assets_editor/cloudy_0/bluecloud_ft.jpg"),
 		driver->getTexture("assets_editor/cloudy_0/bluecloud_bk.jpg"));
 	driver->setTextureCreationFlag(irr::video::ETCF_CREATE_MIP_MAPS, true);
-	*/
+
+	// Cool ground
+	smgr->addCubeSceneNode(200, 0, -1, irr::core::vector3df(0, -100, 0));
 
 	irr::scene::ICameraSceneNode* cam = smgr->addCameraSceneNode();
 	cam->setPosition(irr::core::vector3df(3, 3, 3));
@@ -808,6 +841,10 @@ int main() {
 	// Initialize tpf calculator
 	irr::u32 then = device->getTimer()->getTime();
 	irr::u32 frames = 0;
+	irr::core::dimension2du screenSize = driver->getScreenSize();
+	irr::core::position2di screenCenter;
+	screenCenter.X = screenSize.Width / 2;
+	screenCenter.Y = screenSize.Height / 2;
 
 	// Main loop
 	while(device->run()) {
@@ -818,6 +855,28 @@ int main() {
 
 		// Clear buffers before rendering
 		driver->beginScene(true, true, irr::video::SColor(0, 140, 140, 140));
+
+
+		const irr::core::dimension2du newScreenSize = driver->getScreenSize();
+		if(screenSize.Width != newScreenSize.Width || screenSize.Height != newScreenSize.Height) {
+			screenSize = driver->getScreenSize();
+			screenCenter.X = screenSize.Width / 2;
+			screenCenter.Y = screenSize.Height / 2;
+
+
+		}
+
+		if(appState == STATE_PAN || appState == STATE_LOOK) {
+			device->getCursorControl()->setVisible(false);
+
+
+
+			device->getCursorControl()->setPosition(screenCenter);
+
+		}
+		else {
+			device->getCursorControl()->setVisible(true);
+		}
 
 		// Draw stuff
 		smgr->drawAll();
