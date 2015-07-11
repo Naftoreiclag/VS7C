@@ -562,30 +562,45 @@ void saveProject() {
 
 irr::core::position2di mouseLoc;
 bool mouseJustClicked = false;
+bool moveCamToggle = false;
 class AppEventReceiver : public irr::IEventReceiver {
 public:
 	virtual bool OnEvent(const irr::SEvent& event) {
 
+		if(event.EventType == irr::EET_KEY_INPUT_EVENT) {
+			if(event.KeyInput.Key == 160) {
+				moveCamToggle = event.KeyInput.PressedDown;
+			}
+		}
+
 		if(event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
+
+			if(moveCamToggle) {
+				switch(event.MouseInput.Event) {
+					case irr::EMIE_LMOUSE_PRESSED_DOWN: {
+						appState = STATE_LOOK;
+						mouseJustClicked = true;
+						break;
+					}
+					case irr::EMIE_RMOUSE_PRESSED_DOWN: {
+						appState = STATE_PAN;
+						mouseJustClicked = true;
+						break;
+					}
+					case irr::EMIE_LMOUSE_LEFT_UP: {
+						appState = STATE_EDIT;
+						break;
+					}
+					case irr::EMIE_RMOUSE_LEFT_UP: {
+						appState = STATE_EDIT;
+						break;
+					}
+					default: {
+						break;
+					}
+				}
+			}
 			switch(event.MouseInput.Event) {
-				case irr::EMIE_LMOUSE_PRESSED_DOWN: {
-					appState = STATE_LOOK;
-					mouseJustClicked = true;
-					break;
-				}
-				case irr::EMIE_RMOUSE_PRESSED_DOWN: {
-					appState = STATE_PAN;
-					mouseJustClicked = true;
-					break;
-				}
-				case irr::EMIE_LMOUSE_LEFT_UP: {
-					appState = STATE_EDIT;
-					break;
-				}
-				case irr::EMIE_RMOUSE_LEFT_UP: {
-					appState = STATE_EDIT;
-					break;
-				}
 				case irr::EMIE_MOUSE_MOVED: {
 					mouseLoc.X = event.MouseInput.X;
 					mouseLoc.Y = event.MouseInput.Y;
@@ -595,6 +610,7 @@ public:
 					break;
 				}
 			}
+
 
 		}
 
@@ -860,8 +876,10 @@ int main() {
 	screenCenter.Y = screenSize.Height / 2;
 
 	irr::f32 lookSpd = 0.1;
-	irr::f32 panSpd = 0.005;
+	irr::f32 panSpd = 0.01;
 
+	irr::core::vector3df upMov;
+	irr::core::vector3df rightMov;
 
 	// Main loop
 	while(device->run()) {
@@ -890,11 +908,16 @@ int main() {
 		if(appState == STATE_PAN || appState == STATE_LOOK) {
 			device->getCursorControl()->setVisible(false);
 
-			// Prevent teleporting
+
+			// Prevent shaking
 			irr::core::position2di mouseMove;
+
 			if(mouseJustClicked) {
 				mouseMove.X = 0;
 				mouseMove.Y = 0;
+				irr::core::vector3df camPos = cam->getAbsolutePosition();
+				upMov = camUp->getAbsolutePosition() - camPos;
+				rightMov = camRight->getAbsolutePosition() - camPos;
 				mouseJustClicked = false;
 			} else {
 				mouseMove.X = mouseLoc.X - screenCenter.X;
@@ -921,21 +944,15 @@ int main() {
 				*/
 			}
 			else if(appState == STATE_PAN) {
-				irr::core::vector3df camPos = cam->getAbsolutePosition();
-				irr::core::vector3df upMov = camUp->getAbsolutePosition() - camPos;
-				irr::core::vector3df rightMov = camRight->getAbsolutePosition() - camPos;
-
 				irr::f32 xMov = mouseMove.X * panSpd;
 				irr::f32 yMov = mouseMove.Y * panSpd;
 
-				upMov *= -yMov;
-				rightMov *= xMov;
+				irr::core::vector3df camPos = cam->getAbsolutePosition();
+				camPos += upMov * yMov;
+				camPos += rightMov * -xMov;
 
-				camPos += upMov;
-				camPos += rightMov;
-
-				cam->setPosition(camPos);
 				cam->setTarget(lookAt->getAbsolutePosition());
+				cam->setPosition(camPos);
 			}
 
 			device->getCursorControl()->setPosition(screenCenter);
