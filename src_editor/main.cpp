@@ -8,6 +8,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <sstream>
 
 #include "irrlicht.h"
 #include "driverChoice.h"
@@ -65,6 +66,7 @@ enum {
     GUI_EDIT_PHYSICS_DIMENSIONS_Z,
     GUI_EDIT_PHYSICS_RADIUS,
     GUI_EDIT_PHYSICS_HEIGHT,
+    GUI_EDIT_PHYSICS_FILE,
     GUI_EMPTY_PHYSICS_TYPE_EDITOR,
 
 	// Y-axis aligned where applicable
@@ -79,8 +81,7 @@ enum {
 };
 
 struct PhysicsShape {
-	bool modified = false;
-
+	std::string filename;
 	irr::s32 type = PHYS_EMPTY;
 
 	btScalar radius = 0; // Sphere, Capsule, Cone
@@ -94,6 +95,8 @@ struct Project {
 	std::string dir;
 
 	Json::Value jsonFile;
+
+	btVector3 physicsOffset;
 	PhysicsShape physicsShape;
 };
 
@@ -167,6 +170,34 @@ void showResourcesDialog() {
 	root->addChildBack(L"Test");
 
 }
+const wchar_t* toText(std::string value) {
+	std::wstring ws(value.begin(), value.end());
+	return ws.c_str();
+}
+const wchar_t* toText(btScalar value) {
+	std::stringstream ss;
+	ss << value;
+	return toText(ss.str());
+}
+const std::string toString(const wchar_t* text) {
+	std::stringstream ss;
+	for(std::size_t i = 0; i < 99999; ++ i) {
+		if(text[i] == 0) {
+			break;
+		}
+		ss << ((char) text[i]);
+	}
+	return ss.str();
+}
+btScalar toScalar(const wchar_t* text) {
+	std::stringstream ss(toString(text));
+	double ret;
+	if(!(ss >> ret)) {
+		return 0;
+	}
+	return ret;
+}
+
 irr::s32 physicsComboToType(irr::s32 comboInput) {
 	switch(comboInput) {
 		case 1: { return PHYS_SPHERE; }
@@ -204,28 +235,28 @@ inline void updatePhysicsDialog() {
 	removeAllChildren(dialog);
 
 	irr::s32 physType = currProj->physicsShape.type;
+	PhysicsShape physShape = currProj->physicsShape;
 
 	if(physType == PHYS_BOX || physType == PHYS_CYLINDER) {
 		gui->addStaticText(L"Size:", GuiBox(5, 5, 69, 69), false, true, dialog);
 		gui->addStaticText(L"X", GuiBox(65,  5, 69, 69), false, false, dialog);
 		gui->addStaticText(L"Y", GuiBox(65, 25, 69, 69), false, false, dialog);
 		gui->addStaticText(L"Z", GuiBox(65, 45, 69, 69), false, false, dialog);
-		gui->addEditBox(L"0", GuiBox(80,  5, 115, 20), true, dialog, GUI_EDIT_PHYSICS_DIMENSIONS_X);
-		gui->addEditBox(L"0", GuiBox(80, 25, 115, 20), true, dialog, GUI_EDIT_PHYSICS_DIMENSIONS_Y);
-		gui->addEditBox(L"0", GuiBox(80, 45, 115, 20), true, dialog, GUI_EDIT_PHYSICS_DIMENSIONS_Z);
+		gui->addEditBox(toText(physShape.dimensions.getX()), GuiBox(80,  5, 115, 20), true, dialog, GUI_EDIT_PHYSICS_DIMENSIONS_X);
+		gui->addEditBox(toText(physShape.dimensions.getY()), GuiBox(80, 25, 115, 20), true, dialog, GUI_EDIT_PHYSICS_DIMENSIONS_Y);
+		gui->addEditBox(toText(physShape.dimensions.getZ()), GuiBox(80, 45, 115, 20), true, dialog, GUI_EDIT_PHYSICS_DIMENSIONS_Z);
 	}
 	if(physType == PHYS_SPHERE || physType == PHYS_CAPSULE || physType == PHYS_CONE) {
 		gui->addStaticText(L"Radius:", GuiBox(5, 5, 69, 69), false, true, dialog);
-		gui->addEditBox(L"0", GuiBox(80,  5, 115, 20), true, dialog, GUI_EDIT_PHYSICS_DIMENSIONS_X);
+		gui->addEditBox(toText(physShape.radius), GuiBox(80,  5, 115, 20), true, dialog, GUI_EDIT_PHYSICS_RADIUS);
 	}
 	if(physType == PHYS_CAPSULE || physType == PHYS_CONE) {
 		gui->addStaticText(L"Height:", GuiBox(5, 30, 69, 69), false, true, dialog);
-		gui->addEditBox(L"0", GuiBox(80, 30, 115, 20), true, dialog, GUI_EDIT_PHYSICS_DIMENSIONS_X);
+		gui->addEditBox(toText(physShape.height), GuiBox(80, 30, 115, 20), true, dialog, GUI_EDIT_PHYSICS_HEIGHT);
 	}
 	if(physType == PHYS_TRIANGLE_MESH) {
 		gui->addStaticText(L"File:", GuiBox(5, 5, 69, 69), false, true, dialog);
-		gui->addEditBox(L"fname", GuiBox(5, 30, 190, 20), true, dialog, GUI_EDIT_PHYSICS_DIMENSIONS_X);
-
+		gui->addEditBox(toText(currProj->physicsShape.filename), GuiBox(5, 30, 190, 20), true, dialog, GUI_EDIT_PHYSICS_FILE);
 	}
 
 
@@ -296,15 +327,15 @@ void openPhysicsShape(std::string filename) {
 				btScalar allDimen = dimen.asDouble();
 				physShape.dimensions = btVector3(allDimen, allDimen, allDimen);
 			}
-			Json::Value& dimenX = physData["sizeX"];
+			Json::Value& dimenX = physData["size-x"];
 			if(dimenX != Json::nullValue) {
 				physShape.dimensions.setX(dimenX.asDouble());
 			}
-			Json::Value& dimenY = physData["sizeY"];
+			Json::Value& dimenY = physData["size-y"];
 			if(dimenY != Json::nullValue) {
 				physShape.dimensions.setY(dimenY.asDouble());
 			}
-			Json::Value& dimenZ = physData["sizeZ"];
+			Json::Value& dimenZ = physData["size-z"];
 			if(dimenZ != Json::nullValue) {
 				physShape.dimensions.setZ(dimenZ.asDouble());
 			}
@@ -378,13 +409,78 @@ void openFile(std::string filename) {
 	Json::Value& data = currProj->jsonFile;
 
 	Json::Value& physData = data["physics"];
-	openPhysicsShape(currProj->dir + "/" + physData.asString());
+	currProj->physicsShape.filename = currProj->dir + "/" + physData.asString();
+	openPhysicsShape(currProj->physicsShape.filename);
 
 	Json::Value& modelData = data["model"];
 	openModel(currProj->dir + "/" + modelData.asString());
 
 	std::cout << "Object opened:" << std::endl;
 	std::cout << data << std::endl;
+}
+
+void saveFile() {
+	if(currProj->physicsShape.type == PHYS_TRIANGLE_MESH) {
+
+	}
+	else {
+		PhysicsShape& shape = currProj->physicsShape;
+
+		std::ofstream physicsFile(shape.filename);
+
+		Json::Value jdata;
+
+		Json::Value& jtype = jdata["type"];
+		switch(shape.type) {
+			case PHYS_SPHERE: {
+				jtype = "sphere";
+				break;
+			}
+			case PHYS_BOX: {
+				jtype = "box";
+				break;
+			}
+			case PHYS_CYLINDER: {
+				jtype = "cylinder";
+				break;
+			}
+			case PHYS_CAPSULE: {
+				jtype = "capsule";
+				break;
+			}
+			case PHYS_CONE: {
+				jtype = "cone";
+				break;
+			}
+			case PHYS_MULTI_SPHERE: {
+				jtype = "multi-sphere";
+				break;
+			}
+			default: {
+				jtype = "empty";
+				break;
+			}
+		}
+
+		if(shape.type == PHYS_BOX || shape.type == PHYS_CYLINDER) {
+			jdata["size-x"] = shape.dimensions.getX();
+			jdata["size-y"] = shape.dimensions.getY();
+			jdata["size-z"] = shape.dimensions.getZ();
+		}
+		if(shape.type == PHYS_CAPSULE || shape.type == PHYS_CONE || shape.type == PHYS_SPHERE) {
+			jdata["radius"] = shape.radius;
+		}
+		if(shape.type == PHYS_CAPSULE || shape.type == PHYS_CONE) {
+			jdata["height"] = shape.height;
+		}
+
+
+		physicsFile << jdata;
+
+	}
+
+
+
 }
 
 class AppEventReceiver : public irr::IEventReceiver {
@@ -406,8 +502,57 @@ public:
 							gui->addFileOpenDialog(L"Open object...");
 							return true;
 						}
+						case GUI_FILE_SAVE: {
+							saveFile();
+							return true;
+						}
 						default: {
 							break;
+						}
+					}
+					break;
+				}
+
+				// Edit box changed
+				case irr::gui::EGET_EDITBOX_CHANGED: {
+					irr::gui::IGUIEditBox* box = (irr::gui::IGUIEditBox*) event.GUIEvent.Caller;
+					const wchar_t* text = box->getText();
+					btScalar scalar = toScalar(text);
+					std::string str = toString(text);
+
+					switch(id) {
+						case GUI_EDIT_PHYSICS_OFFSET_X: {
+							currProj->physicsOffset.setX(scalar);
+							return true;
+						}
+						case GUI_EDIT_PHYSICS_OFFSET_Y: {
+							currProj->physicsOffset.setY(scalar);
+							return true;
+						}
+						case GUI_EDIT_PHYSICS_OFFSET_Z: {
+							currProj->physicsOffset.setZ(scalar);
+							return true;
+						}
+						case GUI_EDIT_PHYSICS_HEIGHT: {
+							currProj->physicsShape.height = scalar;
+							return true;
+						}
+						case GUI_EDIT_PHYSICS_DIMENSIONS_X: {
+							currProj->physicsShape.dimensions.setX(scalar);
+							return true;
+						}
+						case GUI_EDIT_PHYSICS_DIMENSIONS_Y: {
+							currProj->physicsShape.dimensions.setY(scalar);
+							return true;
+						}
+						case GUI_EDIT_PHYSICS_DIMENSIONS_Z: {
+							currProj->physicsShape.dimensions.setZ(scalar);
+							return true;
+						}
+						case GUI_EDIT_PHYSICS_RADIUS: {
+							std::cout << "Radius changed to " << scalar << "." << std::endl;
+							currProj->physicsShape.radius = scalar;
+							return true;
 						}
 					}
 					break;
@@ -534,6 +679,7 @@ int main() {
 		submenu->addItem(L"Open", GUI_FILE_OPEN);
 		submenu->addItem(L"Save", GUI_FILE_SAVE);
 		submenu->addItem(L"Save as...", GUI_FILE_SAVE_AS);
+		submenu->addSeparator();
 	}
 
 	{
