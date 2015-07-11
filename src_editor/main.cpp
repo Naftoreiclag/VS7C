@@ -452,8 +452,6 @@ void openModel(std::string filename) {
 	irr::io::path path(filename.c_str());
 	irr::scene::IAnimatedMesh* mesh = smgr->getMesh(path);
 	irr::scene::IAnimatedMeshSceneNode* node = smgr->addAnimatedMeshSceneNode(mesh, rootNode);
-	node->getMaterial(0).AmbientColor = irr::video::SColor(1, 1, 1, 1);
-	node->getMaterial(0).Lighting = false;
 }
 void openProject(std::string filename) {
 
@@ -561,6 +559,7 @@ void saveProject() {
 }
 
 irr::core::position2di mouseLoc;
+irr::f32 wheelDelta = 0;
 bool mouseJustClicked = false;
 bool moveCamToggle = false;
 class AppEventReceiver : public irr::IEventReceiver {
@@ -604,6 +603,10 @@ public:
 				case irr::EMIE_MOUSE_MOVED: {
 					mouseLoc.X = event.MouseInput.X;
 					mouseLoc.Y = event.MouseInput.Y;
+					break;
+				}
+				case irr::EMIE_MOUSE_WHEEL: {
+					wheelDelta += event.MouseInput.Wheel;
 					break;
 				}
 				default: {
@@ -848,10 +851,9 @@ int main() {
 		driver->getTexture("assets_editor/cloudy_0/bluecloud_bk.jpg"));
 	driver->setTextureCreationFlag(irr::video::ETCF_CREATE_MIP_MAPS, true);
 
+
 	// Cool ground
-	/*
 	smgr->addCubeSceneNode(200, 0, -1, irr::core::vector3df(0, -100, 0));
-	*/
 
 	irr::scene::ICameraSceneNode* cam = smgr->addCameraSceneNode();
 	irr::scene::ISceneNode* lookAt = smgr->addEmptySceneNode(cam);
@@ -864,8 +866,18 @@ int main() {
 	cam->setRotation(irr::core::vector3df(45, -135, 0));
 	cam->setTarget(lookAt->getAbsolutePosition());
 
+	//
+	irr::scene::ISceneNode* dLightControl = smgr->addEmptySceneNode();
+	irr::scene::ILightSceneNode* directionalLight = smgr->addLightSceneNode(dLightControl, irr::core::vector3df(0, 0, 1), irr::video::SColor(1, 1, 1, 1), 10000.0f);
+	irr::video::SLight lightData;
+	lightData.Type = irr::video::ELT_DIRECTIONAL;
+	lightData.Direction = irr::core::vector3df(0, -100, 0);
+	lightData.DiffuseColor = irr::video::SColorf(0.4f, 0.4f, 0.4f, 1);
+	lightData.CastShadows = false;
+	directionalLight->setLightData(lightData);
+	dLightControl->setRotation(irr::core::vector3df(45, -135, 0));
 
-	smgr->setAmbientLight(irr::video::SColorf(1, 1, 1, 1));
+	smgr->setAmbientLight(irr::video::SColorf(0.6f, 0.6f, 0.6f, 1));
 
 	// Initialize tpf calculator
 	irr::u32 then = device->getTimer()->getTime();
@@ -877,9 +889,13 @@ int main() {
 
 	irr::f32 lookSpd = 0.1;
 	irr::f32 panSpd = 0.01;
+	irr::f32 zoomSpd = 0.01;
 
+	irr::core::vector3df inMov;
 	irr::core::vector3df upMov;
 	irr::core::vector3df rightMov;
+
+	bool panningInitializedByWheel = false;
 
 	// Main loop
 	while(device->run()) {
@@ -905,6 +921,15 @@ int main() {
 			}
 		}
 
+		if(wheelDelta != 0 && moveCamToggle) {
+			appState = STATE_PAN;
+			panningInitializedByWheel = true;
+		}
+		else if(panningInitializedByWheel) {
+			appState = STATE_EDIT;
+			panningInitializedByWheel = false;
+		}
+
 		if(appState == STATE_PAN || appState == STATE_LOOK) {
 			device->getCursorControl()->setVisible(false);
 
@@ -916,6 +941,7 @@ int main() {
 				mouseMove.X = 0;
 				mouseMove.Y = 0;
 				irr::core::vector3df camPos = cam->getAbsolutePosition();
+				inMov = lookAt->getAbsolutePosition() - camPos;
 				upMov = camUp->getAbsolutePosition() - camPos;
 				rightMov = camRight->getAbsolutePosition() - camPos;
 				mouseJustClicked = false;
@@ -946,10 +972,12 @@ int main() {
 			else if(appState == STATE_PAN) {
 				irr::f32 xMov = mouseMove.X * panSpd;
 				irr::f32 yMov = mouseMove.Y * panSpd;
+				irr::f32 wMov = wheelDelta * zoomSpd;
 
 				irr::core::vector3df camPos = cam->getAbsolutePosition();
 				camPos += upMov * yMov;
 				camPos += rightMov * -xMov;
+				camPos += inMov * wMov;
 
 				cam->setTarget(lookAt->getAbsolutePosition());
 				cam->setPosition(camPos);
@@ -961,6 +989,7 @@ int main() {
 		else {
 			device->getCursorControl()->setVisible(true);
 		}
+		wheelDelta = 0;
 
 		// Draw stuff
 		smgr->drawAll();
