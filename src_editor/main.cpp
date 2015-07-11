@@ -561,6 +561,7 @@ void saveProject() {
 }
 
 irr::core::position2di mouseLoc;
+bool mouseJustClicked = false;
 class AppEventReceiver : public irr::IEventReceiver {
 public:
 	virtual bool OnEvent(const irr::SEvent& event) {
@@ -569,10 +570,12 @@ public:
 			switch(event.MouseInput.Event) {
 				case irr::EMIE_LMOUSE_PRESSED_DOWN: {
 					appState = STATE_LOOK;
+					mouseJustClicked = true;
 					break;
 				}
 				case irr::EMIE_RMOUSE_PRESSED_DOWN: {
 					appState = STATE_PAN;
+					mouseJustClicked = true;
 					break;
 				}
 				case irr::EMIE_LMOUSE_LEFT_UP: {
@@ -830,11 +833,21 @@ int main() {
 	driver->setTextureCreationFlag(irr::video::ETCF_CREATE_MIP_MAPS, true);
 
 	// Cool ground
+	/*
 	smgr->addCubeSceneNode(200, 0, -1, irr::core::vector3df(0, -100, 0));
+	*/
 
 	irr::scene::ICameraSceneNode* cam = smgr->addCameraSceneNode();
+	irr::scene::ISceneNode* lookAt = smgr->addEmptySceneNode(cam);
+	lookAt->setPosition(irr::core::vector3df(0, 0, 1));
+	irr::scene::ISceneNode* camUp = smgr->addEmptySceneNode(cam);
+	camUp->setPosition(irr::core::vector3df(0, 1, 0));
+	irr::scene::ISceneNode* camRight = smgr->addEmptySceneNode(cam);
+	camRight->setPosition(irr::core::vector3df(1, 0, 0));
 	cam->setPosition(irr::core::vector3df(3, 3, 3));
-	cam->setTarget(irr::core::vector3df(0, 0, 0));
+	cam->setRotation(irr::core::vector3df(45, -135, 0));
+	cam->setTarget(lookAt->getAbsolutePosition());
+
 
 	smgr->setAmbientLight(irr::video::SColorf(1, 1, 1, 1));
 
@@ -845,6 +858,10 @@ int main() {
 	irr::core::position2di screenCenter;
 	screenCenter.X = screenSize.Width / 2;
 	screenCenter.Y = screenSize.Height / 2;
+
+	irr::f32 lookSpd = 0.1;
+	irr::f32 panSpd = 0.005;
+
 
 	// Main loop
 	while(device->run()) {
@@ -859,17 +876,67 @@ int main() {
 
 		const irr::core::dimension2du newScreenSize = driver->getScreenSize();
 		if(screenSize.Width != newScreenSize.Width || screenSize.Height != newScreenSize.Height) {
+			std::cout << "Screen resized." << std::endl;
 			screenSize = driver->getScreenSize();
 			screenCenter.X = screenSize.Width / 2;
 			screenCenter.Y = screenSize.Height / 2;
 
-
+			irr::f32 aspect = screenSize.Width / screenSize.Height;
+			if(aspect != 0) {
+				cam->setAspectRatio(aspect);
+			}
 		}
 
 		if(appState == STATE_PAN || appState == STATE_LOOK) {
 			device->getCursorControl()->setVisible(false);
 
+			// Prevent teleporting
+			irr::core::position2di mouseMove;
+			if(mouseJustClicked) {
+				mouseMove.X = 0;
+				mouseMove.Y = 0;
+				mouseJustClicked = false;
+			} else {
+				mouseMove.X = mouseLoc.X - screenCenter.X;
+				mouseMove.Y = mouseLoc.Y - screenCenter.Y;
+			}
 
+			if(appState == STATE_LOOK) {
+				irr::core::vector3df rot = cam->getRotation();
+				rot.Y += mouseMove.X * lookSpd;
+				rot.X += mouseMove.Y * lookSpd;
+
+				if(rot.X > 80) {
+					rot.X = 80;
+				}
+				else if(rot.X < -80) {
+					rot.X = -80;
+				}
+
+				cam->setRotation(rot);
+				cam->setTarget(lookAt->getAbsolutePosition());
+				/*
+				std::cout << "X" << rot.X << std::endl;
+				std::cout << "Y" << rot.Y << std::endl;
+				*/
+			}
+			else if(appState == STATE_PAN) {
+				irr::core::vector3df camPos = cam->getAbsolutePosition();
+				irr::core::vector3df upMov = camUp->getAbsolutePosition() - camPos;
+				irr::core::vector3df rightMov = camRight->getAbsolutePosition() - camPos;
+
+				irr::f32 xMov = mouseMove.X * panSpd;
+				irr::f32 yMov = mouseMove.Y * panSpd;
+
+				upMov *= -yMov;
+				rightMov *= xMov;
+
+				camPos += upMov;
+				camPos += rightMov;
+
+				cam->setPosition(camPos);
+				cam->setTarget(lookAt->getAbsolutePosition());
+			}
 
 			device->getCursorControl()->setPosition(screenCenter);
 
