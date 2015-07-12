@@ -174,7 +174,7 @@ struct Cpack {
 };
 
 Cpack* loadedPack;
-Gobject* loadedObject;
+Gobject* openedObject;
 
 // UTILITY
 // =======
@@ -303,7 +303,8 @@ void showResourcesDialog() {
 
 }
 
-void updateObjectsDialogOnSelection() {
+/*
+inline void updateObjectsDialogOnSelection() {
 	if(objectsDialog == 0) {
 		return;
 	}
@@ -326,6 +327,7 @@ void updateObjectsDialogOnSelection() {
 	}
 
 }
+*/
 void updateObjectsDialogOnReload() {
 	if(objectsDialog == 0) {
 		return;
@@ -339,7 +341,6 @@ void updateObjectsDialogOnReload() {
 		listbox->addItem(toText(obj->id));
 	}
 
-	updateObjectsDialogOnSelection();
 }
 void updateObjectsDialogOnScroll() {
 	if(objectsDialog == 0) {
@@ -377,19 +378,19 @@ void updatePhysicsDialog() {
 	if(physicsDialog == 0) {
 		return;
 	}
-	physicsDialog->getElementFromId(GUI_EDIT_PHYSICS_OFFSET_X)->setText(toText(loadedObject->physicsOffset.getX()));
-	physicsDialog->getElementFromId(GUI_EDIT_PHYSICS_OFFSET_Y)->setText(toText(loadedObject->physicsOffset.getY()));
-	physicsDialog->getElementFromId(GUI_EDIT_PHYSICS_OFFSET_Z)->setText(toText(loadedObject->physicsOffset.getZ()));
+	physicsDialog->getElementFromId(GUI_EDIT_PHYSICS_OFFSET_X)->setText(toText(openedObject->physicsOffset.getX()));
+	physicsDialog->getElementFromId(GUI_EDIT_PHYSICS_OFFSET_Y)->setText(toText(openedObject->physicsOffset.getY()));
+	physicsDialog->getElementFromId(GUI_EDIT_PHYSICS_OFFSET_Z)->setText(toText(openedObject->physicsOffset.getZ()));
 
 	irr::gui::IGUIComboBox* typeSel = (irr::gui::IGUIComboBox*) physicsDialog->getElementFromId(GUI_COMBO_PHYSICS_TYPE);
-	typeSel->setSelected(physicsTypeToCombo(loadedObject->physicsShape.type));
+	typeSel->setSelected(physicsTypeToCombo(openedObject->physicsShape.type));
 
 	irr::gui::IGUIStaticText* dialog = (irr::gui::IGUIStaticText*) physicsDialog->getElementFromId(GUI_EMPTY_PHYSICS_TYPE_EDITOR);
 
 	removeAllChildren(dialog);
 
-	irr::s32 physType = loadedObject->physicsShape.type;
-	PhysicsShape physShape = loadedObject->physicsShape;
+	irr::s32 physType = openedObject->physicsShape.type;
+	PhysicsShape physShape = openedObject->physicsShape;
 
 	if(physType == PHYS_BOX || physType == PHYS_CYLINDER) {
 		gui->addStaticText(L"Size:", GuiBox(5, 5, 69, 69), false, true, dialog);
@@ -410,7 +411,7 @@ void updatePhysicsDialog() {
 	}
 	if(physType == PHYS_TRIANGLE_MESH) {
 		gui->addStaticText(L"File:", GuiBox(5, 5, 69, 69), false, true, dialog);
-		gui->addEditBox(toText(loadedObject->physicsShape.filename), GuiBox(5, 30, 190, 20), true, dialog, GUI_EDIT_PHYSICS_FILE);
+		gui->addEditBox(toText(openedObject->physicsShape.filename), GuiBox(5, 30, 190, 20), true, dialog, GUI_EDIT_PHYSICS_FILE);
 	}
 
 
@@ -465,22 +466,22 @@ void closeAllDialogs() {
 // DRAWING
 // =======
 void updatePhysicsRendering() {
-	if(loadedObject->collObj) {
-		bulletWorld->removeCollisionObject(loadedObject->collObj);
-		delete loadedObject->collObj;
+	if(openedObject->collObj) {
+		bulletWorld->removeCollisionObject(openedObject->collObj);
+		delete openedObject->collObj;
 	}
-	if(loadedObject->collShape) {
-		delete loadedObject->collShape;
+	if(openedObject->collShape) {
+		delete openedObject->collShape;
 	}
 
-	loadedObject->collShape = newShape(loadedObject->physicsShape);
+	openedObject->collShape = newShape(openedObject->physicsShape);
 
-	if(loadedObject->collShape) {
+	if(openedObject->collShape) {
 		btTransform trans;
 		trans.setIdentity();
-		trans.setOrigin(loadedObject->physicsOffset);
-		loadedObject->collObj = new btRigidBody(0, new btDefaultMotionState(trans), loadedObject->collShape, btVector3(0, 0, 0));
-		bulletWorld->addCollisionObject(loadedObject->collObj);
+		trans.setOrigin(openedObject->physicsOffset);
+		openedObject->collObj = new btRigidBody(0, new btDefaultMotionState(trans), openedObject->collShape, btVector3(0, 0, 0));
+		bulletWorld->addCollisionObject(openedObject->collObj);
 	}
 }
 
@@ -493,10 +494,10 @@ std::string parseFilename(std::string filename) {
 		return filename;
 	}
 
-	if(loadedObject) {
-		std::ifstream test3(getDirectory(loadedObject->filename) + "/" + filename);
+	if(openedObject) {
+		std::ifstream test3(getDirectory(openedObject->filename) + "/" + filename);
 		if(test3.is_open()) {
-			return getDirectory(loadedObject->filename) + "/" + filename;
+			return getDirectory(openedObject->filename) + "/" + filename;
 		}
 	}
 
@@ -548,7 +549,7 @@ void openPhysicsShape(std::string filename) {
 	filename = parseFilename(filename);
 	std::string extension = getExtension(filename);
 
-	PhysicsShape& physShape = loadedObject->physicsShape;
+	PhysicsShape& physShape = openedObject->physicsShape;
 
 	if(extension == "json") {
 		std::ifstream stream(filename);
@@ -616,7 +617,7 @@ void openPhysicsShape(std::string filename) {
 		std::cout << "Indices: " << indexCount << std::endl;
 		std::cout << "Triangles: " << indexCount / 3 << std::endl;
 
-		btTriangleMesh* triMesh = loadedObject->physicsShape.triangles = new btTriangleMesh();
+		btTriangleMesh* triMesh = openedObject->physicsShape.triangles = new btTriangleMesh();
 
 		for(irr::u32 i = 0; i < indexCount; i += 3) {
 			triMesh->addTriangle(
@@ -642,6 +643,7 @@ void openModel(std::string filename) {
 	irr::scene::IAnimatedMeshSceneNode* node = smgr->addAnimatedMeshSceneNode(mesh, rootNode);
 }
 void openObject(Gobject* gobject) {
+	openedObject = gobject;
 	openModel(gobject->modelFile);
 	openPhysicsShape(gobject->filename);
 
@@ -699,19 +701,19 @@ void loadPack(std::string filename) {
 	showObjectsDialog();
 }
 void saveAll() {
-	std::ofstream mainFile(loadedObject->filename + "/object.json");
+	std::ofstream mainFile(openedObject->filename + "/object.json");
 
-	Json::Value& jdata = loadedObject->jVal;
-	jdata["physics-offset"] = toJson(loadedObject->physicsOffset);
+	Json::Value& jdata = openedObject->jVal;
+	jdata["physics-offset"] = toJson(openedObject->physicsOffset);
 
 
 	mainFile << jdata;
 
-	if(loadedObject->physicsShape.type == PHYS_TRIANGLE_MESH) {
+	if(openedObject->physicsShape.type == PHYS_TRIANGLE_MESH) {
 
 	}
 	else {
-		PhysicsShape& shape = loadedObject->physicsShape;
+		PhysicsShape& shape = openedObject->physicsShape;
 
 		std::ofstream physicsFile(shape.filename);
 
@@ -865,43 +867,43 @@ public:
 
 					switch(id) {
 						case GUI_EDIT_PHYSICS_OFFSET_X: {
-							loadedObject->physicsOffset.setX(scalar);
+							openedObject->physicsOffset.setX(scalar);
 							updatePhysicsRendering();
 							return true;
 						}
 						case GUI_EDIT_PHYSICS_OFFSET_Y: {
-							loadedObject->physicsOffset.setY(scalar);
+							openedObject->physicsOffset.setY(scalar);
 							updatePhysicsRendering();
 							return true;
 						}
 						case GUI_EDIT_PHYSICS_OFFSET_Z: {
-							loadedObject->physicsOffset.setZ(scalar);
+							openedObject->physicsOffset.setZ(scalar);
 							updatePhysicsRendering();
 							return true;
 						}
 						case GUI_EDIT_PHYSICS_HEIGHT: {
-							loadedObject->physicsShape.height = scalar;
+							openedObject->physicsShape.height = scalar;
 							updatePhysicsRendering();
 							return true;
 						}
 						case GUI_EDIT_PHYSICS_DIMENSIONS_X: {
-							loadedObject->physicsShape.dimensions.setX(scalar);
+							openedObject->physicsShape.dimensions.setX(scalar);
 							updatePhysicsRendering();
 							return true;
 						}
 						case GUI_EDIT_PHYSICS_DIMENSIONS_Y: {
-							loadedObject->physicsShape.dimensions.setY(scalar);
+							openedObject->physicsShape.dimensions.setY(scalar);
 							updatePhysicsRendering();
 							return true;
 						}
 						case GUI_EDIT_PHYSICS_DIMENSIONS_Z: {
-							loadedObject->physicsShape.dimensions.setZ(scalar);
+							openedObject->physicsShape.dimensions.setZ(scalar);
 							updatePhysicsRendering();
 							return true;
 						}
 						case GUI_EDIT_PHYSICS_RADIUS: {
 							std::cout << "Radius changed to " << scalar << "." << std::endl;
-							loadedObject->physicsShape.radius = scalar;
+							openedObject->physicsShape.radius = scalar;
 							updatePhysicsRendering();
 							return true;
 						}
@@ -916,7 +918,7 @@ public:
 						case GUI_COMBO_PHYSICS_TYPE: {
 							irr::gui::IGUIComboBox* combo = (irr::gui::IGUIComboBox*) event.GUIEvent.Caller;
 
-							loadedObject->physicsShape.type = physicsComboToType(combo->getSelected());
+							openedObject->physicsShape.type = physicsComboToType(combo->getSelected());
 
 							updatePhysicsDialog();
 							updatePhysicsRendering();
@@ -946,7 +948,25 @@ public:
 
 					switch(id) {
 						case GUI_LIST_OBJECTS: {
-							updateObjectsDialogOnSelection();
+							if(loadedPack == 0) {
+								break;
+							}
+
+							irr::gui::IGUIListBox* listbox = (irr::gui::IGUIListBox*) event.GUIEvent.Caller;
+
+							irr::s32 selectedIndex = listbox->getSelected();
+
+							if(selectedIndex != -1) {
+								Gobject* selected = loadedPack->gobjectFiles[selectedIndex];
+
+								openObject(selected);
+
+								// populate
+							}
+							else {
+
+							}
+							break;
 						}
 					}
 				}
@@ -956,6 +976,7 @@ public:
 					switch(id) {
 						case GUI_SCROLL_OBJECTS_INFO: {
 							updateObjectsDialogOnScroll();
+							break;
 						}
 					}
 				}
@@ -994,7 +1015,7 @@ public:
 
 int main() {
 	loadedPack = new Cpack();
-	loadedObject = new Gobject();
+	openedObject = new Gobject();
 
 	// Get the preferred driver type
 	irr::video::E_DRIVER_TYPE driverType = irr::video::EDT_OPENGL; // driverChoiceConsole(); //
