@@ -132,14 +132,18 @@ struct Gobject {
 	// Where is the file located
 	std::string filename = "null";
 
+	// Unique id
 	std::string id = "null";
 
 	// Offset from the origin
 	btVector3 physicsOffset;
 
+	//
+	std::string physicsFile;
+	std::string modelFile;
+
 	// The shape itself
 	PhysicsShape physicsShape;
-
 	btCollisionShape* collShape;
 	btCollisionObject* collObj;
 	irr::scene::ISceneNode* sceneNode;
@@ -313,7 +317,9 @@ void updateObjectsDialogOnSelection() {
 	if(selectedIndex != -1) {
 		Gobject* selected = loadedPack->gobjectFiles[selectedIndex];
 
-		//objectsDialog->set
+		openObject(selected);
+
+		// populate
 	}
 	else {
 
@@ -361,7 +367,6 @@ void showObjectsDialog() {
 	irr::gui::IGUIStaticText* objInfo = gui->addStaticText(L"", GuiBox(0, 0, 1000, 1000), false, true, objInfoArea, GUI_EMPTY_OBJECTS_INFO);
 
 	gui->addStaticText(L"ID", GuiBox(0, 0, 369, 69), false, false, objInfo, GUI_TEXT_OBJECTS_ID);
-
 
 	gui->addScrollBar(false, GuiRect(395, 25, 415, 495), objectsDialog, GUI_SCROLL_OBJECTS_INFO);
 
@@ -486,6 +491,13 @@ std::string parseFilename(std::string filename) {
 	std::ifstream test1(filename);
 	if(test1.is_open()) {
 		return filename;
+	}
+
+	if(loadedObject) {
+		std::ifstream test3(getDirectory(loadedObject->filename) + "/" + filename);
+		if(test3.is_open()) {
+			return getDirectory(loadedObject->filename) + "/" + filename;
+		}
 	}
 
 	if(loadedPack) {
@@ -629,14 +641,17 @@ void openModel(std::string filename) {
 	irr::scene::IAnimatedMesh* mesh = smgr->getMesh(path);
 	irr::scene::IAnimatedMeshSceneNode* node = smgr->addAnimatedMeshSceneNode(mesh, rootNode);
 }
-Gobject* openObject(std::string filename) {
+void openObject(Gobject* gobject) {
+	openModel(gobject->modelFile);
+	openPhysicsShape(gobject->filename);
 
+}
+Gobject* loadObject(std::string filename) {
+	filename = parseFilename(filename);
 	Gobject* retVal = new Gobject();
 
-	retVal->filename = getDirectory(filename);
-	std::cout << "Object directory: " << retVal->filename << std::endl;
+	retVal->filename = filename;
 
-	filename = parseFilename(filename);
 	std::ifstream stream(filename);
 	stream >> retVal->jVal;
 	Json::Value& jdata = retVal->jVal;
@@ -644,16 +659,14 @@ Gobject* openObject(std::string filename) {
 	retVal->id = retVal->jVal["id"].asString();
 
 	retVal->physicsOffset = toBullet(jdata["physics-offset"]);
-	retVal->physicsShape.filename = retVal->filename + "/" + jdata["physics"].asString();
+	retVal->physicsShape.filename = jdata["physics"].asString();
 
-	Json::Value& modelData = jdata["model"];
-
-	std::cout << "Object opened:" << std::endl;
-	std::cout << jdata << std::endl;
+	retVal->physicsFile = jdata["physics"].asString();
+	retVal->modelFile = jdata["model"].asString();
 
 	return retVal;
 }
-void openPack(std::string filename) {
+void loadPack(std::string filename) {
 	// Unload old pack
 	if(loadedPack) {
 		delete loadedPack;
@@ -677,7 +690,7 @@ void openPack(std::string filename) {
 	if(jGobjs.isArray()) {
 		for(Json::Value::iterator it = jGobjs.begin(); it != jGobjs.end(); ++ it) {
 			Json::Value& jGobjFilename = *it;
-			Gobject* objData = openObject(jGobjFilename.asString());
+			Gobject* objData = loadObject(jGobjFilename.asString());
 			loadedPack->gobjectFiles.push_back(objData);
 		}
 	}
@@ -754,6 +767,9 @@ void saveAll() {
 
 	}
 }
+
+// APPEVENTRECEIVER
+// ================
 
 irr::core::position2di mouseLoc;
 irr::f32 wheelDelta = 0;
@@ -919,7 +935,7 @@ public:
 				case irr::gui::EGET_FILE_SELECTED: {
 					irr::gui::IGUIFileOpenDialog* dialog = (irr::gui::IGUIFileOpenDialog*) event.GUIEvent.Caller;
 
-					openPack(irr::core::stringc(dialog->getFileName()).c_str());
+					loadPack(irr::core::stringc(dialog->getFileName()).c_str());
 
 
 					break;
