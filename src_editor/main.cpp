@@ -34,6 +34,8 @@ btCollisionDispatcher* dispatcher;
 btCollisionWorld* bulletWorld;
 reib::BulletDebugDrawer* bulletDebugDrawer;
 
+irr::scene::IMeshSceneNode* ground;
+
 typedef double btDouble;
 
 enum {
@@ -254,6 +256,44 @@ irr::s32 physicsTypeToCombo(irr::s32 type) {
 
 	}
 }
+
+std::string toString(irr::video::SColor color) {
+	std::stringstream ss;
+
+	ss << "(";
+	ss << color.getAlpha();
+	ss << ", ";
+	ss << color.getRed();
+	ss << ", ";
+	ss << color.getGreen();
+	ss << ", ";
+	ss << color.getBlue();
+	ss << ")";
+
+	return ss.str();
+}
+void debugMaterial(irr::video::SMaterial material) {
+	std::cout << "Ambient: " << toString(material.AmbientColor) << std::endl;
+	std::cout << "Anti Alias: " << material.AntiAliasing << std::endl;
+	std::cout << "Backface: " << material.BackfaceCulling << std::endl;
+	std::cout << "Blend: " << material.BlendOperation << std::endl;
+	std::cout << "Color Mask: " << material.ColorMask << std::endl;
+	std::cout << "Color Material: " << material.ColorMaterial << std::endl;
+	std::cout << "Diffuse: " << toString(material.DiffuseColor) << std::endl;
+	std::cout << "Emissive: " << toString(material.EmissiveColor) << std::endl;
+	std::cout << "Fog: " << material.FogEnable << std::endl;
+	std::cout << "Frontface: " << material.FrontfaceCulling << std::endl;
+	std::cout << "Gourad: " << material.GouraudShading << std::endl;
+	std::cout << "Light: " << material.Lighting << std::endl;
+	std::cout << "Mat type: " << material.MaterialType << std::endl;
+	std::cout << "Normalize: " << material.NormalizeNormals << std::endl;
+	std::cout << "Shiny: " << material.Shininess << std::endl;
+	std::cout << "Specular: " << toString(material.SpecularColor) << std::endl;
+	std::cout << "Thickness: " << material.Thickness << std::endl;
+	std::cout << "Wireframe: " << material.Wireframe << std::endl;
+	std::cout << "ZBuffer: " << material.ZBuffer << std::endl;
+}
+
 
 // 3D DATA MANIPULATION
 // ====================
@@ -617,6 +657,15 @@ void openAndRenderModel(std::string filename) {
 	irr::io::path path(filename.c_str());
 	openedObject->sceneMesh = smgr->getMesh(path);
 	openedObject->sceneNode = smgr->addAnimatedMeshSceneNode(openedObject->sceneMesh, rootNode);
+	irr::video::SMaterial& mat = openedObject->sceneNode->getMaterial(0);
+	mat.AmbientColor = irr::video::SColor(255, 255, 255, 255);
+	mat.DiffuseColor = irr::video::SColor(255, 255, 0, 0);
+	debugMaterial(ground->getMaterial(0));
+	std::cout << "============" << std::endl;
+	debugMaterial(mat);
+	//ground->getMaterial(0) = mat;
+
+	//mat = ground->getMaterial(0);
 }
 void openObject(Gobject* gobject) {
 	openedObject = gobject;
@@ -1124,7 +1173,9 @@ int main() {
 
 
 	// Cool ground
-	smgr->addCubeSceneNode(200, 0, -1, irr::core::vector3df(0, -100, 0));
+	ground = smgr->addCubeSceneNode(200, 0, -1, irr::core::vector3df(0, -100, 0));
+	irr::video::SMaterial& gmat = ground->getMaterial(0);
+
 
 	irr::scene::ICameraSceneNode* cam = smgr->addCameraSceneNode();
 	irr::scene::ISceneNode* lookAt = smgr->addEmptySceneNode(cam);
@@ -1143,12 +1194,13 @@ int main() {
 	irr::video::SLight lightData;
 	lightData.Type = irr::video::ELT_DIRECTIONAL;
 	lightData.Direction = irr::core::vector3df(0, -100, 0);
-	lightData.DiffuseColor = irr::video::SColorf(1.4f, 1.4f, 1.4f, 1);
+	lightData.DiffuseColor = irr::video::SColor(255, 100, 100, 100);
 	lightData.CastShadows = false;
 	directionalLight->setLightData(lightData);
 	dLightControl->setRotation(irr::core::vector3df(45, -135, 0));
 
-	smgr->setAmbientLight(irr::video::SColorf(0.6f, 0.6f, 0.6f, 1));
+
+	smgr->setAmbientLight(irr::video::SColor(255, 155, 155, 155));
 
 	// Initialize tpf calculator
 	irr::u32 then = device->getTimer()->getTime();
