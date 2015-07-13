@@ -549,6 +549,8 @@ void openPhysicsShape(std::string filename) {
 	filename = parseFilename(filename);
 	std::string extension = getExtension(filename);
 
+	std::cout << "phys: " << filename << std::endl;
+
 	PhysicsShape& physShape = openedObject->physicsShape;
 
 	if(extension == "json") {
@@ -645,7 +647,7 @@ void openModel(std::string filename) {
 void openObject(Gobject* gobject) {
 	openedObject = gobject;
 	openModel(gobject->modelFile);
-	openPhysicsShape(gobject->filename);
+	openPhysicsShape(gobject->physicsFile);
 
 }
 Gobject* loadObject(std::string filename) {
@@ -868,42 +870,50 @@ public:
 					switch(id) {
 						case GUI_EDIT_PHYSICS_OFFSET_X: {
 							openedObject->physicsOffset.setX(scalar);
+							openedObject->modified = true;
 							updatePhysicsRendering();
 							return true;
 						}
 						case GUI_EDIT_PHYSICS_OFFSET_Y: {
 							openedObject->physicsOffset.setY(scalar);
+							openedObject->modified = true;
+							openedObject->modified = true;
 							updatePhysicsRendering();
 							return true;
 						}
 						case GUI_EDIT_PHYSICS_OFFSET_Z: {
 							openedObject->physicsOffset.setZ(scalar);
+							openedObject->modified = true;
 							updatePhysicsRendering();
 							return true;
 						}
 						case GUI_EDIT_PHYSICS_HEIGHT: {
 							openedObject->physicsShape.height = scalar;
+							openedObject->modified = true;
 							updatePhysicsRendering();
 							return true;
 						}
 						case GUI_EDIT_PHYSICS_DIMENSIONS_X: {
 							openedObject->physicsShape.dimensions.setX(scalar);
+							openedObject->modified = true;
 							updatePhysicsRendering();
 							return true;
 						}
 						case GUI_EDIT_PHYSICS_DIMENSIONS_Y: {
 							openedObject->physicsShape.dimensions.setY(scalar);
+							openedObject->modified = true;
 							updatePhysicsRendering();
 							return true;
 						}
 						case GUI_EDIT_PHYSICS_DIMENSIONS_Z: {
 							openedObject->physicsShape.dimensions.setZ(scalar);
+							openedObject->modified = true;
 							updatePhysicsRendering();
 							return true;
 						}
 						case GUI_EDIT_PHYSICS_RADIUS: {
-							std::cout << "Radius changed to " << scalar << "." << std::endl;
 							openedObject->physicsShape.radius = scalar;
+							openedObject->modified = true;
 							updatePhysicsRendering();
 							return true;
 						}
