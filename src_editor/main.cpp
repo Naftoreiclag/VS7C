@@ -1200,6 +1200,7 @@ int main() {
 	dLightControl->setRotation(irr::core::vector3df(45, -135, 0));
 
 
+
 	smgr->setAmbientLight(irr::video::SColor(255, 155, 155, 155));
 
 	// Initialize tpf calculator
@@ -1222,6 +1223,15 @@ int main() {
 
 	// Test
 	loadPack("content/standard/content-pack.json");
+
+	{
+		irr::scene::IAnimatedMesh* ninjm = smgr->getMesh("example_media/ninja.b3d");
+		irr::scene::IAnimatedMeshSceneNode* ninja = smgr->addAnimatedMeshSceneNode(ninjm, rootNode);
+		debugMaterial(ninja->getMaterial(0));
+		ninja->setScale(irr::core::vector3df(0.3f, 0.3f, 0.3f));
+		//ninja->remove();
+
+	}
 
 	// Main loop
 	while(device->run()) {
