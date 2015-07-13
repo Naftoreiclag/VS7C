@@ -5,6 +5,7 @@
 	"authors" : ["Naftoreiclag"],
 	"objects" : 
 	[
-		"cube/object.json"
+		"cube/object.json",
+		"cylinder/object.json"
 	]
 }

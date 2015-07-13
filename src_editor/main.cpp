@@ -67,6 +67,7 @@ enum {
 	GUI_EMPTY_OBJECTS_INFO_AREA,
 	GUI_EMPTY_OBJECTS_INFO,
 	GUI_TEXT_OBJECTS_ID,
+	GUI_EDIT_OBJECTS_ID,
 	GUI_BUTTON_OBJECTS_NEW,
 	GUI_BUTTON_OBJECTS_ADD,
 	GUI_BUTTON_OBJECTS_REMOVE,
@@ -339,7 +340,8 @@ void showObjectsDialog() {
 
 	irr::gui::IGUIStaticText* objInfo = gui->addStaticText(L"", GuiBox(0, 0, 1000, 1000), false, true, objInfoArea, GUI_EMPTY_OBJECTS_INFO);
 
-	gui->addStaticText(L"ID", GuiBox(0, 0, 369, 69), false, false, objInfo, GUI_TEXT_OBJECTS_ID);
+	gui->addStaticText(L"ID", GuiBox(0, 0, 969, 69), false, false, objInfo, GUI_TEXT_OBJECTS_ID);
+	gui->addEditBox(L"", GuiBox(0, 20, 190, 20), true, objInfo, GUI_EDIT_OBJECTS_ID);
 
 	gui->addScrollBar(false, GuiRect(395, 25, 415, 495), objectsDialog, GUI_SCROLL_OBJECTS_INFO);
 
@@ -1141,7 +1143,7 @@ int main() {
 	irr::video::SLight lightData;
 	lightData.Type = irr::video::ELT_DIRECTIONAL;
 	lightData.Direction = irr::core::vector3df(0, -100, 0);
-	lightData.DiffuseColor = irr::video::SColorf(0.4f, 0.4f, 0.4f, 1);
+	lightData.DiffuseColor = irr::video::SColorf(1.4f, 1.4f, 1.4f, 1);
 	lightData.CastShadows = false;
 	directionalLight->setLightData(lightData);
 	dLightControl->setRotation(irr::core::vector3df(45, -135, 0));

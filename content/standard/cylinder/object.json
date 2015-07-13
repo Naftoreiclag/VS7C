@@ -1,0 +1,11 @@
+{
+	"id" : "cylinder",
+	"model" : "model.dae",
+	"physics" : "physics.json",
+	"physics-offset" : 
+	[
+		0,
+		1,
+		0
+	]
+}
