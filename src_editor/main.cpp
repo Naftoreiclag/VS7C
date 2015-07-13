@@ -24,6 +24,8 @@ irr::gui::IGUIWindow* resourcesDialog;
 irr::gui::IGUIWindow* objectsDialog;
 irr::gui::IGUIWindow* physicsDialog;
 irr::gui::IGUIWindow* modelDialog;
+irr::gui::IGUIWindow* animationDialog;
+irr::gui::IGUIWindow* morphDialog;
 
 irr::scene::ISceneNode* rootNode;
 
@@ -53,15 +55,19 @@ enum {
 	GUI_DIALOG_MODEL,
 	GUI_DIALOG_PHYSICS,
 	GUI_DIALOG_ANIMATION,
+	GUI_DIALOG_MORPH,
+	GUI_DIALOG_FACIAL,
 
 	GUI_TREE_RESOURCES,
 
-    GUI_BUTTON_RESOURCES,
-    GUI_BUTTON_OBJECTS,
-    GUI_BUTTON_COMPONENTS,
-    GUI_BUTTON_MODEL,
-    GUI_BUTTON_PHYSICS,
-    GUI_BUTTON_ANIMATION,
+    GUI_BUTTON_DIALOG_RESOURCES,
+    GUI_BUTTON_DIALOG_OBJECTS,
+    GUI_BUTTON_DIALOG_COMPONENTS,
+    GUI_BUTTON_DIALOG_MODEL,
+    GUI_BUTTON_DIALOG_PHYSICS,
+    GUI_BUTTON_DIALOG_ANIMATION,
+    GUI_BUTTON_DIALOG_MORPH,
+    GUI_BUTTON_DIALOG_FACIAL,
 
 	GUI_EDIT_OBJECTS_SEARCH,
 	GUI_LIST_OBJECTS,
@@ -85,6 +91,10 @@ enum {
     GUI_EDIT_PHYSICS_HEIGHT,
     GUI_EDIT_PHYSICS_FILE,
     GUI_EMPTY_PHYSICS_TYPE_EDITOR,
+
+    GUI_COMBO_ANIM,
+    GUI_BUTTON_ANIM_PLAY,
+    GUI_BUTTON_ANIM_STOP,
 
 	STATE_EDIT,
 	STATE_PAN,
@@ -388,6 +398,18 @@ void showObjectsDialog() {
 	updateObjectsDialogOnReload();
 }
 
+void updateAnimationDialog() {
+}
+void showAnimationDialog() {
+    closeDialog(GUI_DIALOG_ANIMATION);
+
+    animationDialog = gui->addWindow(GuiBox(10, 60, 400, 200), false, L"Animation", 0, GUI_DIALOG_ANIMATION);
+
+    gui->addComboBox(GuiBox(5, 25, 100, 20), animationDialog, GUI_COMBO_ANIM);
+    gui->addButton(GuiBox(110, 25, 60, 20), animationDialog, GUI_BUTTON_ANIM_PLAY, L"Play", L"Plays animation.");
+    //gui->addButton()
+}
+
 void updatePhysicsDialog() {
 	if(physicsDialog == 0) {
 		return;
@@ -475,6 +497,10 @@ void closeAllDialogs() {
 	objectsDialog = 0;
 	closeDialog(GUI_DIALOG_PHYSICS);
 	physicsDialog = 0;
+	closeDialog(GUI_DIALOG_ANIMATION);
+	animationDialog = 0;
+	closeDialog(GUI_DIALOG_MORPH);
+	morphDialog = 0;
 }
 
 // DRAWING
@@ -658,6 +684,7 @@ void openAndRenderModel(std::string filename) {
 	openedObject->sceneMesh = smgr->getMesh(path);
 	openedObject->sceneNode = smgr->addAnimatedMeshSceneNode(openedObject->sceneMesh, rootNode);
 	irr::video::SMaterial& mat = openedObject->sceneNode->getMaterial(0);
+
 	mat.AmbientColor = irr::video::SColor(255, 255, 255, 255);
 	mat.DiffuseColor = irr::video::SColor(255, 255, 0, 0);
 	debugMaterial(ground->getMaterial(0));
@@ -665,37 +692,36 @@ void openAndRenderModel(std::string filename) {
 	debugMaterial(mat);
 	//ground->getMaterial(0) = mat;
 
+
 	//mat = ground->getMaterial(0);
 }
-void openObject(Gobject* gobject) {
-	openedObject = gobject;
-	openAndRenderModel(gobject->modelFile);
-	openPhysicsShape(gobject->physicsFile);
-}
-void closeObject(Gobject* gobject) {
+void closeObject() {
+	if(openedObject == 0) {
+		return;
+	}
 	if(openedObject->collObj) {
+		std::cout << "Close collision object" << std::endl;
 		bulletWorld->removeCollisionObject(openedObject->collObj);
 		delete openedObject->collObj;
 		openedObject->collObj = 0;
 	}
 	if(openedObject->collShape) {
+		std::cout << "Delete collision shape" << std::endl;
 		delete openedObject->collShape;
 		openedObject->collShape = 0;
 	}
 	if(openedObject->sceneNode) {
+		std::cout << "Remove scene node" << std::endl;
 		openedObject->sceneNode->remove();
-		openedObject->sceneNode->drop();
 		openedObject->sceneNode = 0;
 	}
-	if(openedObject->sceneMesh) {
-		openedObject->sceneMesh->drop();
-		openedObject->sceneMesh = 0;
-	}
-	if(openedObject->bulletTriMesh) {
-		openedObject->bulletTriMesh->drop();
-		openedObject->bulletTriMesh = 0;
-	}
 	openedObject = 0;
+}
+void openObject(Gobject* gobject) {
+	closeObject();
+	openedObject = gobject;
+	openAndRenderModel(gobject->modelFile);
+	openPhysicsShape(gobject->physicsFile);
 }
 Gobject* loadObject(std::string filename) {
 	filename = parseFilename(filename);
@@ -1046,17 +1072,20 @@ public:
 				case irr::gui::EGET_BUTTON_CLICKED: {
 					switch(id) {
 						// Resource button
-						case GUI_BUTTON_RESOURCES: {
+						case GUI_BUTTON_DIALOG_RESOURCES: {
 							showResourcesDialog();
 							return true;
 						}
-						case GUI_BUTTON_OBJECTS: {
+						case GUI_BUTTON_DIALOG_OBJECTS: {
 							showObjectsDialog();
 							return true;
 						}
-						case GUI_BUTTON_PHYSICS: {
+						case GUI_BUTTON_DIALOG_PHYSICS: {
 							showPhysicsDialog();
 							return true;
+						}
+						case GUI_BUTTON_DIALOG_ANIMATION: {
+							showAnimationDialog();
 						}
 						default: {
 							break;
@@ -1141,12 +1170,14 @@ int main() {
 	{
 		irr::gui::IGUIToolBar* bar = gui->addToolBar();
 
-		bar->addButton(GUI_BUTTON_OBJECTS, 0, L"Objects", driver->getTexture("assets_editor/objects.png"), 0, false, true);
-		bar->addButton(GUI_BUTTON_RESOURCES, 0, L"Resources", driver->getTexture("assets_editor/resources.png"), 0, false, true);
-		bar->addButton(GUI_BUTTON_COMPONENTS, 0, L"Components", driver->getTexture("assets_editor/components.png"), 0, false, true);
-		bar->addButton(GUI_BUTTON_MODEL, 0, L"Model", driver->getTexture("assets_editor/model.png"), 0, false, true);
-		bar->addButton(GUI_BUTTON_PHYSICS, 0, L"Physics", driver->getTexture("assets_editor/physics.png"), 0, false, true);
-		bar->addButton(GUI_BUTTON_ANIMATION, 0, L"Animation", driver->getTexture("assets_editor/animation.png"), 0, false, true);
+		bar->addButton(GUI_BUTTON_DIALOG_OBJECTS, 0, L"Objects", driver->getTexture("assets_editor/objects.png"), 0, false, true);
+		bar->addButton(GUI_BUTTON_DIALOG_RESOURCES, 0, L"Resources", driver->getTexture("assets_editor/resources.png"), 0, false, true);
+		bar->addButton(GUI_BUTTON_DIALOG_COMPONENTS, 0, L"Components", driver->getTexture("assets_editor/components.png"), 0, false, true);
+		bar->addButton(GUI_BUTTON_DIALOG_MODEL, 0, L"Model", driver->getTexture("assets_editor/model.png"), 0, false, true);
+		bar->addButton(GUI_BUTTON_DIALOG_PHYSICS, 0, L"Physics", driver->getTexture("assets_editor/physics.png"), 0, false, true);
+		bar->addButton(GUI_BUTTON_DIALOG_ANIMATION, 0, L"Animation", driver->getTexture("assets_editor/animation.png"), 0, false, true);
+		bar->addButton(GUI_BUTTON_DIALOG_MORPH, 0, L"Morph Targets", driver->getTexture("assets_editor/morph.png"), 0, false, true);
+		bar->addButton(GUI_BUTTON_DIALOG_FACIAL, 0, L"Facial Targets", driver->getTexture("assets_editor/facial.png"), 0, false, true);
 
 
 	}
@@ -1199,8 +1230,6 @@ int main() {
 	directionalLight->setLightData(lightData);
 	dLightControl->setRotation(irr::core::vector3df(45, -135, 0));
 
-
-
 	smgr->setAmbientLight(irr::video::SColor(255, 155, 155, 155));
 
 	// Initialize tpf calculator
@@ -1224,6 +1253,7 @@ int main() {
 	// Test
 	loadPack("content/standard/content-pack.json");
 
+	/*
 	{
 		irr::scene::IAnimatedMesh* ninjm = smgr->getMesh("example_media/ninja.b3d");
 		irr::scene::IAnimatedMeshSceneNode* ninja = smgr->addAnimatedMeshSceneNode(ninjm, rootNode);
@@ -1232,6 +1262,7 @@ int main() {
 		//ninja->remove();
 
 	}
+	*/
 
 	// Main loop
 	while(device->run()) {

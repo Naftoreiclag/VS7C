@@ -6,6 +6,7 @@
 	"objects" : 
 	[
 		"cube/object.json",
-		"cylinder/object.json"
+		"cylinder/object.json",
+		"textured_cube/object.json"
 	]
 }

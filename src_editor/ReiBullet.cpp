@@ -11,6 +11,7 @@ reib::BulletDebugDrawer::BulletDebugDrawer(irr::IrrlichtDevice* const device)
 debugMode(btIDebugDraw::DBG_DrawWireframe) {
 	driver = device->getVideoDriver();
 	material.Lighting = false;
+	material.Thickness += 2;
 }
 
 void reib::BulletDebugDrawer::drawLine(const btVector3& from, const btVector3& to, const btVector3& color) {

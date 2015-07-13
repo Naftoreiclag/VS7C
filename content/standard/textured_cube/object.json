@@ -1,0 +1,11 @@
+{
+	"id" : "textured_cube",
+	"model" : "textured_cube.dae",
+	"physics" : "physics.json",
+	"physics-offset" : 
+	[
+		0,
+		1,
+		0
+	]
+}
