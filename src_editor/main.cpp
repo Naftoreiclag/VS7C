@@ -490,17 +490,27 @@ std::string parseFilename(std::string filename, Gobject* context = 0) {
 }
 
 Json::Value toJson(btVector3 vector) {
-	Json::Value ret = Json::arrayValue;
 
-	ret[0] = vector.getX();
-	ret[1] = vector.getY();
-	ret[2] = vector.getZ();
+	btDouble x = vector.getX();
+	btDouble y = vector.getY();
+	btDouble z = vector.getZ();
 
-	return ret;
+	if(x == y && x == z) {
+		Json::Value ret = x;
+		return ret;
+	}
+	else {
+		Json::Value ret = Json::arrayValue;
+
+		ret[0] = x;
+		ret[1] = y;
+		ret[2] = z;
+
+		return ret;
+	}
 }
 
 btVector3 toBullet(Json::Value& jValue) {
-
 	if(jValue.isArray()) {
 		btVector3 retVal(0, 0, 0);
 
@@ -512,13 +522,17 @@ btVector3 toBullet(Json::Value& jValue) {
 			retVal.setX(jx.asDouble());
 		}
 		if(jy.isDouble()) {
-			retVal.setX(jy.asDouble());
+			retVal.setY(jy.asDouble());
 		}
 		if(jz.isDouble()) {
-			retVal.setX(jz.asDouble());
+			retVal.setZ(jz.asDouble());
 		}
 
 		return retVal;
+	}
+	if(jValue.isDouble()) {
+		btDouble n = jValue.asDouble();
+		return btVector3(n, n, n);
 	} else {
 		return btVector3(0, 0, 0);
 	}
@@ -551,27 +565,7 @@ void openPhysicsShape(std::string filename) {
 		// Load a box from the json file
 		else if(type == "box") {
 			physShape.type = PHYS_BOX;
-			Json::Value& jdimen = jphysData["size"];
-			if(jdimen != Json::nullValue) {
-				if(jdimen.isDouble()) {
-					btDouble allDimen = jdimen.asDouble();
-					physShape.dimensions = btVector3(allDimen, allDimen, allDimen);
-				}
-				else {
-					Json::Value& dimenX = jdimen[0];
-					if(dimenX != Json::nullValue) {
-						physShape.dimensions.setX(dimenX.asDouble());
-					}
-					Json::Value& dimenY = jdimen[1];
-					if(dimenY != Json::nullValue) {
-						physShape.dimensions.setY(dimenY.asDouble());
-					}
-					Json::Value& dimenZ = jdimen[2];
-					if(dimenZ != Json::nullValue) {
-						physShape.dimensions.setZ(dimenZ.asDouble());
-					}
-				}
-			}
+			physShape.dimensions = toBullet(jphysData["size"]);
 			std::cout << "Size = " << "(" << physShape.dimensions.getX() << ", " << physShape.dimensions.getY() << ", " << physShape.dimensions.getZ() << ")" << std::endl;
 		}
 		else {
@@ -762,10 +756,7 @@ void saveAll() {
 				}
 			}
 			if(shape.type == PHYS_BOX || shape.type == PHYS_CYLINDER) {
-				Json::Value& size = shape.jVal["size"];
-				size.append(shape.dimensions.getX());
-				size.append(shape.dimensions.getY());
-				size.append(shape.dimensions.getZ());
+				shape.jVal["size"] = toJson(shape.dimensions);
 			}
 			if(shape.type == PHYS_CAPSULE || shape.type == PHYS_CONE || shape.type == PHYS_SPHERE) {
 				shape.jVal["radius"] = shape.radius;
@@ -843,6 +834,7 @@ public:
 		}
 
 		if(event.EventType == irr::EET_GUI_EVENT) {
+			// The bane of prank calling
 			irr::s32 id = event.GUIEvent.Caller->getID();
 
 			switch(event.GUIEvent.EventType) {
@@ -1195,7 +1187,8 @@ int main() {
 			screenCenter.X = screenSize.Width / 2;
 			screenCenter.Y = screenSize.Height / 2;
 
-			irr::f32 aspect = screenSize.Width / screenSize.Height;
+			irr::f32 aspect = ((irr::f32) screenSize.Width) / ((irr::f32) screenSize.Height);
+			std::cout << "Aspect ratio: " << aspect << std::endl;
 			if(aspect != 0) {
 				cam->setAspectRatio(aspect);
 			}
