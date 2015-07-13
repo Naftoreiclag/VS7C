@@ -105,10 +105,10 @@ struct PhysicsShape {
 	bool modified = false;
 
 	// Original json file, if applicable
-	Json::Value jVal;
+	Json::Value jVal = Json::nullValue;
 
 	// Where is the file located
-	std::string filename;
+	std::string filename = "";
 
 	// Type
 	irr::s32 type = PHYS_EMPTY;
@@ -127,7 +127,7 @@ struct Gobject {
 	bool modified = false;
 
 	// Original json file
-	Json::Value jVal;
+	Json::Value jVal = Json::nullValue;
 
 	// Where is the file located
 	std::string filename = "null";
@@ -136,17 +136,21 @@ struct Gobject {
 	std::string id = "null";
 
 	// Offset from the origin
-	btVector3 physicsOffset;
+	btVector3 physicsOffset = btVector3(0, 0, 0);
 
 	//
-	std::string physicsFile;
-	std::string modelFile;
+	std::string physicsFile = "";
+	std::string modelFile = "";
 
-	// The shape itself
+	// The shape as described by physicsFile
 	PhysicsShape physicsShape;
-	btCollisionShape* collShape;
-	btCollisionObject* collObj;
-	irr::scene::ISceneNode* sceneNode;
+
+	// For rendering only
+	btCollisionShape* collShape = 0;
+	btCollisionObject* collObj = 0;
+	irr::scene::ISceneNode* sceneNode = 0;
+	irr::scene::IAnimatedMesh* bulletTriMesh = 0;
+	irr::scene::IAnimatedMesh* sceneMesh = 0;
 };
 
 // Represents the content-pack.json file located at root of content pack
@@ -162,13 +166,6 @@ struct Cpack {
 	std::string root = "null";
 	std::string nmsp = "null";
 	std::string desc = "null";
-
-	// Partially loaded objects
-	struct PartialGobject {
-		std::string filename;
-		std::string name;
-		Gobject* fullyLoaded;
-	};
 
 	std::vector<Gobject*> gobjectFiles;
 };
@@ -303,31 +300,6 @@ void showResourcesDialog() {
 
 }
 
-/*
-inline void updateObjectsDialogOnSelection() {
-	if(objectsDialog == 0) {
-		return;
-	}
-	if(loadedPack == 0) {
-		return;
-	}
-	irr::gui::IGUIListBox* listbox = (irr::gui::IGUIListBox*) objectsDialog->getElementFromId(GUI_LIST_OBJECTS);
-
-	irr::s32 selectedIndex = listbox->getSelected();
-
-	if(selectedIndex != -1) {
-		Gobject* selected = loadedPack->gobjectFiles[selectedIndex];
-
-		openObject(selected);
-
-		// populate
-	}
-	else {
-
-	}
-
-}
-*/
 void updateObjectsDialogOnReload() {
 	if(objectsDialog == 0) {
 		return;
@@ -488,7 +460,7 @@ void updatePhysicsRendering() {
 // IO NOT THE MOON
 // ===============
 
-std::string parseFilename(std::string filename) {
+std::string parseFilename(std::string filename, Gobject* context = 0) {
 	std::ifstream test1(filename);
 	if(test1.is_open()) {
 		return filename;
@@ -505,6 +477,13 @@ std::string parseFilename(std::string filename) {
 		std::ifstream test2(loadedPack->root + "/" + filename);
 		if(test2.is_open()) {
 			return loadedPack->root + "/" + filename;
+		}
+	}
+
+	if(context) {
+		std::ifstream test4(getDirectory(context->filename) + "/" + filename);
+		if(test4.is_open()) {
+			return getDirectory(context->filename) + "/" + filename;
 		}
 	}
 
@@ -547,12 +526,11 @@ btVector3 toBullet(Json::Value& jValue) {
 
 void openPhysicsShape(std::string filename) {
 	filename = parseFilename(filename);
-	std::string extension = getExtension(filename);
-
-	std::cout << "phys: " << filename << std::endl;
+	std::cout << filename << std::endl;
 
 	PhysicsShape& physShape = openedObject->physicsShape;
 
+	std::string extension = getExtension(filename);
 	if(extension == "json") {
 		std::ifstream stream(filename);
 		Json::Value jphysData;
@@ -609,8 +587,8 @@ void openPhysicsShape(std::string filename) {
 
 		std::cout << "Loading file as mesh..." << std::endl;
 		irr::io::path path(filename.c_str());
-		irr::scene::IAnimatedMesh* mesh = smgr->getMesh(path);
-		irr::scene::IMeshBuffer* buffer = mesh->getMeshBuffer(0);
+		openedObject->bulletTriMesh = smgr->getMesh(path);
+		irr::scene::IMeshBuffer* buffer = openedObject->bulletTriMesh->getMeshBuffer(0);
 
 		const irr::u16* indices = buffer->getIndices();
 		irr::u32 indexCount = buffer->getIndexCount();
@@ -638,17 +616,41 @@ void openPhysicsShape(std::string filename) {
 	updatePhysicsDialog();
 	updatePhysicsRendering();
 }
-void openModel(std::string filename) {
+void openAndRenderModel(std::string filename) {
 	filename = parseFilename(filename);
 	irr::io::path path(filename.c_str());
-	irr::scene::IAnimatedMesh* mesh = smgr->getMesh(path);
-	irr::scene::IAnimatedMeshSceneNode* node = smgr->addAnimatedMeshSceneNode(mesh, rootNode);
+	openedObject->sceneMesh = smgr->getMesh(path);
+	openedObject->sceneNode = smgr->addAnimatedMeshSceneNode(openedObject->sceneMesh, rootNode);
 }
 void openObject(Gobject* gobject) {
 	openedObject = gobject;
-	openModel(gobject->modelFile);
+	openAndRenderModel(gobject->modelFile);
 	openPhysicsShape(gobject->physicsFile);
-
+}
+void closeObject(Gobject* gobject) {
+	if(openedObject->collObj) {
+		bulletWorld->removeCollisionObject(openedObject->collObj);
+		delete openedObject->collObj;
+		openedObject->collObj = 0;
+	}
+	if(openedObject->collShape) {
+		delete openedObject->collShape;
+		openedObject->collShape = 0;
+	}
+	if(openedObject->sceneNode) {
+		openedObject->sceneNode->remove();
+		openedObject->sceneNode->drop();
+		openedObject->sceneNode = 0;
+	}
+	if(openedObject->sceneMesh) {
+		openedObject->sceneMesh->drop();
+		openedObject->sceneMesh = 0;
+	}
+	if(openedObject->bulletTriMesh) {
+		openedObject->bulletTriMesh->drop();
+		openedObject->bulletTriMesh = 0;
+	}
+	openedObject = 0;
 }
 Gobject* loadObject(std::string filename) {
 	filename = parseFilename(filename);
@@ -671,6 +673,7 @@ Gobject* loadObject(std::string filename) {
 	return retVal;
 }
 void loadPack(std::string filename) {
+
 	// Unload old pack
 	if(loadedPack) {
 		delete loadedPack;
@@ -703,72 +706,77 @@ void loadPack(std::string filename) {
 	showObjectsDialog();
 }
 void saveAll() {
-	std::ofstream mainFile(openedObject->filename + "/object.json");
+	if(loadedPack->modified) {
+		loadedPack->jVal["name"] = loadedPack->name;
+		loadedPack->jVal["description"] = loadedPack->desc;
+		loadedPack->jVal["namespace"] = loadedPack->nmsp;
 
-	Json::Value& jdata = openedObject->jVal;
-	jdata["physics-offset"] = toJson(openedObject->physicsOffset);
-
-
-	mainFile << jdata;
-
-	if(openedObject->physicsShape.type == PHYS_TRIANGLE_MESH) {
-
+		std::ofstream packFile(loadedPack->root + "/content-pack.json");
+		packFile << loadedPack->jVal;
 	}
-	else {
-		PhysicsShape& shape = openedObject->physicsShape;
+	for(std::vector<Gobject*>::iterator it = loadedPack->gobjectFiles.begin(); it != loadedPack->gobjectFiles.end(); ++ it) {
+		Gobject* gobj = *it;
 
-		std::ofstream physicsFile(shape.filename);
+		if(gobj->modified) {
+			gobj->jVal["id"] = gobj->id;
+			gobj->jVal["model"] = gobj->modelFile;
+			gobj->jVal["physics"] = gobj->physicsFile;
+			gobj->jVal["physics-offset"] = toJson(gobj->physicsOffset);
 
-		Json::Value jdata;
-
-		Json::Value& jtype = jdata["type"];
-		switch(shape.type) {
-			case PHYS_SPHERE: {
-				jtype = "sphere";
-				break;
-			}
-			case PHYS_BOX: {
-				jtype = "box";
-				break;
-			}
-			case PHYS_CYLINDER: {
-				jtype = "cylinder";
-				break;
-			}
-			case PHYS_CAPSULE: {
-				jtype = "capsule";
-				break;
-			}
-			case PHYS_CONE: {
-				jtype = "cone";
-				break;
-			}
-			case PHYS_MULTI_SPHERE: {
-				jtype = "multi-sphere";
-				break;
-			}
-			default: {
-				jtype = "empty";
-				break;
-			}
+			std::ofstream objFile(parseFilename(gobj->filename));
+			objFile << gobj->jVal;
 		}
 
-		if(shape.type == PHYS_BOX || shape.type == PHYS_CYLINDER) {
-			Json::Value& size = jdata["size"];
-			size.append(shape.dimensions.getX());
-			size.append(shape.dimensions.getY());
-			size.append(shape.dimensions.getZ());
-		}
-		if(shape.type == PHYS_CAPSULE || shape.type == PHYS_CONE || shape.type == PHYS_SPHERE) {
-			jdata["radius"] = shape.radius;
-		}
-		if(shape.type == PHYS_CAPSULE || shape.type == PHYS_CONE) {
-			jdata["height"] = shape.height;
-		}
+		if(gobj->physicsShape.modified) {
+			PhysicsShape& shape = gobj->physicsShape;
 
+			Json::Value& jtype = shape.jVal["type"];
+			switch(shape.type) {
+				case PHYS_SPHERE: {
+					jtype = "sphere";
+					break;
+				}
+				case PHYS_BOX: {
+					jtype = "box";
+					break;
+				}
+				case PHYS_CYLINDER: {
+					jtype = "cylinder";
+					break;
+				}
+				case PHYS_CAPSULE: {
+					jtype = "capsule";
+					break;
+				}
+				case PHYS_CONE: {
+					jtype = "cone";
+					break;
+				}
+				case PHYS_MULTI_SPHERE: {
+					jtype = "multi-sphere";
+					break;
+				}
+				default: {
+					jtype = "empty";
+					break;
+				}
+			}
+			if(shape.type == PHYS_BOX || shape.type == PHYS_CYLINDER) {
+				Json::Value& size = shape.jVal["size"];
+				size.append(shape.dimensions.getX());
+				size.append(shape.dimensions.getY());
+				size.append(shape.dimensions.getZ());
+			}
+			if(shape.type == PHYS_CAPSULE || shape.type == PHYS_CONE || shape.type == PHYS_SPHERE) {
+				shape.jVal["radius"] = shape.radius;
+			}
+			if(shape.type == PHYS_CAPSULE || shape.type == PHYS_CONE) {
+				shape.jVal["height"] = shape.height;
+			}
 
-		physicsFile << jdata;
-
+			std::ofstream physFile(parseFilename(gobj->physicsFile));
+			physFile << shape.jVal;
+		}
 	}
 }
 
@@ -889,31 +897,31 @@ public:
 						}
 						case GUI_EDIT_PHYSICS_HEIGHT: {
 							openedObject->physicsShape.height = scalar;
-							openedObject->modified = true;
+							openedObject->physicsShape.modified = true;
 							updatePhysicsRendering();
 							return true;
 						}
 						case GUI_EDIT_PHYSICS_DIMENSIONS_X: {
 							openedObject->physicsShape.dimensions.setX(scalar);
-							openedObject->modified = true;
+							openedObject->physicsShape.modified = true;
 							updatePhysicsRendering();
 							return true;
 						}
 						case GUI_EDIT_PHYSICS_DIMENSIONS_Y: {
 							openedObject->physicsShape.dimensions.setY(scalar);
-							openedObject->modified = true;
+							openedObject->physicsShape.modified = true;
 							updatePhysicsRendering();
 							return true;
 						}
 						case GUI_EDIT_PHYSICS_DIMENSIONS_Z: {
 							openedObject->physicsShape.dimensions.setZ(scalar);
-							openedObject->modified = true;
+							openedObject->physicsShape.modified = true;
 							updatePhysicsRendering();
 							return true;
 						}
 						case GUI_EDIT_PHYSICS_RADIUS: {
 							openedObject->physicsShape.radius = scalar;
-							openedObject->modified = true;
+							openedObject->physicsShape.modified = true;
 							updatePhysicsRendering();
 							return true;
 						}
@@ -1165,6 +1173,9 @@ int main() {
 	irr::core::vector3df rightMov;
 
 	bool panningInitializedByWheel = false;
+
+	// Test
+	loadPack("content/standard/content-pack.json");
 
 	// Main loop
 	while(device->run()) {

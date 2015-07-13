@@ -1,9 +1,10 @@
 {
+	"radius" : 2,
 	"size" : 
 	[
 		2,
-		2,
+		3,
 		2
 	],
-	"type" : "box"
+	"type" : "sphere"
 }
