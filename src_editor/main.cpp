@@ -55,6 +55,14 @@ enum {
 	GUI_DIALOG_ANIMATION,
 	GUI_DIALOG_MORPH,
 	GUI_DIALOG_FACIAL,
+	GUI_DIALOG_NEWOBJECT,
+
+	GUI_BUTTON_NEWOBJECT_OK,
+	GUI_BUTTON_NEWOBJECT_AUTONAME,
+	GUI_EDIT_NEWOBJECT_ID,
+	GUI_EDIT_NEWOBJECT_LOC,
+	GUI_EDIT_NEWOBJECT_MODEL,
+	GUI_EDIT_NEWOBJECT_PHYSICS,
 
 	GUI_TREE_RESOURCES,
 
@@ -111,6 +119,8 @@ enum {
     PHYS_MULTI_SPHERE,
     PHYS_TRIANGLE_MESH,
 };
+
+irr::core::position2di screenCenter;
 irr::s32 appState = STATE_EDIT;
 
 // Represents a typical physics shape
@@ -153,8 +163,11 @@ struct Gobject {
 	btVector3 physicsOffset = btVector3(0, 0, 0);
 
 	//
-	std::string physicsFile = "";
-	std::string modelFile = "";
+	bool modelFileExists = true;
+
+	//
+	std::string physicsFile = "null";
+	std::string modelFile = "null";
 
 	// The shape as described by physicsFile
 	PhysicsShape physicsShape;
@@ -626,7 +639,7 @@ btVector3 toBullet(Json::Value& jValue) {
 	}
 }
 
-void openPhysicsShape(std::string filename) {
+void openAndRenderPhysicsShape(std::string filename) {
 	filename = parseFilename(filename);
 	std::cout << filename << std::endl;
 
@@ -753,7 +766,82 @@ void openObject(Gobject* gobject) {
 	closeObject();
 	openedObject = gobject;
 	openAndRenderModel(gobject->modelFile);
-	openPhysicsShape(gobject->physicsFile);
+	openAndRenderPhysicsShape(gobject->physicsFile);
+}
+void saveObject(Gobject* gobj) {
+	if(gobj->modified) {
+		std::cout << "Saving object: " << parseFilename(gobj->filename) << std::endl;
+		gobj->jVal["id"] = gobj->id;
+		gobj->jVal["model"] = gobj->modelFile;
+		gobj->jVal["physics"] = gobj->physicsFile;
+		gobj->jVal["physics-offset"] = toJson(gobj->physicsOffset);
+
+		std::ofstream objFile(parseFilename(gobj->filename));
+		objFile << gobj->jVal;
+
+		gobj->modified = false;
+	}
+
+	if(!gobj->modelFileExists) {
+		std::ifstream defCube("assets_editor/default-cube.dae");
+		std::ofstream newCube(parseFilename(gobj->modelFile, gobj));
+
+		newCube << defCube;
+
+		gobj->modelFileExists = true;
+
+	}
+
+	if(gobj->physicsShape.modified) {
+		std::cout << "Saving shape: " << parseFilename(gobj->physicsFile, gobj) << std::endl;
+		PhysicsShape& shape = gobj->physicsShape;
+
+		Json::Value& jtype = shape.jVal["type"];
+		switch(shape.type) {
+			case PHYS_SPHERE: {
+				jtype = "sphere";
+				break;
+			}
+			case PHYS_BOX: {
+				jtype = "box";
+				break;
+			}
+			case PHYS_CYLINDER: {
+				jtype = "cylinder";
+				break;
+			}
+			case PHYS_CAPSULE: {
+				jtype = "capsule";
+				break;
+			}
+			case PHYS_CONE: {
+				jtype = "cone";
+				break;
+			}
+			case PHYS_MULTI_SPHERE: {
+				jtype = "multi-sphere";
+				break;
+			}
+			default: {
+				jtype = "empty";
+				break;
+			}
+		}
+		if(shape.type == PHYS_BOX || shape.type == PHYS_CYLINDER) {
+			shape.jVal["size"] = toJson(shape.dimensions);
+		}
+		if(shape.type == PHYS_CAPSULE || shape.type == PHYS_CONE || shape.type == PHYS_SPHERE) {
+			shape.jVal["radius"] = shape.radius;
+		}
+		if(shape.type == PHYS_CAPSULE || shape.type == PHYS_CONE) {
+			shape.jVal["height"] = shape.height;
+		}
+
+		std::ofstream physFile(parseFilename(gobj->physicsFile, gobj));
+		physFile << shape.jVal;
+
+		gobj->physicsShape.modified = false;
+	}
 }
 Gobject* loadObject(std::string filename) {
 	filename = parseFilename(filename);
@@ -821,75 +909,12 @@ void saveAll() {
 	for(std::vector<Gobject*>::iterator it = loadedPack->gobjectFiles.begin(); it != loadedPack->gobjectFiles.end(); ++ it) {
 		Gobject* gobj = *it;
 
-		if(gobj->modified) {
-			std::cout << "Saving object: " << parseFilename(gobj->filename) << std::endl;
-			gobj->jVal["id"] = gobj->id;
-			gobj->jVal["model"] = gobj->modelFile;
-			gobj->jVal["physics"] = gobj->physicsFile;
-			gobj->jVal["physics-offset"] = toJson(gobj->physicsOffset);
-
-			std::ofstream objFile(parseFilename(gobj->filename));
-			objFile << gobj->jVal;
-
-			gobj->modified = false;
-		}
-
-		if(gobj->physicsShape.modified) {
-			std::cout << "Saving shape: " << parseFilename(gobj->physicsFile, gobj) << std::endl;
-			PhysicsShape& shape = gobj->physicsShape;
-
-			Json::Value& jtype = shape.jVal["type"];
-			switch(shape.type) {
-				case PHYS_SPHERE: {
-					jtype = "sphere";
-					break;
-				}
-				case PHYS_BOX: {
-					jtype = "box";
-					break;
-				}
-				case PHYS_CYLINDER: {
-					jtype = "cylinder";
-					break;
-				}
-				case PHYS_CAPSULE: {
-					jtype = "capsule";
-					break;
-				}
-				case PHYS_CONE: {
-					jtype = "cone";
-					break;
-				}
-				case PHYS_MULTI_SPHERE: {
-					jtype = "multi-sphere";
-					break;
-				}
-				default: {
-					jtype = "empty";
-					break;
-				}
-			}
-			if(shape.type == PHYS_BOX || shape.type == PHYS_CYLINDER) {
-				shape.jVal["size"] = toJson(shape.dimensions);
-			}
-			if(shape.type == PHYS_CAPSULE || shape.type == PHYS_CONE || shape.type == PHYS_SPHERE) {
-				shape.jVal["radius"] = shape.radius;
-			}
-			if(shape.type == PHYS_CAPSULE || shape.type == PHYS_CONE) {
-				shape.jVal["height"] = shape.height;
-			}
-
-			std::ofstream physFile(parseFilename(gobj->physicsFile, gobj));
-			physFile << shape.jVal;
-
-			gobj->physicsShape.modified = false;
-		}
+		saveObject(gobj);
 	}
 }
 
 // APPEVENTRECEIVER
 // ================
-
 irr::core::position2di mouseLoc;
 irr::f32 wheelDelta = 0;
 bool mouseJustClicked = false;
@@ -1179,6 +1204,90 @@ public:
 							updatePhysicsRendering();
 							return true;
 						}
+						case GUI_BUTTON_OBJECTS_NEW: {
+							closeDialog(GUI_DIALOG_NEWOBJECT);
+
+							irr::u32 width = 350;
+							irr::u32 height = 150;
+
+							irr::gui::IGUIWindow* newObjectDialog = gui->addWindow(GuiBox(screenCenter.X - width / 2, screenCenter.Y - height / 2, width, height), false, L"New Object", 0, GUI_DIALOG_NEWOBJECT);
+
+							gui->addButton(GuiBox(width / 2 - 40, height - 25, 80, 20), newObjectDialog, GUI_BUTTON_NEWOBJECT_OK, L"OK", L"Confirm new object");
+
+							gui->addStaticText(L"ID:", GuiBox(5, 25, 69, 69), false, false, newObjectDialog);
+							gui->addEditBox(L"", GuiBox(70, 25, width - 135, 20), true, newObjectDialog, GUI_EDIT_NEWOBJECT_ID);
+							gui->addButton(GuiBox(width - 70, 25, 65, 20), newObjectDialog, GUI_BUTTON_NEWOBJECT_AUTONAME, L"Rename", L"Automatically picks filename based on id.");
+
+							gui->addStaticText(L"Location:", GuiBox(5, 50, 69, 69), false, false, newObjectDialog);
+							gui->addEditBox(L"", GuiBox(70, 50, width - 75, 20), true, newObjectDialog, GUI_EDIT_NEWOBJECT_LOC);
+							gui->addStaticText(L"Model:", GuiBox(5, 75, 69, 69), false, false, newObjectDialog);
+							gui->addEditBox(L"", GuiBox(70, 75, width - 75, 20), true, newObjectDialog, GUI_EDIT_NEWOBJECT_MODEL);
+							gui->addStaticText(L"Physics:", GuiBox(5, 100, 69, 69), false, false, newObjectDialog);
+							gui->addEditBox(L"", GuiBox(70, 100, width - 75, 20), true, newObjectDialog, GUI_EDIT_NEWOBJECT_PHYSICS);
+
+							return true;
+						}
+						case GUI_BUTTON_NEWOBJECT_AUTONAME: {
+
+							irr::gui::IGUIWindow* newObjectDialog = (irr::gui::IGUIWindow*) gui->getRootGUIElement()->getElementFromId(GUI_DIALOG_NEWOBJECT, true);
+
+							irr::gui::IGUIEditBox* editId = (irr::gui::IGUIEditBox*) newObjectDialog->getElementFromId(GUI_EDIT_NEWOBJECT_ID);
+							irr::gui::IGUIEditBox* editLoc = (irr::gui::IGUIEditBox*) newObjectDialog->getElementFromId(GUI_EDIT_NEWOBJECT_LOC);
+							irr::gui::IGUIEditBox* editModel = (irr::gui::IGUIEditBox*) newObjectDialog->getElementFromId(GUI_EDIT_NEWOBJECT_MODEL);
+							irr::gui::IGUIEditBox* editPhys = (irr::gui::IGUIEditBox*) newObjectDialog->getElementFromId(GUI_EDIT_NEWOBJECT_PHYSICS);
+
+							std::string id = toString(editId->getText());
+
+							std::string loc   = id + "/" + id + "-object.json";
+							std::string model = id + "/" + id + "-model.dae";
+							std::string phys  = id + "/" + id + "-physics.json";
+
+							editLoc->setText(toText(loc));
+							editModel->setText(toText(model));
+							editPhys->setText(toText(phys));
+
+							return true;
+						}
+						case GUI_BUTTON_NEWOBJECT_OK: {
+
+							if(loadedPack == 0) {
+								std::cout << "Error! no project open!" << std::endl;
+								return true;
+							}
+
+							irr::gui::IGUIWindow* newObjectDialog = (irr::gui::IGUIWindow*) gui->getRootGUIElement()->getElementFromId(GUI_DIALOG_NEWOBJECT, true);
+
+							irr::gui::IGUIEditBox* editId = (irr::gui::IGUIEditBox*) newObjectDialog->getElementFromId(GUI_EDIT_NEWOBJECT_ID);
+							irr::gui::IGUIEditBox* editLoc = (irr::gui::IGUIEditBox*) newObjectDialog->getElementFromId(GUI_EDIT_NEWOBJECT_LOC);
+							irr::gui::IGUIEditBox* editModel = (irr::gui::IGUIEditBox*) newObjectDialog->getElementFromId(GUI_EDIT_NEWOBJECT_MODEL);
+							irr::gui::IGUIEditBox* editPhys = (irr::gui::IGUIEditBox*) newObjectDialog->getElementFromId(GUI_EDIT_NEWOBJECT_PHYSICS);
+
+							std::string id    = toString(editId->getText());
+							std::string loc   = toString(editLoc->getText());
+							std::string model = toString(editModel->getText());
+							std::string phys  = toString(editPhys->getText());
+
+							Gobject* newObj = new Gobject();
+
+							newObj->id = id;
+							newObj->filename = loc;
+							newObj->modelFile = model;
+							newObj->physicsFile = phys;
+
+							newObj->modelFileExists = false;
+
+							newObj->modified = true;
+							newObj->physicsShape.modified = true;
+
+							loadedPack->gobjectFiles.push_back(newObj);
+							updateObjectsDialogOnReload();
+
+							saveObject(newObj);
+							openObject(newObj);
+
+							closeDialog(GUI_DIALOG_NEWOBJECT);
+							return true;
+						}
 						default: {
 							break;
 						}
@@ -1330,7 +1439,6 @@ int main() {
 	irr::u32 then = device->getTimer()->getTime();
 	irr::u32 frames = 0;
 	irr::core::dimension2du screenSize = driver->getScreenSize();
-	irr::core::position2di screenCenter;
 	screenCenter.X = screenSize.Width / 2;
 	screenCenter.Y = screenSize.Height / 2;
 
