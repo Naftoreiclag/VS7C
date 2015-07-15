@@ -36,8 +36,6 @@ btCollisionDispatcher* dispatcher;
 btCollisionWorld* bulletWorld;
 reib::BulletDebugDrawer* bulletDebugDrawer;
 
-irr::scene::IMeshSceneNode* ground;
-
 typedef double btDouble;
 
 enum {
@@ -722,7 +720,6 @@ void openAndRenderModel(std::string filename) {
 
 	mat.AmbientColor = irr::video::SColor(255, 255, 255, 255);
 	mat.DiffuseColor = irr::video::SColor(255, 255, 0, 0);
-	debugMaterial(ground->getMaterial(0));
 	std::cout << "============" << std::endl;
 	debugMaterial(mat);
 	//ground->getMaterial(0) = mat;
@@ -1299,9 +1296,11 @@ int main() {
 
 
 	// Cool ground
-	ground = smgr->addCubeSceneNode(200, 0, -1, irr::core::vector3df(0, -100, 0));
-	irr::video::SMaterial& gmat = ground->getMaterial(0);
-
+	irr::scene::IAnimatedMesh* groundMesh = smgr->getMesh("assets_editor/ground.dae");
+	irr::scene::IAnimatedMeshSceneNode* groundNode = smgr->addAnimatedMeshSceneNode(groundMesh);
+	irr::video::SMaterial& mat22 = groundNode->getMaterial(0);
+	mat22.AmbientColor = irr::video::SColor(255, 255, 255, 255);
+	mat22.DiffuseColor = irr::video::SColor(255, 255, 0, 0);
 
 	irr::scene::ICameraSceneNode* cam = smgr->addCameraSceneNode();
 	irr::scene::ISceneNode* lookAt = smgr->addEmptySceneNode(cam);
@@ -1361,6 +1360,10 @@ int main() {
 
 	// Main loop
 	while(device->run()) {
+		if(!device->isWindowActive()) {
+			continue;
+		}
+
 		// Calculate time per frame in seconds
 		const irr::u32 now = device->getTimer()->getTime();
         const irr::f32 tpf = (irr::f32)(now - then) / 1000.f;
