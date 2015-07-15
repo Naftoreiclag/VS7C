@@ -588,6 +588,13 @@ std::string parseFilename(std::string filename, Gobject* context = 0) {
 		}
 	}
 
+	if(loadedPack) {
+		return loadedPack->root + "/" + filename;
+	}
+	else {
+		return filename;
+	}
+
 }
 
 Json::Value toJson(btVector3 vector) {
@@ -637,6 +644,11 @@ btVector3 toBullet(Json::Value& jValue) {
 	} else {
 		return btVector3(0, 0, 0);
 	}
+}
+
+std::ofstream forceWrite(std::string filename) {
+	irr::io::IWriteFile* createAndWriteFile(const path &filename, bool append=false)=0
+	//irr::io::IFileSystem
 }
 
 void openAndRenderPhysicsShape(std::string filename) {
@@ -783,6 +795,7 @@ void saveObject(Gobject* gobj) {
 	}
 
 	if(!gobj->modelFileExists) {
+		std::cout << "Copied default cube shape" << std::endl;
 		std::ifstream defCube("assets_editor/default-cube.dae");
 		std::ofstream newCube(parseFilename(gobj->modelFile, gobj));
 
@@ -1269,6 +1282,12 @@ public:
 
 							Gobject* newObj = new Gobject();
 
+							std::cout << "New Object: " << std::endl;
+							std::cout << "id: " << id << std::endl;
+							std::cout << "loc: " << loc << std::endl;
+							std::cout << "model: " << model << std::endl;
+							std::cout << "phys: " << phys << std::endl;
+
 							newObj->id = id;
 							newObj->filename = loc;
 							newObj->modelFile = model;
@@ -1279,10 +1298,11 @@ public:
 							newObj->modified = true;
 							newObj->physicsShape.modified = true;
 
+							saveObject(newObj);
+
 							loadedPack->gobjectFiles.push_back(newObj);
 							updateObjectsDialogOnReload();
 
-							saveObject(newObj);
 							openObject(newObj);
 
 							closeDialog(GUI_DIALOG_NEWOBJECT);
