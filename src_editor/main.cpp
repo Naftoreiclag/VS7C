@@ -90,6 +90,7 @@ enum {
     GUI_EDIT_PHYSICS_RADIUS,
     GUI_EDIT_PHYSICS_HEIGHT,
     GUI_EDIT_PHYSICS_FILE,
+    GUI_BUTTON_PHYSICS_SETBB,
     GUI_EMPTY_PHYSICS_TYPE_EDITOR,
 
     GUI_COMBO_ANIM,
@@ -316,6 +317,10 @@ btCollisionShape* newShape(PhysicsShape shape) {
 			std::cout << "Generated shape from box." << std::endl;
 			return new btBoxShape(shape.dimensions / 2);
 		}
+		case PHYS_CYLINDER: {
+			std::cout << "Generated shape from cylinder." << std::endl;
+			return new btCylinderShape(shape.dimensions / 2);
+		}
 		case PHYS_TRIANGLE_MESH: {
 			return new btConvexTriangleMeshShape(shape.triangles);
 		}
@@ -436,6 +441,7 @@ void updatePhysicsDialog() {
 		gui->addEditBox(toText(physShape.dimensions.getX()), GuiBox(80,  5, 115, 20), true, dialog, GUI_EDIT_PHYSICS_DIMENSIONS_X);
 		gui->addEditBox(toText(physShape.dimensions.getY()), GuiBox(80, 25, 115, 20), true, dialog, GUI_EDIT_PHYSICS_DIMENSIONS_Y);
 		gui->addEditBox(toText(physShape.dimensions.getZ()), GuiBox(80, 45, 115, 20), true, dialog, GUI_EDIT_PHYSICS_DIMENSIONS_Z);
+		gui->addButton(GuiBox(80, 70, 60, 20), dialog, GUI_BUTTON_PHYSICS_SETBB, L"Auto-size", L"Automatically scales shape.");
 	}
 	if(physType == PHYS_SPHERE || physType == PHYS_CAPSULE || physType == PHYS_CONE) {
 		gui->addStaticText(L"Radius:", GuiBox(5, 5, 69, 69), false, true, dialog);
@@ -509,9 +515,6 @@ void updatePhysicsRendering() {
 	if(openedObject->collObj) {
 		bulletWorld->removeCollisionObject(openedObject->collObj);
 		delete openedObject->collObj;
-	}
-	if(openedObject->collShape) {
-		delete openedObject->collShape;
 	}
 
 	openedObject->collShape = newShape(openedObject->physicsShape);
@@ -863,6 +866,11 @@ public:
 			if(event.KeyInput.Key == 160) {
 				moveCamToggle = event.KeyInput.PressedDown;
 			}
+			if(event.KeyInput.Key == 27) {
+				moveCamToggle = false;
+				appState = STATE_EDIT;
+			}
+			std::cout << "Key pressed: " << event.KeyInput.Key << std::endl;
 		}
 
 		if(event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
@@ -1086,6 +1094,22 @@ public:
 						}
 						case GUI_BUTTON_DIALOG_ANIMATION: {
 							showAnimationDialog();
+							return true;
+						}
+						case GUI_BUTTON_PHYSICS_SETBB: {
+                            if(!openedObject) {
+								break;
+                            }
+
+							irr::core::aabbox3df bb = openedObject->sceneNode->getBoundingBox();
+
+							openedObject->physicsOffset = toBullet(bb.getCenter());
+							openedObject->physicsShape.dimensions = toBullet(bb.getExtent());
+
+
+							updatePhysicsDialog();
+							updatePhysicsRendering();
+							return true;
 						}
 						default: {
 							break;
