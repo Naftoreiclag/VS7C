@@ -781,6 +781,7 @@ void loadPack(std::string filename) {
 }
 void saveAll() {
 	if(loadedPack->modified) {
+		std::cout << "Saving pack info" << std::endl;
 		loadedPack->jVal["name"] = loadedPack->name;
 		loadedPack->jVal["description"] = loadedPack->desc;
 		loadedPack->jVal["namespace"] = loadedPack->nmsp;
@@ -792,6 +793,7 @@ void saveAll() {
 		Gobject* gobj = *it;
 
 		if(gobj->modified) {
+			std::cout << "Saving object: " << parseFilename(gobj->filename) << std::endl;
 			gobj->jVal["id"] = gobj->id;
 			gobj->jVal["model"] = gobj->modelFile;
 			gobj->jVal["physics"] = gobj->physicsFile;
@@ -799,9 +801,12 @@ void saveAll() {
 
 			std::ofstream objFile(parseFilename(gobj->filename));
 			objFile << gobj->jVal;
+
+			gobj->modified = false;
 		}
 
 		if(gobj->physicsShape.modified) {
+			std::cout << "Saving shape: " << parseFilename(gobj->physicsFile, gobj) << std::endl;
 			PhysicsShape& shape = gobj->physicsShape;
 
 			Json::Value& jtype = shape.jVal["type"];
@@ -845,8 +850,10 @@ void saveAll() {
 				shape.jVal["height"] = shape.height;
 			}
 
-			std::ofstream physFile(parseFilename(gobj->physicsFile));
+			std::ofstream physFile(parseFilename(gobj->physicsFile, gobj));
 			physFile << shape.jVal;
+
+			gobj->physicsShape.modified = false;
 		}
 	}
 }
@@ -1105,7 +1112,8 @@ public:
 
 							openedObject->physicsOffset = toBullet(bb.getCenter());
 							openedObject->physicsShape.dimensions = toBullet(bb.getExtent());
-
+							openedObject->modified = true;
+							openedObject->physicsShape.modified = true;
 
 							updatePhysicsDialog();
 							updatePhysicsRendering();
