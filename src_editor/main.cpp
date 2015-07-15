@@ -16,6 +16,7 @@
 #include "btBulletCollisionCommon.h"
 #include "ReiBullet.h"
 
+irr::IrrlichtDevice* device;
 irr::video::IVideoDriver* driver;
 irr::scene::ISceneManager* smgr;
 irr::gui::IGUIEnvironment* gui;
@@ -646,9 +647,19 @@ btVector3 toBullet(Json::Value& jValue) {
 	}
 }
 
-std::ofstream forceWrite(std::string filename) {
-	irr::io::IWriteFile* createAndWriteFile(const path &filename, bool append=false)=0
-	//irr::io::IFileSystem
+void createFileIfNotExist(std::string filename) {
+	std::ifstream stream(filename);
+
+	std::cout << "Checking that " << filename << " exists..." << std::endl;
+	std::cout << "File does " << (stream.is_open() ? "" : "not ") << "exist." << std::endl;
+	if(!stream.is_open()) {
+
+		irr::io::IFileSystem* fs = device->getFileSystem();
+
+		fs->createAndOpenFile(irr::io::path(filename.c_str()));
+		//fs->createFileList(,)
+
+	}
 }
 
 void openAndRenderPhysicsShape(std::string filename) {
@@ -788,6 +799,7 @@ void saveObject(Gobject* gobj) {
 		gobj->jVal["physics"] = gobj->physicsFile;
 		gobj->jVal["physics-offset"] = toJson(gobj->physicsOffset);
 
+		createFileIfNotExist(parseFilename(gobj->filename));
 		std::ofstream objFile(parseFilename(gobj->filename));
 		objFile << gobj->jVal;
 
@@ -797,9 +809,10 @@ void saveObject(Gobject* gobj) {
 	if(!gobj->modelFileExists) {
 		std::cout << "Copied default cube shape" << std::endl;
 		std::ifstream defCube("assets_editor/default-cube.dae");
+		createFileIfNotExist(parseFilename(gobj->modelFile, gobj));
 		std::ofstream newCube(parseFilename(gobj->modelFile, gobj));
 
-		newCube << defCube;
+		newCube << defCube.rdbuf();
 
 		gobj->modelFileExists = true;
 
@@ -850,6 +863,7 @@ void saveObject(Gobject* gobj) {
 			shape.jVal["height"] = shape.height;
 		}
 
+		createFileIfNotExist(parseFilename(gobj->physicsFile, gobj));
 		std::ofstream physFile(parseFilename(gobj->physicsFile, gobj));
 		physFile << shape.jVal;
 
@@ -1343,7 +1357,7 @@ int main() {
 	params.Vsync = true;
 	params.EventReceiver = &appEventReceiver;
 	params.AntiAlias = 0;
-	irr::IrrlichtDevice* device = createDeviceEx(params);
+	device = createDeviceEx(params);
 	if(!device) { return 1; }
 
 	device->setResizable(true);
