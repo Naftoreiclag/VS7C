@@ -91,6 +91,8 @@ enum {
     GUI_EDIT_PHYSICS_HEIGHT,
     GUI_EDIT_PHYSICS_FILE,
     GUI_BUTTON_PHYSICS_SETBB,
+    GUI_BUTTON_PHYSICS_SHRINK,
+    GUI_BUTTON_PHYSICS_GROW,
     GUI_EMPTY_PHYSICS_TYPE_EDITOR,
 
     GUI_COMBO_ANIM,
@@ -329,6 +331,19 @@ btCollisionShape* newShape(PhysicsShape shape) {
 		}
     }
 }
+void physicsGrow(PhysicsShape& physShape, btDouble amount) {
+	irr::s32 physType = openedObject->physicsShape.type;
+
+	if(physType == PHYS_BOX || physType == PHYS_CYLINDER) {
+		physShape.dimensions *= amount;
+	}
+	if(physType == PHYS_SPHERE || physType == PHYS_CAPSULE || physType == PHYS_CONE) {
+		physShape.radius *= amount;
+	}
+	if(physType == PHYS_CAPSULE || physType == PHYS_CONE) {
+		physShape.height *= amount;
+	}
+}
 
 // GUI
 // ===
@@ -433,6 +448,11 @@ void updatePhysicsDialog() {
 	irr::s32 physType = openedObject->physicsShape.type;
 	PhysicsShape physShape = openedObject->physicsShape;
 
+	if(physType != PHYS_EMPTY && physType != PHYS_TRIANGLE_MESH) {
+		gui->addButton(GuiBox(5, 130, 80, 20), dialog, GUI_BUTTON_PHYSICS_SETBB, L"Auto-size", L"Automatically scales shape.");
+		gui->addButton(GuiBox(5, 155, 60, 20), dialog, GUI_BUTTON_PHYSICS_SHRINK, L"Shrink", L"Contract");
+		gui->addButton(GuiBox(70, 155, 60, 20), dialog, GUI_BUTTON_PHYSICS_GROW, L"Grow", L"Expand");
+	}
 	if(physType == PHYS_BOX || physType == PHYS_CYLINDER) {
 		gui->addStaticText(L"Size:", GuiBox(5, 5, 69, 69), false, true, dialog);
 		gui->addStaticText(L"X", GuiBox(65,  5, 69, 69), false, false, dialog);
@@ -441,7 +461,6 @@ void updatePhysicsDialog() {
 		gui->addEditBox(toText(physShape.dimensions.getX()), GuiBox(80,  5, 115, 20), true, dialog, GUI_EDIT_PHYSICS_DIMENSIONS_X);
 		gui->addEditBox(toText(physShape.dimensions.getY()), GuiBox(80, 25, 115, 20), true, dialog, GUI_EDIT_PHYSICS_DIMENSIONS_Y);
 		gui->addEditBox(toText(physShape.dimensions.getZ()), GuiBox(80, 45, 115, 20), true, dialog, GUI_EDIT_PHYSICS_DIMENSIONS_Z);
-		gui->addButton(GuiBox(80, 70, 60, 20), dialog, GUI_BUTTON_PHYSICS_SETBB, L"Auto-size", L"Automatically scales shape.");
 	}
 	if(physType == PHYS_SPHERE || physType == PHYS_CAPSULE || physType == PHYS_CONE) {
 		gui->addStaticText(L"Radius:", GuiBox(5, 5, 69, 69), false, true, dialog);
@@ -623,6 +642,8 @@ void openPhysicsShape(std::string filename) {
 
 		std::string type = jphysData["type"].asString();
 
+		bool isKnown = false;
+
 		// Load a sphere from the json file
 		if(type == "sphere") {
 			// Set type to be a sphere
@@ -631,15 +652,26 @@ void openPhysicsShape(std::string filename) {
 			// Set radius
 			physShape.radius = jphysData["radius"].asDouble();
 			std::cout << "Radius = " << physShape.radius << std::endl;
+
+			isKnown = true;
 		}
 
-		// Load a box from the json file
-		else if(type == "box") {
-			physShape.type = PHYS_BOX;
+		if(type == "box" || type == "cylinder") {
+			if(type == "box") {
+				physShape.type = PHYS_BOX;
+			}
+			else if(type == "cylinder") {
+				physShape.type = PHYS_CYLINDER;
+			}
+
 			physShape.dimensions = toBullet(jphysData["size"]);
 			std::cout << "Size = " << "(" << physShape.dimensions.getX() << ", " << physShape.dimensions.getY() << ", " << physShape.dimensions.getZ() << ")" << std::endl;
+
+			isKnown = true;
 		}
-		else {
+
+		if(!isKnown)
+		{
 			std::cout << "Physics shape is empty." << std::endl;
 			physShape.type = PHYS_EMPTY;
 		}
@@ -1107,14 +1139,45 @@ public:
                             if(!openedObject) {
 								break;
                             }
-
 							irr::core::aabbox3df bb = openedObject->sceneNode->getBoundingBox();
 
 							openedObject->physicsOffset = toBullet(bb.getCenter());
-							openedObject->physicsShape.dimensions = toBullet(bb.getExtent());
+							irr::s32 physType = openedObject->physicsShape.type;
+							if(physType == PHYS_BOX || physType == PHYS_CYLINDER) {
+								openedObject->physicsShape.dimensions = toBullet(bb.getExtent());
+							}
+							if(physType == PHYS_SPHERE || physType == PHYS_CAPSULE || physType == PHYS_CONE) {
+								irr::core::vector3df vec = bb.getExtent();
+								vec /= 2;
+								openedObject->physicsShape.radius = vec.getLength();
+							}
+							if(physType == PHYS_CAPSULE || physType == PHYS_CONE) {
+								openedObject->physicsShape.height = bb.getExtent().Y;
+							}
 							openedObject->modified = true;
 							openedObject->physicsShape.modified = true;
 
+
+							updatePhysicsDialog();
+							updatePhysicsRendering();
+							return true;
+						}
+						case GUI_BUTTON_PHYSICS_SHRINK: {
+                            if(!openedObject) {
+								break;
+                            }
+							physicsGrow(openedObject->physicsShape, 0.95);
+							openedObject->physicsShape.modified = true;
+							updatePhysicsDialog();
+							updatePhysicsRendering();
+							return true;
+						}
+						case GUI_BUTTON_PHYSICS_GROW: {
+                            if(!openedObject) {
+								break;
+                            }
+							physicsGrow(openedObject->physicsShape, 1 / 0.95);
+							openedObject->physicsShape.modified = true;
 							updatePhysicsDialog();
 							updatePhysicsRendering();
 							return true;
