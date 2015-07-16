@@ -1,8 +1,11 @@
 {
+	"authors" : 
+	[
+		"Naftoreiclag"
+	],
+	"description" : "Vanilla stuff. Game will not run correctly if these items are removed.",
 	"name" : "Standard Content",
 	"namespace" : "std",
-	"description" : "Vanilla stuff. Game will not run correctly if these items are removed.",
-	"authors" : ["Naftoreiclag"],
 	"objects" : 
 	[
 		"cube/object.json",

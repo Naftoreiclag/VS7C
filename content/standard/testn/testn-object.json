@@ -1,0 +1,6 @@
+{
+	"id" : "testn",
+	"model" : "testn/testn-model.dae",
+	"physics" : "testn/testn-physics.json",
+	"physics-offset" : 0
+}

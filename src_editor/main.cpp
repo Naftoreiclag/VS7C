@@ -1315,6 +1315,7 @@ public:
 							saveObject(newObj);
 
 							loadedPack->gobjectFiles.push_back(newObj);
+							loadedPack->modified = true;
 							updateObjectsDialogOnReload();
 
 							openObject(newObj);
