@@ -73,19 +73,19 @@ void OverworldGameState::init() {
 	maxPitch = 80;
 	minPitch = -maxPitch;
 
-	irr::scene::ISceneNode* empt = smgr->addEmptySceneNode();
-	irr::scene::ILightSceneNode* dlight = smgr->addLightSceneNode(empt, irr::core::vector3df(0, 0, 1), irr::video::SColor(1, 1, 1, 1), 10000.0f);
-	irr::video::SLight light;
-	light.Type = irr::video::ELT_DIRECTIONAL;
-	light.Direction = irr::core::vector3df(0, -100, 0);
-	light.AmbientColor = irr::video::SColorf(0.3f, 0.3f, 0.6f, 1);
-	light.SpecularColor= irr::video::SColorf(1.0f, 1.0f, 1.0f, 1);
-	light.DiffuseColor = irr::video::SColorf(1.0f, 1.0f, 1.0f, 1);
-	light.CastShadows = false;
-	dlight->setLightData(light);
+	irr::scene::ISceneNode* dLightControl = smgr->addEmptySceneNode();
+	irr::scene::ILightSceneNode* directionalLight = smgr->addLightSceneNode(dLightControl, irr::core::vector3df(0, 0, 1), irr::video::SColor(1, 1, 1, 1), 10000.0f);
+	irr::video::SLight lightData;
+	lightData.Type = irr::video::ELT_DIRECTIONAL;
+	lightData.Direction = irr::core::vector3df(0, -100, 0);
+	lightData.DiffuseColor = irr::video::SColor(255, 100, 100, 100);
+	lightData.CastShadows = false;
+	directionalLight->setLightData(lightData);
+	dLightControl->setRotation(irr::core::vector3df(45, -135, 0));
+	smgr->setAmbientLight(irr::video::SColor(255, 155, 155, 155));
 
 	// ???
-	smgr->setShadowColor(video::SColor(149, 0, 0, 0));
+	//smgr->setShadowColor(video::SColor(149, 0, 0, 0));
 
 
 	// Make the test chunk
@@ -102,11 +102,16 @@ void OverworldGameState::init() {
 	node->setFrameLoop(0, 30);
 	node->setAnimationSpeed(15);
 
-	chunkNode = smgr->addCubeSceneNode(100);
+	irr::scene::IAnimatedMesh* groundMesh = smgr->getMesh("assets_editor/ground.dae");
+	chunkNode = smgr->addAnimatedMeshSceneNode(groundMesh);
+	irr::video::SMaterial& mat22 = chunkNode->getMaterial(0);
+	mat22.AmbientColor = irr::video::SColor(255, 255, 255, 255);
+	/*
 	chunkNode->getMaterial(0).setTexture(0, driver->getTexture("assets/grass.png"));
 	chunkNode->setPosition(irr::core::vector3df(0, -50, 0));
 	chunkNode->addShadowVolumeSceneNode();
 
+*/
 
 	// Phys test floor
 	btStaticPlaneShape* planeShape = new btStaticPlaneShape(btVector3(0, 1, 0), 0);

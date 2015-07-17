@@ -83,7 +83,7 @@ private:
 
 	nres::Entity* playerEnt;
 
-	irr::scene::IMeshSceneNode* chunkNode;
+	irr::scene::IAnimatedMeshSceneNode* chunkNode;
 };
 
 #endif // OVERWORLDGAMESTATE_H

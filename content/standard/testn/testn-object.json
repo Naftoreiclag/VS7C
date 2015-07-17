@@ -2,5 +2,10 @@
 	"id" : "testn",
 	"model" : "testn/testn-model.dae",
 	"physics" : "testn/testn-physics.json",
-	"physics-offset" : 0
+	"physics-offset" : 
+	[
+		0,
+		1,
+		0
+	]
 }
