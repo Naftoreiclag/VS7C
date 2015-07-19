@@ -16,7 +16,7 @@
 
 namespace reia {
 
-	void debugAiNode(const aiNode* rootNode, unsigned int depth);
+	void debugAiNode(const aiScene* scene, const aiNode* node, unsigned int depth);
 
 	void loadUsingAssimp(std::string filename);
 

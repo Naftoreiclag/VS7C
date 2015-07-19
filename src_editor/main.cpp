@@ -1495,7 +1495,7 @@ int main() {
 	loadPack("content/standard/content-pack.json");
 
 	// Test
-	reia::loadUsingAssimp("assets/unit_cube.dae");
+	reia::loadUsingAssimp("assets_editor/testcylinder.dae");
 
 	// Main loop
 	while(device->run()) {

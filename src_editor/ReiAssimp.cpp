@@ -8,21 +8,39 @@
 
 namespace reia {
 
-	void debugAiNode(const aiNode* rootNode, unsigned int depth) {
+	void debugAiNode(const aiScene* scene, const aiNode* node, unsigned int depth) {
 
 		for(int c = 0; c < depth; ++ c) {
             std::cout << "  ";
 		}
 
-        std::cout << rootNode->mName.C_Str() << std::endl;
+        std::cout << node->mName.C_Str();
 
-        unsigned int numChildren = rootNode->mNumChildren;
+        unsigned int numMeshes = node->mNumMeshes;
 
-        aiNode** children = rootNode->mChildren;
-        //rootNode->mChildren.
+        if(numMeshes > 0) {
+			std::cout << " ";
+			std::cout << numMeshes;
+			std::cout << ":[";
+			for(unsigned int i = 0; i < numMeshes; ++ i) {
+
+				aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+
+				std::cout << mesh->mName.C_Str();
+
+				if(i != numMeshes - 1) {
+                    std::cout << ", ";
+				}
+			}
+			std::cout << "]";
+
+        }
+        std::cout << std::endl;
+
+        unsigned int numChildren = node->mNumChildren;
 
         for(unsigned int i = 0; i < numChildren; ++ i) {
-			debugAiNode(children[i], depth + 1);
+			debugAiNode(scene, node->mChildren[i], depth + 1);
 
         }
 
@@ -34,7 +52,7 @@ namespace reia {
 
 		const aiNode* rootNode = scene->mRootNode;
 
-		debugAiNode(rootNode, 0);
+		debugAiNode(scene, rootNode, 0);
 
 	}
 
