@@ -9,16 +9,20 @@
 
 #include <iostream>
 #include <string>
+
+#include "irrlicht.h"
+
 #include "assimp/scene.h"
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
 #include "assimp/mesh.h"
+#include "assimp/anim.h"
 
 namespace reia {
 
 	void debugAiNode(const aiScene* scene, const aiNode* node, unsigned int depth);
 
-	void loadUsingAssimp(std::string filename);
+	irr::scene::IAnimatedMeshSceneNode* loadUsingAssimp(irr::scene::ISceneManager* smgr, std::string filename);
 
 }
 
