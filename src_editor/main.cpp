@@ -10,6 +10,8 @@
 #include <string>
 #include <sstream>
 
+#include "assimp/Importer.hpp"
+
 #include "irrlicht.h"
 #include "driverChoice.h"
 #include "json/json.h"
@@ -1384,7 +1386,6 @@ int main() {
 	btRigidBody* planeRigid = new btRigidBody(0, 0, planeShape);
 	bulletWorld->addCollisionObject(planeRigid);
 	rootNode = smgr->addEmptySceneNode();
-	//rootNode->setScale(irr::core::vector3df(10, 10, 10));
 
 	{
 		irr::gui::IGUIContextMenu* menu = gui->addMenu();
@@ -1489,17 +1490,6 @@ int main() {
 
 	// Test
 	loadPack("content/standard/content-pack.json");
-
-	/*
-	{
-		irr::scene::IAnimatedMesh* ninjm = smgr->getMesh("example_media/ninja.b3d");
-		irr::scene::IAnimatedMeshSceneNode* ninja = smgr->addAnimatedMeshSceneNode(ninjm, rootNode);
-		debugMaterial(ninja->getMaterial(0));
-		ninja->setScale(irr::core::vector3df(0.3f, 0.3f, 0.3f));
-		//ninja->remove();
-
-	}
-	*/
 
 	// Main loop
 	while(device->run()) {
