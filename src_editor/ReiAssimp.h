@@ -7,17 +7,19 @@
 #ifndef REIASSIMP_H
 #define REIASSIMP_H
 
+#include <iostream>
 #include <string>
+#include "assimp/scene.h"
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
+#include "assimp/mesh.h"
 
 namespace reia {
 
-	void loadUsingAssimp(std::string filename) {
-		Assimp::Importer assimp;
-		const aiScene* scene = assimp.ReadFile(filename, aiProcessPreset_TargetRealtime_Fast);
+	void debugAiNode(const aiNode* rootNode, unsigned int depth);
 
-	}
+	void loadUsingAssimp(std::string filename);
+
 }
 
 #endif // REIASSIMP_H

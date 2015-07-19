@@ -16,7 +16,9 @@
 #include "driverChoice.h"
 #include "json/json.h"
 #include "btBulletCollisionCommon.h"
+
 #include "ReiBullet.h"
+#include "ReiAssimp.h"
 
 irr::IrrlichtDevice* device;
 irr::video::IVideoDriver* driver;
@@ -1342,6 +1344,7 @@ public:
 };
 
 int main() {
+
 	loadedPack = new Cpack();
 	openedObject = new Gobject();
 
@@ -1490,6 +1493,9 @@ int main() {
 
 	// Test
 	loadPack("content/standard/content-pack.json");
+
+	// Test
+	reia::loadUsingAssimp("assets/unit_cube.dae");
 
 	// Main loop
 	while(device->run()) {
