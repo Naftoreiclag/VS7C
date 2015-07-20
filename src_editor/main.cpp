@@ -307,7 +307,7 @@ void debugMaterial(irr::video::SMaterial material) {
 	std::cout << "Backface: " << material.BackfaceCulling << std::endl;
 	std::cout << "Blend: " << material.BlendOperation << std::endl;
 	std::cout << "Color Mask: " << material.ColorMask << std::endl;
-	std::cout << "Color Material: " << material.ColorMaterial << std::endl;
+	std::cout << "Color Material: " << (material.ColorMaterial + 0) << std::endl;
 	std::cout << "Diffuse: " << toString(material.DiffuseColor) << std::endl;
 	std::cout << "Emissive: " << toString(material.EmissiveColor) << std::endl;
 	std::cout << "Fog: " << material.FogEnable << std::endl;
@@ -759,7 +759,7 @@ void openAndRenderModel(std::string filename) {
 	irr::video::SMaterial& mat = openedObject->sceneNode->getMaterial(0);
 
 	mat.AmbientColor = irr::video::SColor(255, 255, 255, 255);
-	mat.DiffuseColor = irr::video::SColor(255, 255, 0, 0);
+
 	std::cout << "============" << std::endl;
 	debugMaterial(mat);
 	//ground->getMaterial(0) = mat;
@@ -1483,7 +1483,7 @@ int main() {
 
 	irr::f32 lookSpd = 0.1;
 	irr::f32 panSpd = 0.01;
-	irr::f32 zoomSpd = 0.01;
+	irr::f32 zoomSpd = 0.1;
 
 	irr::core::vector3df inMov;
 	irr::core::vector3df upMov;

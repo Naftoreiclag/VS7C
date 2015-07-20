@@ -85,6 +85,9 @@ namespace reia {
 
 					irr::scene::SMeshBuffer* buffer = new irr::scene::SMeshBuffer();
 
+					bool vertColors = false;
+					bool texCoords = false;
+
 					buffer->Vertices.reallocate(amesh->mNumVertices);
 					buffer->Vertices.set_used(amesh->mNumVertices);
 					buffer->Vertices.set_used(amesh->mNumVertices);
@@ -94,8 +97,13 @@ namespace reia {
 						const aiVector3D& avert = amesh->mVertices[i];
 						const aiVector3D& anormal = amesh->mNormals[i];
 
-						ivert.Pos.set(avert.x, avert.y, avert.z);
-						ivert.Normal.set(anormal.x, anormal.y, anormal.z);
+						ivert.Pos.set(avert.x, avert.z, avert.y);
+						ivert.Normal.set(anormal.x, anormal.z, anormal.y);
+						ivert.Color.set(0, 0, 0, 0);
+
+						vertColors = vertColors | amesh->HasVertexColors(i);
+						texCoords = texCoords | amesh->HasTextureCoords(i);
+
 					}
 
 					buffer->Indices.reallocate(amesh->mNumFaces * 3);
@@ -118,11 +126,15 @@ namespace reia {
 					irr::video::SMaterial& imaterial = buffer->getMaterial();
 					aiMaterial* amaterial = scene->mMaterials[amesh->mMaterialIndex];
 
-					aiColor3D adiffuse(0.5f, 0.5f, 0.5f);
+					aiColor3D adiffuse(1.0f, 1.0f, 1.0f);
 					amaterial->Get(AI_MATKEY_COLOR_DIFFUSE, adiffuse);
 
-					imaterial.DiffuseColor = irr::video::SColor(255, adiffuse.r * 255.f, adiffuse.g * 255.f, adiffuse.b * 255.f);
+					std::cout << adiffuse.r << ", " << adiffuse.g << ", " << adiffuse.b << std::endl;
 
+					imaterial.DiffuseColor = irr::video::SColor(255, adiffuse.r * 255.f, adiffuse.g * 255.f, adiffuse.b * 255.f);
+					imaterial.AmbientColor = irr::video::SColor(255, 255, 255, 255);
+
+					imaterial.ColorMaterial = vertColors ? 1 : 0;
 
 
 					imesh->addMeshBuffer(buffer);
@@ -133,8 +145,7 @@ namespace reia {
 				irr::scene::IMeshSceneNode* node = smgr->addMeshSceneNode(imesh);
 
 				node->setMaterialFlag(irr::video::EMF_BACK_FACE_CULLING, false);
-				node->setMaterialFlag(irr::video::EMF_LIGHTING, true);
-				// node->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true);
+				node->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true);
 
 
 				break;
