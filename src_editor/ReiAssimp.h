@@ -20,9 +20,19 @@
 
 namespace reia {
 
+	class AssimpMeshLoader : public irr::scene::IMeshLoader {
+		AssimpMeshLoader();
+		virtual ~AssimpMeshLoader();
+
+		virtual irr::scene::IAnimatedMesh* createMesh(irr::io::IReadFile* file);
+
+		virtual bool isALoadableFileExtension(const irr::io::path& filename);
+
+	};
+
 	void debugAiNode(const aiScene* scene, const aiNode* node, unsigned int depth);
 
-	irr::scene::IAnimatedMeshSceneNode* loadUsingAssimp(irr::scene::ISceneManager* smgr, std::string filename);
+	irr::scene::IMeshSceneNode* loadUsingAssimp(irr::scene::ISceneManager* smgr, std::string filename);
 
 }
 

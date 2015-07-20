@@ -45,54 +45,68 @@ namespace reia {
         }
 
 	}
-
-	irr::scene::IAnimatedMeshSceneNode* loadUsingAssimp(irr::scene::ISceneManager* smgr, std::string filename) {
+	irr::scene::IMeshSceneNode* loadUsingAssimp(irr::scene::ISceneManager* smgr, std::string filename) {
 		Assimp::Importer assimp;
 		const aiScene* scene = assimp.ReadFile(filename, aiProcessPreset_TargetRealtime_Fast);
 
 		const aiNode* rootNode = scene->mRootNode;
 
-		const aiMesh* amesh = scene->mMeshes[0];
+		for(unsigned int i = 0; i < rootNode->mNumChildren; ++ i) {
+			const aiNode* node = rootNode->mChildren[i];
 
-		irr::scene::SMesh* imesh = new irr::scene::SMesh();
+			if(node->mNumMeshes > 0) {
+				irr::scene::SMesh* imesh = new irr::scene::SMesh();
+				for(unsigned int i = 0; i < node->mNumMeshes; ++ i) {
 
-		irr::scene::SMeshBuffer* buffer = new irr::scene::SMeshBuffer();
+					const aiMesh* amesh = scene->mMeshes[node->mMeshes[i]];
 
-		buffer->Vertices.reallocate(amesh->mNumVertices);
-		buffer->Vertices.set_used(amesh->mNumVertices);
+					irr::scene::SMeshBuffer* buffer = new irr::scene::SMeshBuffer();
 
-		for(int i = 0; i < amesh->mNumVertices; ++ i) {
-			irr::video::S3DVertex& ivert = buffer->Vertices[i];
-			const aiVector3D& avert = amesh->mVertices[i];
+					buffer->Vertices.reallocate(amesh->mNumVertices);
+					buffer->Vertices.set_used(amesh->mNumVertices);
 
-			ivert.Pos.set(avert.x, avert.y, avert.z);
+					for(int i = 0; i < amesh->mNumVertices; ++ i) {
+						irr::video::S3DVertex& ivert = buffer->Vertices[i];
+						const aiVector3D& avert = amesh->mVertices[i];
+
+						ivert.Pos.set(avert.x, avert.y, avert.z);
+					}
+
+					buffer->Indices.reallocate(amesh->mNumFaces * 3);
+					buffer->Indices.set_used(amesh->mNumFaces * 3);
+
+					for(int i = 0; i < amesh->mNumFaces; ++ i) {
+						const aiFace& aface = amesh->mFaces[i];
+
+						unsigned int A = aface.mIndices[0];
+						unsigned int B = aface.mIndices[1];
+						unsigned int C = aface.mIndices[2];
+
+						buffer->Indices[i * 3    ] = A;
+						buffer->Indices[i * 3 + 1] = B;
+						buffer->Indices[i * 3 + 2] = C;
+					}
+
+					buffer->recalculateBoundingBox();
+
+					imesh->addMeshBuffer(buffer);
+					buffer->drop();
+					buffer = 0;
+				}
+
+				irr::scene::IMeshSceneNode* node = smgr->addMeshSceneNode(imesh);
+
+				irr::video::SMaterial& mat = node->getMaterial(0);
+				mat.Wireframe = true;
+
+				node->setMaterialFlag(irr::video::EMF_BACK_FACE_CULLING, false);
+				node->setMaterialFlag(irr::video::EMF_LIGHTING, false);
+
+
+				break;
+			}
 		}
 
-		buffer->Indices.reallocate(amesh->mNumFaces * 3);
-		buffer->Indices.set_used(amesh->mNumFaces * 3);
-
-		for(int i = 0; i < amesh->mNumFaces; ++ i) {
-			const aiFace& aface = amesh->mFaces[i];
-
-			unsigned int A = aface.mIndices[0];
-			unsigned int B = aface.mIndices[1];
-			unsigned int C = aface.mIndices[2];
-
-			buffer->Indices[i * 3    ] = A;
-			buffer->Indices[i * 3 + 1] = B;
-			buffer->Indices[i * 3 + 2] = C;
-		}
-
-		buffer->recalculateBoundingBox();
-
-		imesh->addMeshBuffer(buffer);
-		buffer->drop();
-		buffer = 0;
-
-		irr::scene::IMeshSceneNode* node = smgr->addMeshSceneNode(imesh);
-
-		node->setMaterialFlag(irr::video::EMF_BACK_FACE_CULLING, false);
-		node->setMaterialFlag(irr::video::EMF_LIGHTING, false);
 
 		debugAiNode(scene, rootNode, 0);
 
