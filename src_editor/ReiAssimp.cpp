@@ -63,7 +63,7 @@ namespace reia {
 
 		for(int i = 0; i < amesh->mNumVertices; ++ i) {
 			irr::video::S3DVertex& ivert = buffer->Vertices[i];
-			aiVector3D avert = amesh->mVertices[i];
+			const aiVector3D& avert = amesh->mVertices[i];
 
 			ivert.Pos.set(avert.x, avert.y, avert.z);
 		}
@@ -72,11 +72,11 @@ namespace reia {
 		buffer->Indices.set_used(amesh->mNumFaces * 3);
 
 		for(int i = 0; i < amesh->mNumFaces; ++ i) {
-			aiFace* aface = amesh->mFaces;
+			const aiFace& aface = amesh->mFaces[i];
 
-			unsigned int A = aface->mIndices[0];
-			unsigned int B = aface->mIndices[1];
-			unsigned int C = aface->mIndices[2];
+			unsigned int A = aface.mIndices[0];
+			unsigned int B = aface.mIndices[1];
+			unsigned int C = aface.mIndices[2];
 
 			buffer->Indices[i * 3    ] = A;
 			buffer->Indices[i * 3 + 1] = B;
