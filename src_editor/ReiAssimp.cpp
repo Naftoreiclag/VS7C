@@ -28,6 +28,29 @@ namespace reia {
 
 				std::cout << mesh->mName.C_Str();
 
+				/*
+				aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+
+
+				if(material->mNumProperties > 0) {
+
+					std::cout << ":[";
+
+
+					for(unsigned int j = 0; j < material->mNumProperties; ++ j) {
+						aiMaterialProperty* property = material->mProperties[j];
+
+						aiPropertyTypeInfo* info = property->mType;
+
+
+
+						std::cout << property->mKey.C_Str() << "=" << property->mData << std::endl;
+					}
+					std::cout << "]";
+
+				}
+				*/
+
 				if(i != numMeshes - 1) {
                     std::cout << ", ";
 				}
@@ -41,7 +64,6 @@ namespace reia {
 
         for(unsigned int i = 0; i < numChildren; ++ i) {
 			debugAiNode(scene, node->mChildren[i], depth + 1);
-
         }
 
 	}
@@ -56,6 +78,7 @@ namespace reia {
 
 			if(node->mNumMeshes > 0) {
 				irr::scene::SMesh* imesh = new irr::scene::SMesh();
+
 				for(unsigned int i = 0; i < node->mNumMeshes; ++ i) {
 
 					const aiMesh* amesh = scene->mMeshes[node->mMeshes[i]];
@@ -64,12 +87,15 @@ namespace reia {
 
 					buffer->Vertices.reallocate(amesh->mNumVertices);
 					buffer->Vertices.set_used(amesh->mNumVertices);
+					buffer->Vertices.set_used(amesh->mNumVertices);
 
 					for(int i = 0; i < amesh->mNumVertices; ++ i) {
 						irr::video::S3DVertex& ivert = buffer->Vertices[i];
 						const aiVector3D& avert = amesh->mVertices[i];
+						const aiVector3D& anormal = amesh->mNormals[i];
 
 						ivert.Pos.set(avert.x, avert.y, avert.z);
+						ivert.Normal.set(anormal.x, anormal.y, anormal.z);
 					}
 
 					buffer->Indices.reallocate(amesh->mNumFaces * 3);
@@ -89,6 +115,16 @@ namespace reia {
 
 					buffer->recalculateBoundingBox();
 
+					irr::video::SMaterial& imaterial = buffer->getMaterial();
+					aiMaterial* amaterial = scene->mMaterials[amesh->mMaterialIndex];
+
+					aiColor3D adiffuse(0.5f, 0.5f, 0.5f);
+					amaterial->Get(AI_MATKEY_COLOR_DIFFUSE, adiffuse);
+
+					imaterial.DiffuseColor = irr::video::SColor(255, adiffuse.r * 255.f, adiffuse.g * 255.f, adiffuse.b * 255.f);
+
+
+
 					imesh->addMeshBuffer(buffer);
 					buffer->drop();
 					buffer = 0;
@@ -96,11 +132,9 @@ namespace reia {
 
 				irr::scene::IMeshSceneNode* node = smgr->addMeshSceneNode(imesh);
 
-				irr::video::SMaterial& mat = node->getMaterial(0);
-				mat.Wireframe = true;
-
 				node->setMaterialFlag(irr::video::EMF_BACK_FACE_CULLING, false);
-				node->setMaterialFlag(irr::video::EMF_LIGHTING, false);
+				node->setMaterialFlag(irr::video::EMF_LIGHTING, true);
+				// node->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true);
 
 
 				break;

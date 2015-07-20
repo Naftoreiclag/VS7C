@@ -1495,7 +1495,7 @@ int main() {
 	loadPack("content/standard/content-pack.json");
 
 	// Test
-	reia::loadUsingAssimp(smgr, "content/standard/advanced_mesh/animMeshTest.dae");
+	reia::loadUsingAssimp(smgr, "assets_editor/testcube.dae");
 
 	// Main loop
 	while(device->run()) {
