@@ -52,10 +52,49 @@ namespace reia {
 
 		const aiNode* rootNode = scene->mRootNode;
 
-		//smgr->addAnimatedMeshSceneNode();
+		const aiMesh* amesh = scene->mMeshes[0];
+
+		irr::scene::SMesh* imesh = new irr::scene::SMesh();
+
+		irr::scene::SMeshBuffer* buffer = new irr::scene::SMeshBuffer();
+
+		buffer->Vertices.reallocate(amesh->mNumVertices);
+		buffer->Vertices.set_used(amesh->mNumVertices);
+
+		for(int i = 0; i < amesh->mNumVertices; ++ i) {
+			irr::video::S3DVertex& ivert = buffer->Vertices[i];
+			aiVector3D avert = amesh->mVertices[i];
+
+			ivert.Pos.set(avert.x, avert.y, avert.z);
+		}
+
+		buffer->Indices.reallocate(amesh->mNumFaces * 3);
+		buffer->Indices.set_used(amesh->mNumFaces * 3);
+
+		for(int i = 0; i < amesh->mNumFaces; ++ i) {
+			aiFace* aface = amesh->mFaces;
+
+			unsigned int A = aface->mIndices[0];
+			unsigned int B = aface->mIndices[1];
+			unsigned int C = aface->mIndices[2];
+
+			buffer->Indices[i * 3    ] = A;
+			buffer->Indices[i * 3 + 1] = B;
+			buffer->Indices[i * 3 + 2] = C;
+		}
+
+		buffer->recalculateBoundingBox();
+
+		imesh->addMeshBuffer(buffer);
+		buffer->drop();
+		buffer = 0;
+
+		irr::scene::IMeshSceneNode* node = smgr->addMeshSceneNode(imesh);
+
+		node->setMaterialFlag(irr::video::EMF_BACK_FACE_CULLING, false);
+		node->setMaterialFlag(irr::video::EMF_LIGHTING, false);
 
 		debugAiNode(scene, rootNode, 0);
-
 
 		unsigned int numAnim = scene->mNumAnimations;
 

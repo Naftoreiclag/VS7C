@@ -74,8 +74,8 @@
 			<Add library="sfml-network" />
 			<Add library="sfml-audio" />
 			<Add library="libjsoncpp" />
-			<Add library="libzlibstatic" />
 			<Add library="libassimp" />
+			<Add library="libzlibstatic" />
 			<Add directory="../thirdparty/bullet3-2.83.4/lib" />
 			<Add directory="../thirdparty/SFML-2.3/lib" />
 			<Add directory="../thirdparty/lua-5.3_Win32_mingw4_lib/lib" />
