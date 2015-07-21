@@ -32,7 +32,7 @@ namespace reia {
 
 	void debugAiNode(const aiScene* scene, const aiNode* node, unsigned int depth);
 
-	irr::scene::IMeshSceneNode* loadUsingAssimp(irr::scene::ISceneManager* smgr, std::string filename);
+	irr::scene::SMeshBuffer* loadUsingAssimp(irr::scene::ISceneManager* smgr, std::string filename);
 
 }
 

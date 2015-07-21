@@ -1363,6 +1363,9 @@ public:
 public:
 	virtual void OnSetConstants(irr::video::IMaterialRendererServices* services, irr::s32 userData) {
 		services->setVertexShaderConstant("time", &time, 1);
+
+		//services->setVertexShaderConstant();
+
 		irr::s32 texidc = 0;
 		services->setPixelShaderConstant("myTexture", &texidc, 1);
 	}
@@ -1535,7 +1538,7 @@ int main() {
 	loadPack("content/standard/content-pack.json");
 
 	// Test
-	// reia::loadUsingAssimp(smgr, "content/standard/advanced_mesh/advMesh.dae");
+	irr::scene::SMeshBuffer* buff = reia::loadUsingAssimp(smgr, "content/standard/advanced_mesh/advMesh.dae");
 
 	// Main loop
 	while(device->run()) {
@@ -1549,6 +1552,14 @@ int main() {
         then = now;
 
 		ts->time += tpf;
+		for(irr::u32 i = 0; i < buff->Vertices.size(); ++ i) {
+			irr::video::S3DVertex& vert = buff->Vertices[i];
+
+			irr::core::vector3df oldLoc = vert.Pos;
+			vert.Pos.set(oldLoc.X, oldLoc.Y + tpf, oldLoc.Z + tpf);
+
+		}
+		buff->recalculateBoundingBox();
 
 		// Clear buffers before rendering
 		driver->beginScene(true, true, irr::video::SColor(0, 140, 140, 140));

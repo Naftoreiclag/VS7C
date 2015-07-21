@@ -67,7 +67,7 @@ namespace reia {
         }
 
 	}
-	irr::scene::IMeshSceneNode* loadUsingAssimp(irr::scene::ISceneManager* smgr, std::string filename) {
+	irr::scene::SMeshBuffer* loadUsingAssimp(irr::scene::ISceneManager* smgr, std::string filename) {
 		Assimp::Importer assimp;
 		const aiScene* scene = assimp.ReadFile(filename, aiProcessPreset_TargetRealtime_Fast);
 
@@ -79,11 +79,12 @@ namespace reia {
 			if(node->mNumMeshes > 0) {
 				irr::scene::SMesh* imesh = new irr::scene::SMesh();
 
+				irr::scene::SMeshBuffer* buffer;
 				for(unsigned int i = 0; i < node->mNumMeshes; ++ i) {
 
 					const aiMesh* amesh = scene->mMeshes[node->mMeshes[i]];
 
-					irr::scene::SMeshBuffer* buffer = new irr::scene::SMeshBuffer();
+					buffer = new irr::scene::SMeshBuffer();
 
 					bool vertColors = false;
 					bool texCoords = false;
@@ -139,7 +140,6 @@ namespace reia {
 
 					imesh->addMeshBuffer(buffer);
 					buffer->drop();
-					buffer = 0;
 				}
 
 				irr::scene::IMeshSceneNode* node = smgr->addMeshSceneNode(imesh);
@@ -147,6 +147,7 @@ namespace reia {
 				//node->setMaterialFlag(irr::video::EMF_BACK_FACE_CULLING, false);
 				node->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true);
 
+				return buffer;
 
 				break;
 			}
