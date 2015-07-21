@@ -1461,6 +1461,11 @@ int main() {
 	cam->setRotation(irr::core::vector3df(45, -135, 0));
 	cam->setTarget(lookAt->getAbsolutePosition());
 
+/*
+	irr::scene::IAnimatedMesh* arrowMeshY = smgr->addArrowMesh("name", 0xFFFFFFFF, 0xFFFFFFFF, 4, 8, 3);
+	smgr->addAnimatedMeshSceneNode(arrowMeshY);
+	*/
+
 	//
 	irr::scene::ISceneNode* dLightControl = smgr->addEmptySceneNode();
 	irr::scene::ILightSceneNode* directionalLight = smgr->addLightSceneNode(dLightControl, irr::core::vector3df(0, 0, 1), irr::video::SColor(1, 1, 1, 1), 10000.0f);
@@ -1495,7 +1500,7 @@ int main() {
 	loadPack("content/standard/content-pack.json");
 
 	// Test
-	reia::loadUsingAssimp(smgr, "assets_editor/testcube.dae");
+	// reia::loadUsingAssimp(smgr, "content/standard/advanced_mesh/advMesh.dae");
 
 	// Main loop
 	while(device->run()) {
@@ -1601,6 +1606,10 @@ int main() {
 		driver->setTransform(irr::video::ETS_WORLD, irr::core::IdentityMatrix);
 		driver->setMaterial(bulletDebugDrawer->material);
 		bulletWorld->debugDrawWorld();
+		driver->draw3DLine(irr::core::vector3df(0, 0.5, 0), irr::core::vector3df(3, 0.5, 0), irr::video::SColor(255, 255, 0, 0));
+		driver->draw3DLine(irr::core::vector3df(0, 0.5, 0), irr::core::vector3df(0, 3.5, 0), irr::video::SColor(255, 0, 255, 0));
+		driver->draw3DLine(irr::core::vector3df(0, 0.5, 0), irr::core::vector3df(0, 0.5, 3), irr::video::SColor(255, 0, 0, 255));
+
 		gui->drawAll();
 
 		// Flush

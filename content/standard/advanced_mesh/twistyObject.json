@@ -1,0 +1,11 @@
+{
+	"id" : "twisty",
+	"model" : "advMesh.dae",
+	"physics" : "physics.json",
+	"physics-offset" : 
+	[
+		0,
+		2,
+		0
+	]
+}

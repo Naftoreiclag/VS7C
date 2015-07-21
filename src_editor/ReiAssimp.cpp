@@ -117,8 +117,8 @@ namespace reia {
 						unsigned int C = aface.mIndices[2];
 
 						buffer->Indices[i * 3    ] = A;
-						buffer->Indices[i * 3 + 1] = B;
-						buffer->Indices[i * 3 + 2] = C;
+						buffer->Indices[i * 3 + 1] = C;
+						buffer->Indices[i * 3 + 2] = B;
 					}
 
 					buffer->recalculateBoundingBox();
@@ -144,7 +144,7 @@ namespace reia {
 
 				irr::scene::IMeshSceneNode* node = smgr->addMeshSceneNode(imesh);
 
-				node->setMaterialFlag(irr::video::EMF_BACK_FACE_CULLING, false);
+				//node->setMaterialFlag(irr::video::EMF_BACK_FACE_CULLING, false);
 				node->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true);
 
 
