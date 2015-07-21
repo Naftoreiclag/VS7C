@@ -8,5 +8,7 @@ void main(void)
 	vert.x += sin(vert.z + time);
 
 	gl_Position = gl_ModelViewProjectionMatrix * vert;
+	
+	gl_TexCoord[0] = gl_MultiTexCoord0;
 }
 
