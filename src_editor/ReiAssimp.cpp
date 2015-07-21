@@ -73,6 +73,39 @@ namespace reia {
 
 		const aiNode* rootNode = scene->mRootNode;
 
+		debugAiNode(scene, rootNode, 0);
+
+		unsigned int numAnim = scene->mNumAnimations;
+
+		std::cout << "numAnim = " << numAnim << std::endl;
+
+		for(int i = 0; i < numAnim; ++ i) {
+			aiAnimation* anim = scene->mAnimations[i];
+
+			std::cout << "anim = " << anim->mName.C_Str() << std::endl;
+
+			unsigned int numChannels = anim->mNumChannels;
+
+            for(unsigned int j = 0; j < numChannels; ++ j) {
+
+                aiNodeAnim* nodeAnim = anim->mChannels[j];
+                std::cout << "Channel " << j << " ";
+                std::cout << nodeAnim->mNodeName.C_Str();
+                std::cout << std::endl;
+
+                unsigned int numKeys = nodeAnim->mNumPositionKeys;
+
+                for(unsigned int k = 0; k < numKeys; ++ k) {
+					const aiVectorKey& key = nodeAnim->mPositionKeys[k];
+
+					std::cout << "  ";
+					std::cout << key.mTime << std::endl;
+
+                }
+
+            }
+		}
+
 		for(unsigned int i = 0; i < rootNode->mNumChildren; ++ i) {
 			const aiNode* node = rootNode->mChildren[i];
 
@@ -154,28 +187,7 @@ namespace reia {
 		}
 
 
-		debugAiNode(scene, rootNode, 0);
 
-		unsigned int numAnim = scene->mNumAnimations;
-
-		std::cout << "numAnim = " << numAnim << std::endl;
-
-		for(int i = 0; i < numAnim; ++ i) {
-			aiAnimation* anim = scene->mAnimations[i];
-
-			std::cout << "anim = " << anim->mName.C_Str() << std::endl;
-
-			unsigned int numChannels = anim->mNumChannels;
-
-            for(int j = 0; j < numChannels; ++ j) {
-
-                aiNodeAnim* nodeAnim = anim->mChannels[i];
-                std::cout << "Channel " << j << " ";
-                std::cout << nodeAnim->mNodeName.C_Str();
-                std::cout << std::endl;
-
-            }
-		}
 
 	}
 

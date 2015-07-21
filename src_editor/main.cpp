@@ -1538,7 +1538,7 @@ int main() {
 	loadPack("content/standard/content-pack.json");
 
 	// Test
-	irr::scene::SMeshBuffer* buff = reia::loadUsingAssimp(smgr, "content/standard/advanced_mesh/advMesh.dae");
+	irr::scene::SMeshBuffer* buff = reia::loadUsingAssimp(smgr, "assets_editor/testAnim2.dae");
 
 	// Main loop
 	while(device->run()) {
