@@ -24,6 +24,7 @@ irr::IrrlichtDevice* device;
 irr::video::IVideoDriver* driver;
 irr::scene::ISceneManager* smgr;
 irr::gui::IGUIEnvironment* gui;
+irr::video::IGPUProgrammingServices* gpuProg;
 
 irr::gui::IGUIWindow* resourcesDialog;
 irr::gui::IGUIWindow* objectsDialog;
@@ -125,6 +126,7 @@ enum {
     PHYS_TRIANGLE_MESH,
 };
 
+irr::video::E_MATERIAL_TYPE shaderMatType;
 irr::core::position2di screenCenter;
 irr::s32 appState = STATE_EDIT;
 
@@ -176,6 +178,9 @@ struct Gobject {
 
 	// The shape as described by physicsFile
 	PhysicsShape physicsShape;
+
+	//
+	std::vector<irr::s32> shaders;
 
 	// For rendering only
 	btCollisionShape* collShape = 0;
@@ -759,6 +764,7 @@ void openAndRenderModel(std::string filename) {
 	irr::video::SMaterial& mat = openedObject->sceneNode->getMaterial(0);
 
 	mat.AmbientColor = irr::video::SColor(255, 255, 255, 255);
+	mat.MaterialType = shaderMatType;
 
 	std::cout << "============" << std::endl;
 	debugMaterial(mat);
@@ -1343,6 +1349,25 @@ public:
 	}
 };
 
+// SHADER
+// =====
+
+class TestShaderCallback : public irr::video::IShaderConstantSetCallBack {
+public:
+	static irr::f32 time = 0;
+	TestShaderCallback() {
+	}
+	virtual ~TestShaderCallback() {
+	}
+public:
+	virtual void OnSetConstants(irr::video::IMaterialRendererServices* services, irr::s32 userData) {
+		services->setVertexShaderConstant("time", &time, 1);
+		irr::s32 texidc = 0;
+		services->setPixelShaderConstant("myTexture", &texidc, 1);
+	}
+};
+
+
 int main() {
 
 	loadedPack = new Cpack();
@@ -1372,6 +1397,15 @@ int main() {
 	driver = device->getVideoDriver();
 	smgr = device->getSceneManager();
 	gui = device->getGUIEnvironment();
+	gpuProg = driver->getGPUProgrammingServices();
+
+	// Load shaders?
+	TestShaderCallback* ts = new TestShaderCallback();
+	shaderMatType = (irr::video::E_MATERIAL_TYPE) gpuProg->addHighLevelShaderMaterialFromFiles(
+		"assets/shaders/wave.vert", "vertexMain", irr::video::EVST_VS_1_1,
+		"assets/shaders/wave.frag", "pixelMain", irr::video::EPST_PS_1_1,
+		ts, irr::video::EMT_SOLID, 0, irr::video::EGSL_DEFAULT);
+	ts->drop();
 
 	// Font
 	irr::gui::IGUISkin* skin = gui->getSkin();
