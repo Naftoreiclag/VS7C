@@ -1354,8 +1354,9 @@ public:
 
 class TestShaderCallback : public irr::video::IShaderConstantSetCallBack {
 public:
-	static irr::f32 time = 0;
+	irr::f32 time;
 	TestShaderCallback() {
+		time = 0;
 	}
 	virtual ~TestShaderCallback() {
 	}
@@ -1546,6 +1547,8 @@ int main() {
 		const irr::u32 now = device->getTimer()->getTime();
         const irr::f32 tpf = (irr::f32)(now - then) / 1000.f;
         then = now;
+
+		ts->time += tpf;
 
 		// Clear buffers before rendering
 		driver->beginScene(true, true, irr::video::SColor(0, 140, 140, 140));
