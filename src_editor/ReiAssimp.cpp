@@ -67,7 +67,7 @@ namespace reia {
         }
 
 	}
-	CustomNode* loadUsingAssimp(irr::scene::ISceneManager* smgr, std::string filename) {
+	ComplexMeshData* loadUsingAssimp(irr::scene::ISceneManager* smgr, std::string filename) {
 		Assimp::Importer assimp;
 		const aiScene* scene = assimp.ReadFile(filename, aiProcessPreset_TargetRealtime_Fast);
 
@@ -115,7 +115,7 @@ namespace reia {
 				std::cout << "Node with a mesh found." << std::endl;
 
 				// Begin copying this data
-				CustomNode* output = new CustomNode();
+				ComplexMeshData* output = new ComplexMeshData();
 
 				output->mesh = new irr::scene::SMesh();
 				output->numBuffers = node->mNumMeshes;

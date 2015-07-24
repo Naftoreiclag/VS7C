@@ -1539,7 +1539,7 @@ int main() {
 
 	// Test
 	//irr::scene::SMeshBuffer* buff = reia::loadUsingAssimp(smgr, "content/standard/advanced_mesh/advMesh.dae");
-	reia::CustomNode* foobar = reia::loadUsingAssimp(smgr, "assets_editor/testAnim3.dae");
+	reia::ComplexMeshData* foobar = reia::loadUsingAssimp(smgr, "assets_editor/testAnim3.dae");
 
 	// Main loop
 	while(device->run()) {

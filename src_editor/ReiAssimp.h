@@ -19,8 +19,6 @@
 #include "assimp/anim.h"
 
 namespace reia {
-
-
 	struct VertexMetadata {
 		irr::u8 boneW = 255;
 		irr::u8 boneX = 255;
@@ -37,18 +35,37 @@ namespace reia {
 		irr::core::matrix4 offsetMatrix;
 	};
 	struct BufferMetadata {
-		VertexMetadata* verts;
+		VertexMetadata* verts = 0;
 		irr::u32 numVerts;
 
-		BoneData* bones;
+		BoneData* bones = 0;
 		irr::u32 numBones;
 	};
-	struct CustomNode {
+	struct ChannelData {
+		std::string boneName;
+
+        irr::core::vector3df positions[];
+        irr::u32 numPositions;
+
+        irr::core::quaternion rotations[];
+        irr::u32 numRotations;
+
+        irr::core::vector3df scalings[];
+        irr::u32 numScalings;
+	};
+	struct AnimationData {
+		std::string animName;
+		irr::f32 duration;
+		irr::f32 tps;
+
+		ChannelData* channels;
+		irr::u32 numChannels;
+	};
+	struct ComplexMeshData {
 		irr::scene::SMesh* mesh = 0;
 
-		BufferMetadata* buffers;
+		BufferMetadata* buffers = 0;
 		irr::u32 numBuffers;
-
 	};
 
 	class AssimpMeshLoader : public irr::scene::IMeshLoader {
@@ -63,7 +80,7 @@ namespace reia {
 
 	void debugAiNode(const aiScene* scene, const aiNode* node, unsigned int depth);
 
-	CustomNode* loadUsingAssimp(irr::scene::ISceneManager* smgr, std::string filename);
+	ComplexMeshData* loadUsingAssimp(irr::scene::ISceneManager* smgr, std::string filename);
 
 }
 
