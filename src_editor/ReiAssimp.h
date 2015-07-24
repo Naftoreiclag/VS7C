@@ -20,6 +20,31 @@
 
 namespace reia {
 
+
+	struct ExtraVertData {
+		irr::u8 boneW = 255;
+		irr::u8 boneX = 255;
+		irr::u8 boneY = 255;
+		irr::u8 boneZ = 255;
+
+		irr::f32 weightW;
+		irr::f32 weightX;
+		irr::f32 weightY;
+		irr::f32 weightZ;
+
+	};
+	struct ExtraBufferData {
+		ExtraVertData* verts;
+		irr::u32 numVerts;
+	};
+	struct CustomNode {
+		irr::scene::SMesh* mesh = 0;
+
+		ExtraBufferData* buffers;
+		irr::u32 numBuffers;
+
+	};
+
 	class AssimpMeshLoader : public irr::scene::IMeshLoader {
 		AssimpMeshLoader();
 		virtual ~AssimpMeshLoader();
@@ -32,7 +57,7 @@ namespace reia {
 
 	void debugAiNode(const aiScene* scene, const aiNode* node, unsigned int depth);
 
-	irr::scene::SMeshBuffer* loadUsingAssimp(irr::scene::ISceneManager* smgr, std::string filename);
+	CustomNode* loadUsingAssimp(irr::scene::ISceneManager* smgr, std::string filename);
 
 }
 

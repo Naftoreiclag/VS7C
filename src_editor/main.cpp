@@ -1538,7 +1538,8 @@ int main() {
 	loadPack("content/standard/content-pack.json");
 
 	// Test
-	irr::scene::SMeshBuffer* buff = reia::loadUsingAssimp(smgr, "assets_editor/testAnim2.dae");
+	//irr::scene::SMeshBuffer* buff = reia::loadUsingAssimp(smgr, "content/standard/advanced_mesh/advMesh.dae");
+	reia::CustomNode* foobar = reia::loadUsingAssimp(smgr, "assets_editor/testAnim3.dae");
 
 	// Main loop
 	while(device->run()) {
@@ -1552,6 +1553,8 @@ int main() {
         then = now;
 
 		ts->time += tpf;
+
+		/*
 		for(irr::u32 i = 0; i < buff->Vertices.size(); ++ i) {
 			irr::video::S3DVertex& vert = buff->Vertices[i];
 
@@ -1560,6 +1563,7 @@ int main() {
 
 		}
 		buff->recalculateBoundingBox();
+		*/
 
 		// Clear buffers before rendering
 		driver->beginScene(true, true, irr::video::SColor(0, 140, 140, 140));

@@ -67,7 +67,7 @@ namespace reia {
         }
 
 	}
-	irr::scene::SMeshBuffer* loadUsingAssimp(irr::scene::ISceneManager* smgr, std::string filename) {
+	CustomNode* loadUsingAssimp(irr::scene::ISceneManager* smgr, std::string filename) {
 		Assimp::Importer assimp;
 		const aiScene* scene = assimp.ReadFile(filename, aiProcessPreset_TargetRealtime_Fast);
 
@@ -95,6 +95,7 @@ namespace reia {
 
                 unsigned int numKeys = nodeAnim->mNumPositionKeys;
 
+				// K for key
                 for(unsigned int k = 0; k < numKeys; ++ k) {
 					const aiVectorKey& key = nodeAnim->mPositionKeys[k];
 
@@ -109,78 +110,115 @@ namespace reia {
 		for(unsigned int i = 0; i < rootNode->mNumChildren; ++ i) {
 			const aiNode* node = rootNode->mChildren[i];
 
+			// If this node is the one with the mesh(es)
 			if(node->mNumMeshes > 0) {
-				irr::scene::SMesh* imesh = new irr::scene::SMesh();
 
-				irr::scene::SMeshBuffer* buffer;
+				// Begin copying this data
+				CustomNode* dmesh = new CustomNode();
+
+				dmesh->mesh = new irr::scene::SMesh();
+				dmesh->numBuffers = node->mNumMeshes;
+				dmesh->buffers = new ExtraBufferData[dmesh->numBuffers];
+
+				// For every buffer
 				for(unsigned int i = 0; i < node->mNumMeshes; ++ i) {
 
-					const aiMesh* amesh = scene->mMeshes[node->mMeshes[i]];
-
-					buffer = new irr::scene::SMeshBuffer();
+					const aiMesh* abuffer = scene->mMeshes[node->mMeshes[i]];
+					irr::scene::SMeshBuffer* ibuffer = new irr::scene::SMeshBuffer();
+					ExtraBufferData& dbuffer = dmesh->buffers[i];
 
 					bool vertColors = false;
 					bool texCoords = false;
 
-					buffer->Vertices.reallocate(amesh->mNumVertices);
-					buffer->Vertices.set_used(amesh->mNumVertices);
-					buffer->Vertices.set_used(amesh->mNumVertices);
+					dbuffer.numVerts = abuffer->mNumVertices;
+					dbuffer.verts = new ExtraVertData[dbuffer.numVerts];
 
-					for(int i = 0; i < amesh->mNumVertices; ++ i) {
-						irr::video::S3DVertex& ivert = buffer->Vertices[i];
-						const aiVector3D& avert = amesh->mVertices[i];
-						const aiVector3D& anormal = amesh->mNormals[i];
+					// Copy vertex data
+					ibuffer->Vertices.reallocate(abuffer->mNumVertices);
+					ibuffer->Vertices.set_used(abuffer->mNumVertices);
+					for(unsigned int j = 0; j < abuffer->mNumVertices; ++ j) {
+						irr::video::S3DVertex& ivert = ibuffer->Vertices[j];
+
+						const aiVector3D& avert = abuffer->mVertices[j];
+						const aiVector3D& anormal = abuffer->mNormals[j];
+						const aiColor4D* acolor = abuffer->mColors[j];
 
 						ivert.Pos.set(avert.x, avert.z, avert.y);
 						ivert.Normal.set(anormal.x, anormal.z, anormal.y);
-						ivert.Color.set(0, 0, 0, 0);
+						ivert.Color.set(acolor->a, acolor->r, acolor->g, acolor->b);
 
-						vertColors = vertColors | amesh->HasVertexColors(i);
-						texCoords = texCoords | amesh->HasTextureCoords(i);
 
+						// Track if any vertex uses textures and or vertex colors
+						vertColors = vertColors | abuffer->HasVertexColors(j);
+						texCoords = texCoords | abuffer->HasTextureCoords(j);
 					}
 
-					buffer->Indices.reallocate(amesh->mNumFaces * 3);
-					buffer->Indices.set_used(amesh->mNumFaces * 3);
+					// Bone data
+					if(abuffer->HasBones()) {
+						unsigned int numBones = abuffer->mNumBones;
 
-					for(int i = 0; i < amesh->mNumFaces; ++ i) {
-						const aiFace& aface = amesh->mFaces[i];
+						for(unsigned int j = 0; j < abuffer->mNumBones; ++ j) {
+							aiBone* abone = abuffer->mBones[j];
+							for(unsigned int k = 0; k < abone->mNumWeights; ++ k) {
+
+								const aiVertexWeight& aweight = abone->mWeights[k];
+								ExtraVertData& dvert = dbuffer.verts[aweight.mVertexId];
+
+                                if(dvert.boneW == 255) {
+									dvert.boneW = j;
+									dvert.weightW = aweight.mWeight;
+                                } else if(dvert.boneX == 255) {
+									dvert.boneX = j;
+									dvert.weightX = aweight.mWeight;
+                                } else if(dvert.boneY == 255) {
+									dvert.boneY = j;
+									dvert.weightY = aweight.mWeight;
+                                } else if(dvert.boneZ == 255) {
+									dvert.boneZ = j;
+									dvert.weightW = aweight.mWeight;
+                                } else {
+									// MORE THAN 4 BONES!!!!
+                                }
+							}
+						}
+					}
+
+					// Copy indice data
+					ibuffer->Indices.reallocate(abuffer->mNumFaces * 3);
+					ibuffer->Indices.set_used(abuffer->mNumFaces * 3);
+					for(unsigned int j = 0; j < abuffer->mNumFaces; ++ j) {
+						const aiFace& aface = abuffer->mFaces[j];
 
 						unsigned int A = aface.mIndices[0];
 						unsigned int B = aface.mIndices[1];
 						unsigned int C = aface.mIndices[2];
 
-						buffer->Indices[i * 3    ] = A;
-						buffer->Indices[i * 3 + 1] = C;
-						buffer->Indices[i * 3 + 2] = B;
+						ibuffer->Indices[j * 3    ] = A;
+						ibuffer->Indices[j * 3 + 1] = C;
+						ibuffer->Indices[j * 3 + 2] = B;
 					}
 
-					buffer->recalculateBoundingBox();
+					// Self-explanitory
+					ibuffer->recalculateBoundingBox();
 
-					irr::video::SMaterial& imaterial = buffer->getMaterial();
-					aiMaterial* amaterial = scene->mMaterials[amesh->mMaterialIndex];
+					// Copy material
+					const aiMaterial* amaterial = scene->mMaterials[abuffer->mMaterialIndex];
 
 					aiColor3D adiffuse(1.0f, 1.0f, 1.0f);
 					amaterial->Get(AI_MATKEY_COLOR_DIFFUSE, adiffuse);
 
-					std::cout << adiffuse.r << ", " << adiffuse.g << ", " << adiffuse.b << std::endl;
-
+					irr::video::SMaterial& imaterial = ibuffer->getMaterial();
 					imaterial.DiffuseColor = irr::video::SColor(255, adiffuse.r * 255.f, adiffuse.g * 255.f, adiffuse.b * 255.f);
 					imaterial.AmbientColor = irr::video::SColor(255, 255, 255, 255);
-
 					imaterial.ColorMaterial = vertColors ? 1 : 0;
 
-
-					imesh->addMeshBuffer(buffer);
-					buffer->drop();
+					// Add da buffer
+					dmesh->mesh->addMeshBuffer(ibuffer);
+					ibuffer->drop();
+					ibuffer = 0;
 				}
 
-				irr::scene::IMeshSceneNode* node = smgr->addMeshSceneNode(imesh);
-
-				//node->setMaterialFlag(irr::video::EMF_BACK_FACE_CULLING, false);
-				node->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true);
-
-				return buffer;
+				return dmesh;
 
 				break;
 			}
