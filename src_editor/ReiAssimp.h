@@ -21,7 +21,7 @@
 namespace reia {
 
 
-	struct ExtraVertData {
+	struct VertexMetadata {
 		irr::u8 boneW = 255;
 		irr::u8 boneX = 255;
 		irr::u8 boneY = 255;
@@ -31,16 +31,22 @@ namespace reia {
 		irr::f32 weightX;
 		irr::f32 weightY;
 		irr::f32 weightZ;
-
 	};
-	struct ExtraBufferData {
-		ExtraVertData* verts;
+	struct BoneData {
+		std::string boneName;
+		irr::core::matrix4 offsetMatrix;
+	};
+	struct BufferMetadata {
+		VertexMetadata* verts;
 		irr::u32 numVerts;
+
+		BoneData* bones;
+		irr::u32 numBones;
 	};
 	struct CustomNode {
 		irr::scene::SMesh* mesh = 0;
 
-		ExtraBufferData* buffers;
+		BufferMetadata* buffers;
 		irr::u32 numBuffers;
 
 	};

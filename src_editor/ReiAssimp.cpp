@@ -112,57 +112,85 @@ namespace reia {
 
 			// If this node is the one with the mesh(es)
 			if(node->mNumMeshes > 0) {
+				std::cout << "Node with a mesh found." << std::endl;
 
 				// Begin copying this data
-				CustomNode* dmesh = new CustomNode();
+				CustomNode* output = new CustomNode();
 
-				dmesh->mesh = new irr::scene::SMesh();
-				dmesh->numBuffers = node->mNumMeshes;
-				dmesh->buffers = new ExtraBufferData[dmesh->numBuffers];
+				output->mesh = new irr::scene::SMesh();
+				output->numBuffers = node->mNumMeshes;
+				output->buffers = new BufferMetadata[output->numBuffers];
 
-				// For every buffer
+				std::cout << "Begin copying buffers..." << std::endl;
 				for(unsigned int i = 0; i < node->mNumMeshes; ++ i) {
-
+					std::cout << "Processing buffer " << i << std::endl;
 					const aiMesh* abuffer = scene->mMeshes[node->mMeshes[i]];
+
 					irr::scene::SMeshBuffer* ibuffer = new irr::scene::SMeshBuffer();
-					ExtraBufferData& dbuffer = dmesh->buffers[i];
+					BufferMetadata& dbuffer = output->buffers[i];
 
 					bool vertColors = false;
 					bool texCoords = false;
-
-					dbuffer.numVerts = abuffer->mNumVertices;
-					dbuffer.verts = new ExtraVertData[dbuffer.numVerts];
-
-					// Copy vertex data
 					ibuffer->Vertices.reallocate(abuffer->mNumVertices);
 					ibuffer->Vertices.set_used(abuffer->mNumVertices);
+					dbuffer.numVerts = abuffer->mNumVertices;
+					dbuffer.verts = new VertexMetadata[dbuffer.numVerts];
+					std::cout << "Begin copying vertexes..." << std::endl;
 					for(unsigned int j = 0; j < abuffer->mNumVertices; ++ j) {
-						irr::video::S3DVertex& ivert = ibuffer->Vertices[j];
-
 						const aiVector3D& avert = abuffer->mVertices[j];
 						const aiVector3D& anormal = abuffer->mNormals[j];
 						const aiColor4D* acolor = abuffer->mColors[j];
 
+						irr::video::S3DVertex& ivert = ibuffer->Vertices[j];
+
 						ivert.Pos.set(avert.x, avert.z, avert.y);
 						ivert.Normal.set(anormal.x, anormal.z, anormal.y);
-						ivert.Color.set(acolor->a, acolor->r, acolor->g, acolor->b);
+						//ivert.Color.set(acolor->a, acolor->r, acolor->g, acolor->b);
+						ivert.Color.set(0, 0, 0, 0);
 
-
-						// Track if any vertex uses textures and or vertex colors
 						vertColors = vertColors | abuffer->HasVertexColors(j);
 						texCoords = texCoords | abuffer->HasTextureCoords(j);
 					}
+					std::cout << "End copying vertexes." << std::endl;
 
-					// Bone data
 					if(abuffer->HasBones()) {
-						unsigned int numBones = abuffer->mNumBones;
+						std::cout << "Buffer has bones." << std::endl;
+						dbuffer.numBones = abuffer->mNumBones;
+						dbuffer.bones = new BoneData[dbuffer.numBones];
 
+						std::cout << "Begin copying bones..." << std::endl;
 						for(unsigned int j = 0; j < abuffer->mNumBones; ++ j) {
-							aiBone* abone = abuffer->mBones[j];
-							for(unsigned int k = 0; k < abone->mNumWeights; ++ k) {
+							const aiBone* abone = abuffer->mBones[j];
 
+                            BoneData& dbone = dbuffer.bones[j];
+                            dbone.boneName = abone->mName.C_Str();
+                            const aiMatrix4x4& aoffsetMatrix = abone->mOffsetMatrix;
+                            irr::core::matrix4& doffsetMatrix = dbone.offsetMatrix;
+
+                            doffsetMatrix[ 0] = aoffsetMatrix.a1;
+                            doffsetMatrix[ 1] = aoffsetMatrix.a2;
+                            doffsetMatrix[ 2] = aoffsetMatrix.a3;
+                            doffsetMatrix[ 3] = aoffsetMatrix.a4;
+
+                            doffsetMatrix[ 4] = aoffsetMatrix.b1;
+                            doffsetMatrix[ 5] = aoffsetMatrix.b2;
+                            doffsetMatrix[ 6] = aoffsetMatrix.b3;
+                            doffsetMatrix[ 7] = aoffsetMatrix.b4;
+
+                            doffsetMatrix[ 8] = aoffsetMatrix.c1;
+                            doffsetMatrix[ 9] = aoffsetMatrix.c2;
+                            doffsetMatrix[10] = aoffsetMatrix.c3;
+                            doffsetMatrix[11] = aoffsetMatrix.c4;
+
+                            doffsetMatrix[12] = aoffsetMatrix.d1;
+                            doffsetMatrix[13] = aoffsetMatrix.d2;
+                            doffsetMatrix[14] = aoffsetMatrix.d3;
+                            doffsetMatrix[15] = aoffsetMatrix.d4;
+
+							std::cout << "Processing bone " << dbone.boneName << std::endl;
+							for(unsigned int k = 0; k < abone->mNumWeights; ++ k) {
 								const aiVertexWeight& aweight = abone->mWeights[k];
-								ExtraVertData& dvert = dbuffer.verts[aweight.mVertexId];
+								VertexMetadata& dvert = dbuffer.verts[aweight.mVertexId];
 
                                 if(dvert.boneW == 255) {
 									dvert.boneW = j;
@@ -177,13 +205,12 @@ namespace reia {
 									dvert.boneZ = j;
 									dvert.weightW = aweight.mWeight;
                                 } else {
-									// MORE THAN 4 BONES!!!!
+									std::cout << "Warning: Vertex " << aweight.mVertexId << " has more than 4 influences." << std::endl;
                                 }
 							}
 						}
 					}
 
-					// Copy indice data
 					ibuffer->Indices.reallocate(abuffer->mNumFaces * 3);
 					ibuffer->Indices.set_used(abuffer->mNumFaces * 3);
 					for(unsigned int j = 0; j < abuffer->mNumFaces; ++ j) {
@@ -198,7 +225,6 @@ namespace reia {
 						ibuffer->Indices[j * 3 + 2] = B;
 					}
 
-					// Self-explanitory
 					ibuffer->recalculateBoundingBox();
 
 					// Copy material
@@ -213,12 +239,12 @@ namespace reia {
 					imaterial.ColorMaterial = vertColors ? 1 : 0;
 
 					// Add da buffer
-					dmesh->mesh->addMeshBuffer(ibuffer);
+					output->mesh->addMeshBuffer(ibuffer);
 					ibuffer->drop();
 					ibuffer = 0;
 				}
 
-				return dmesh;
+				return output;
 
 				break;
 			}
