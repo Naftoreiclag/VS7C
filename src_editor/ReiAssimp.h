@@ -85,6 +85,8 @@ namespace reia {
         irr::u32 parentId;
         irr::u32* childrenIds = 0;
         irr::u32 numChildren = 0;
+
+        irr::core::matrix4 trans;
 	};
 
 	// A single mesh with some number of bones and animations
@@ -101,6 +103,14 @@ namespace reia {
 		irr::u32 numBones = 0;
 	};
 
+	//
+	struct ComplexMeshSceneNode {
+		irr::scene::IMeshSceneNode* node = 0;
+        const ComplexMeshData* data = 0;
+
+        irr::scene::ISceneNode** boneNodes;
+	};
+
 	class AssimpMeshLoader : public irr::scene::IMeshLoader {
 		AssimpMeshLoader();
 		virtual ~AssimpMeshLoader();
@@ -113,10 +123,14 @@ namespace reia {
 
 	void debugAiNode(const aiScene* scene, const aiNode* node, unsigned int depth);
 
+	void convertTransform(const aiMatrix4x4& aoffsetMatrix, irr::core::matrix4& doffsetMatrix);
+
 	irr::u32 recursiveFindTreeSize(const aiNode* rootNode);
 	void recursiveBuildBoneStructure(Bone* boneArray, irr::u32& currIndex, irr::u32 parentIndex, bool isRoot, const aiNode* copyFrom);
 
 	ComplexMeshData* loadUsingAssimp(irr::scene::ISceneManager* smgr, std::string filename);
+
+	ComplexMeshSceneNode* qux(irr::scene::ISceneManager* smgr, const ComplexMeshData* data, irr::gui::IGUIEnvironment* gui);
 
 }
 

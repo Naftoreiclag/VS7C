@@ -69,6 +69,28 @@ namespace reia {
         }
 
 	}
+	void convertTransform(const aiMatrix4x4& aoffsetMatrix, irr::core::matrix4& doffsetMatrix) {
+
+		doffsetMatrix[ 0] = aoffsetMatrix.a1;
+		doffsetMatrix[ 1] = aoffsetMatrix.a2;
+		doffsetMatrix[ 2] = aoffsetMatrix.a3;
+		doffsetMatrix[ 3] = aoffsetMatrix.a4;
+
+		doffsetMatrix[ 4] = aoffsetMatrix.b1;
+		doffsetMatrix[ 5] = aoffsetMatrix.b2;
+		doffsetMatrix[ 6] = aoffsetMatrix.b3;
+		doffsetMatrix[ 7] = aoffsetMatrix.b4;
+
+		doffsetMatrix[ 8] = aoffsetMatrix.c1;
+		doffsetMatrix[ 9] = aoffsetMatrix.c2;
+		doffsetMatrix[10] = aoffsetMatrix.c3;
+		doffsetMatrix[11] = aoffsetMatrix.c4;
+
+		doffsetMatrix[12] = aoffsetMatrix.d1;
+		doffsetMatrix[13] = aoffsetMatrix.d2;
+		doffsetMatrix[14] = aoffsetMatrix.d3;
+		doffsetMatrix[15] = aoffsetMatrix.d4;
+	}
 
 	irr::u32 recursiveFindTreeSize(const aiNode* rootNode) {
 		irr::u32 retVal = 1;
@@ -84,11 +106,11 @@ namespace reia {
 		Bone& dbone = boneArray[myId];
 
 		dbone.parentId = parentId;
+		dbone.isRoot = isRoot;
 
 		dbone.name = copyFrom->mName.C_Str();
-		std::cout << dbone.name << std::endl;
 		dbone.numChildren = copyFrom->mNumChildren;
-		std::cout << dbone.numChildren << std::endl;
+		convertTransform(copyFrom->mTransformation, dbone.trans);
 
         for(unsigned int h = 0; h < copyFrom->mNumChildren; ++ h) {
 			++ currIndex;
@@ -196,28 +218,7 @@ namespace reia {
 
                             BoneMetadata& dbone = dbuffer.usedBones[j];
                             dbone.boneName = abone->mName.C_Str();
-                            const aiMatrix4x4& aoffsetMatrix = abone->mOffsetMatrix;
-                            irr::core::matrix4& doffsetMatrix = dbone.offsetMatrix;
-
-                            doffsetMatrix[ 0] = aoffsetMatrix.a1;
-                            doffsetMatrix[ 1] = aoffsetMatrix.a2;
-                            doffsetMatrix[ 2] = aoffsetMatrix.a3;
-                            doffsetMatrix[ 3] = aoffsetMatrix.a4;
-
-                            doffsetMatrix[ 4] = aoffsetMatrix.b1;
-                            doffsetMatrix[ 5] = aoffsetMatrix.b2;
-                            doffsetMatrix[ 6] = aoffsetMatrix.b3;
-                            doffsetMatrix[ 7] = aoffsetMatrix.b4;
-
-                            doffsetMatrix[ 8] = aoffsetMatrix.c1;
-                            doffsetMatrix[ 9] = aoffsetMatrix.c2;
-                            doffsetMatrix[10] = aoffsetMatrix.c3;
-                            doffsetMatrix[11] = aoffsetMatrix.c4;
-
-                            doffsetMatrix[12] = aoffsetMatrix.d1;
-                            doffsetMatrix[13] = aoffsetMatrix.d2;
-                            doffsetMatrix[14] = aoffsetMatrix.d3;
-                            doffsetMatrix[15] = aoffsetMatrix.d4;
+							convertTransform(abone->mOffsetMatrix, dbone.offsetMatrix);
 
 							std::cout << "Processing bone " << dbone.boneName << std::endl;
 							for(unsigned int k = 0; k < abone->mNumWeights; ++ k) {
@@ -366,7 +367,9 @@ namespace reia {
                     }
 					std::cout << "End copying channel data." << std::endl;
 				}
-				std::cout << "End copying animation data.";
+				std::cout << "End copying animation data." << std::endl;
+
+				assimp.FreeScene();
 
 				return output;
 			}
@@ -375,4 +378,38 @@ namespace reia {
 		return 0;
 	}
 
+	const wchar_t* toText(std::string value) {
+		std::wstring ws(value.begin(), value.end());
+		return ws.c_str();
+	}
+
+	ComplexMeshSceneNode* qux(irr::scene::ISceneManager* smgr, const ComplexMeshData* data, irr::gui::IGUIEnvironment* gui) {
+		ComplexMeshSceneNode* retVal = new ComplexMeshSceneNode();
+		retVal->node = smgr->addMeshSceneNode(data->mesh);
+		retVal->data = data;
+
+		retVal->boneNodes = new irr::scene::ISceneNode*[data->numBones];
+		for(int i = 0; i < data->numBones; ++ i) {
+			const Bone& bone = data->bones[i];
+
+
+			if(bone.isRoot) {
+				retVal->boneNodes[i] = smgr->addTextSceneNode(gui->getBuiltInFont(), toText(bone.name), irr::video::SColor(255, 255, 255, 255), retVal->node);
+				//retVal->boneNodes[i] = smgr->addEmptySceneNode(retVal->node);
+
+			}
+			else {
+				retVal->boneNodes[i] = smgr->addTextSceneNode(gui->getBuiltInFont(), toText(bone.name), irr::video::SColor(255, 255, 255, 255), retVal->boneNodes[bone.parentId]);
+				//retVal->boneNodes[i] = smgr->addEmptySceneNode(retVal->boneNodes[bone.parentId]);
+			}
+
+			retVal->boneNodes[i]->setPosition(bone.trans.getTranslation());
+			retVal->boneNodes[i]->setPosition(irr::core::vector3df(0, 5, 0));
+			retVal->boneNodes[i]->setRotation(bone.trans.getRotationDegrees());
+			retVal->boneNodes[i]->setScale(bone.trans.getScale());
+		}
+
+		return retVal;
+
+	}
 }

@@ -1541,6 +1541,9 @@ int main() {
 	//irr::scene::SMeshBuffer* buff = reia::loadUsingAssimp(smgr, "content/standard/advanced_mesh/advMesh.dae");
 	reia::ComplexMeshData* foobar = reia::loadUsingAssimp(smgr, "assets_editor/testAnim3.dae");
 
+	// ultimate foobar
+	reia::ComplexMeshSceneNode* baz = reia::qux(smgr, foobar, gui);
+
 	// Main loop
 	while(device->run()) {
 		if(!device->isWindowActive()) {
