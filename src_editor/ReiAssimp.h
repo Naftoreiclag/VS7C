@@ -49,16 +49,24 @@ namespace reia {
 		VertexMetadata* verts = 0;
 		irr::u32 numVerts;
 	};
+	struct VectorKey {
+		irr::core::vector3df value;
+		irr::f32 time;
+	};
+	struct QuaternionKey {
+		irr::core::quaternion value;
+		irr::f32 time;
+	};
 	struct ChannelData {
 		std::string boneName;
 
-        irr::core::vector3df* positions;
+        VectorKey* positions;
         irr::u32 numPositions = 0;
 
-        irr::core::quaternion* rotations;
+        QuaternionKey* rotations;
         irr::u32 numRotations = 0;
 
-        irr::core::vector3df* scalings;
+        VectorKey* scalings;
         irr::u32 numScalings = 0;
 	};
 	struct AnimationData {

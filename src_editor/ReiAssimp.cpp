@@ -6,6 +6,8 @@
 
 #include "ReiAssimp.h"
 
+#include "assimp/quaternion.h"
+
 namespace reia {
 
 	void debugAiNode(const aiScene* scene, const aiNode* node, unsigned int depth) {
@@ -151,7 +153,7 @@ namespace reia {
 				std::cout << "Begin copying buffers..." << std::endl;
 				std::cout << "Buffer count " << node->mNumMeshes << std::endl;
 				for(unsigned int i = 0; i < node->mNumMeshes; ++ i) {
-					std::cout << "Processing buffer " << i << std::endl;
+					std::cout << "Buffer #" << i << std::endl;
 					const aiMesh* abuffer = ascene->mMeshes[node->mMeshes[i]];
 
 					irr::scene::SMeshBuffer* ibuffer = new irr::scene::SMeshBuffer();
@@ -189,6 +191,7 @@ namespace reia {
 						std::cout << "Begin copying buffer bone groups..." << std::endl;
 						std::cout << "Bones used " << abuffer->mNumBones << std::endl;
 						for(unsigned int j = 0; j < abuffer->mNumBones; ++ j) {
+							std::cout << "Bone #" << j << std::endl;
 							const aiBone* abone = abuffer->mBones[j];
 
                             BoneMetadata& dbone = dbuffer.usedBones[j];
@@ -282,10 +285,9 @@ namespace reia {
 				}
 
 				// Copying bone structure
-				std::cout << "Begin copying bone structure." << std::endl;
+				std::cout << "Begin copying bone structure..." << std::endl;
 				const aiNode* armatureRoot = rootNode->FindNode("ROOT");
 				if(armatureRoot) {
-					std::cout << "Root bone found." << std::endl;
                     output->numBones = recursiveFindTreeSize(armatureRoot);
 					std::cout << "Total bone count: " << output->numBones << std::endl;
 
@@ -297,12 +299,74 @@ namespace reia {
 						recursiveBuildBoneStructure(output->bones, persistentIndex, 0, true, armatureRoot);
                     }
 				}
+				std::cout << "End copying bone structure." << std::endl;
 
 				// Copying Animations
-				std::cout << "Begin copying animation data." << std::endl;
+				std::cout << "Begin copying animation data..." << std::endl;
+				output->numAnims = ascene->mNumAnimations;
+				output->anims = new AnimationData[output->numAnims];
+				std::cout << "Animation count: " << ascene->mNumAnimations << std::endl;
 				for(unsigned int i = 0; i < ascene->mNumAnimations; ++ i) {
+					std::cout << "Animation #" << i << std::endl;
+                    const aiAnimation* aanim = ascene->mAnimations[i];
+                    AnimationData& danim = output->anims[i];
 
+					std::cout << "Begin copying channel data..." << std::endl;
+					danim.numChannels = aanim->mNumChannels;
+					danim.channels = new ChannelData[danim.numChannels];
+					std::cout << "Channel count: " << aanim->mNumChannels << std::endl;
+                    for(unsigned int j = 0; j < aanim->mNumChannels; ++ j) {
+						std::cout << "Channel #" << j << std::endl;
+                        const aiNodeAnim* achannel = aanim->mChannels[j];
+                        ChannelData& dchannel = danim.channels[j];
+
+						dchannel.boneName = achannel->mNodeName.C_Str();
+
+						std::cout << "Begin copying position keys..." << std::endl;
+						dchannel.numPositions = achannel->mNumPositionKeys;
+						dchannel.positions = new VectorKey[dchannel.numPositions];
+                        for(unsigned int k = 0; k < achannel->mNumPositionKeys; ++ k) {
+							aiVectorKey& akey = achannel->mPositionKeys[k];
+                            VectorKey& dkey = dchannel.positions[k];
+
+							aiVector3D& avalue = akey.mValue;
+
+							dkey.time = akey.mTime;
+							dkey.value = irr::core::vector3df(avalue.x, avalue.y, avalue.z);
+                        }
+						std::cout << "End copying position keys." << std::endl;
+
+						std::cout << "Begin copying rotation keys..." << std::endl;
+						dchannel.numRotations = achannel->mNumRotationKeys;
+						dchannel.rotations = new QuaternionKey[dchannel.numRotations];
+                        for(unsigned int k = 0; k < achannel->mNumRotationKeys; ++ k) {
+							aiQuatKey& akey = achannel->mRotationKeys[k];
+                            QuaternionKey& dkey = dchannel.rotations[k];
+
+							aiQuaternion& avalue = akey.mValue;
+
+							dkey.time = akey.mTime;
+							dkey.value.set(avalue.x, avalue.y, avalue.z, avalue.w);
+                        }
+						std::cout << "End copying rotation keys." << std::endl;
+
+						std::cout << "Begin copying scale keys..." << std::endl;
+						dchannel.numScalings = achannel->mNumScalingKeys;
+						dchannel.scalings = new VectorKey[dchannel.numScalings];
+                        for(unsigned int k = 0; k < achannel->mNumScalingKeys; ++ k) {
+							aiVectorKey& akey = achannel->mScalingKeys[k];
+                            VectorKey& dkey = dchannel.scalings[k];
+
+							aiVector3D& avalue = akey.mValue;
+
+							dkey.time = akey.mTime;
+							dkey.value = irr::core::vector3df(avalue.x, avalue.y, avalue.z);
+                        }
+						std::cout << "End copying scale keys." << std::endl;
+                    }
+					std::cout << "End copying channel data." << std::endl;
 				}
+				std::cout << "End copying animation data.";
 
 				return output;
 			}
