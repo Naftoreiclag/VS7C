@@ -19,7 +19,9 @@
 #include "assimp/anim.h"
 
 namespace reia {
+	// Extra per-vertex data
 	struct VertexMetadata {
+		// These numbers are indices in the usedBones[] array
 		irr::u8 boneW = 255;
 		irr::u8 boneX = 255;
 		irr::u8 boneY = 255;
@@ -30,42 +32,65 @@ namespace reia {
 		irr::f32 weightY;
 		irr::f32 weightZ;
 	};
-	struct BoneData {
+
+	// Describes
+	struct BoneMetadata {
 		std::string boneName;
 		irr::core::matrix4 offsetMatrix;
 	};
+
+	// Extra data for each buffer (group of vertices that has the same material or otherwise differenciated from the rest of the mesh)
 	struct BufferMetadata {
+		// Bones that influences this group of vertices
+		BoneMetadata* usedBones = 0;
+		irr::u32 numBones;
+
+		// The metadata to apply to each vertex
 		VertexMetadata* verts = 0;
 		irr::u32 numVerts;
-
-		BoneData* bones = 0;
-		irr::u32 numBones;
 	};
 	struct ChannelData {
 		std::string boneName;
 
-        irr::core::vector3df positions[];
-        irr::u32 numPositions;
+        irr::core::vector3df* positions;
+        irr::u32 numPositions = 0;
 
-        irr::core::quaternion rotations[];
-        irr::u32 numRotations;
+        irr::core::quaternion* rotations;
+        irr::u32 numRotations = 0;
 
-        irr::core::vector3df scalings[];
-        irr::u32 numScalings;
+        irr::core::vector3df* scalings;
+        irr::u32 numScalings = 0;
 	};
 	struct AnimationData {
 		std::string animName;
 		irr::f32 duration;
 		irr::f32 tps;
 
-		ChannelData* channels;
-		irr::u32 numChannels;
+		ChannelData* channels = 0;
+		irr::u32 numChannels = 0;
 	};
+
+	struct Bone {
+        std::string name;
+
+        bool isRoot = false;
+        irr::u32 parentId;
+        irr::u32* childrenIds = 0;
+        irr::u32 numChildren = 0;
+	};
+
+	// A single mesh with some number of bones and animations
 	struct ComplexMeshData {
 		irr::scene::SMesh* mesh = 0;
 
 		BufferMetadata* buffers = 0;
-		irr::u32 numBuffers;
+		irr::u32 numBuffers = 0;
+
+		AnimationData* anims = 0;
+		irr::u32 numAnims = 0;
+
+		Bone* bones = 0;
+		irr::u32 numBones = 0;
 	};
 
 	class AssimpMeshLoader : public irr::scene::IMeshLoader {
@@ -79,6 +104,9 @@ namespace reia {
 	};
 
 	void debugAiNode(const aiScene* scene, const aiNode* node, unsigned int depth);
+
+	irr::u32 recursiveFindTreeSize(const aiNode* rootNode);
+	void recursiveBuildBoneStructure(Bone* boneArray, irr::u32& currIndex, irr::u32 parentIndex, bool isRoot, const aiNode* copyFrom);
 
 	ComplexMeshData* loadUsingAssimp(irr::scene::ISceneManager* smgr, std::string filename);
 

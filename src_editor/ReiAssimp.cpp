@@ -67,20 +67,47 @@ namespace reia {
         }
 
 	}
+
+	irr::u32 recursiveFindTreeSize(const aiNode* rootNode) {
+		irr::u32 retVal = 1;
+
+        for(unsigned int i = 0; i < rootNode->mNumChildren; ++ i) {
+			retVal += recursiveFindTreeSize(rootNode->mChildren[i]);
+        }
+
+		return retVal;
+	}
+	void recursiveBuildBoneStructure(Bone* boneArray, irr::u32& currIndex, irr::u32 parentId, bool isRoot, const aiNode* copyFrom) {
+		irr::u32 myId = currIndex;
+		Bone& dbone = boneArray[myId];
+
+		dbone.parentId = parentId;
+
+		dbone.name = copyFrom->mName.C_Str();
+		std::cout << dbone.name << std::endl;
+		dbone.numChildren = copyFrom->mNumChildren;
+		std::cout << dbone.numChildren << std::endl;
+
+        for(unsigned int h = 0; h < copyFrom->mNumChildren; ++ h) {
+			++ currIndex;
+			recursiveBuildBoneStructure(boneArray, currIndex, myId, false, copyFrom->mChildren[h]);
+        }
+	}
+
 	ComplexMeshData* loadUsingAssimp(irr::scene::ISceneManager* smgr, std::string filename) {
 		Assimp::Importer assimp;
-		const aiScene* scene = assimp.ReadFile(filename, aiProcessPreset_TargetRealtime_Fast);
+		const aiScene* ascene = assimp.ReadFile(filename, aiProcessPreset_TargetRealtime_Fast);
 
-		const aiNode* rootNode = scene->mRootNode;
+		const aiNode* rootNode = ascene->mRootNode;
 
-		debugAiNode(scene, rootNode, 0);
+		debugAiNode(ascene, rootNode, 0);
 
-		unsigned int numAnim = scene->mNumAnimations;
+		unsigned int numAnim = ascene->mNumAnimations;
 
 		std::cout << "numAnim = " << numAnim << std::endl;
 
 		for(int i = 0; i < numAnim; ++ i) {
-			aiAnimation* anim = scene->mAnimations[i];
+			aiAnimation* anim = ascene->mAnimations[i];
 
 			std::cout << "anim = " << anim->mName.C_Str() << std::endl;
 
@@ -107,8 +134,8 @@ namespace reia {
             }
 		}
 
-		for(unsigned int i = 0; i < rootNode->mNumChildren; ++ i) {
-			const aiNode* node = rootNode->mChildren[i];
+		for(unsigned int h = 0; h < rootNode->mNumChildren; ++ h) {
+			const aiNode* node = rootNode->mChildren[h];
 
 			// If this node is the one with the mesh(es)
 			if(node->mNumMeshes > 0) {
@@ -122,9 +149,10 @@ namespace reia {
 				output->buffers = new BufferMetadata[output->numBuffers];
 
 				std::cout << "Begin copying buffers..." << std::endl;
+				std::cout << "Buffer count " << node->mNumMeshes << std::endl;
 				for(unsigned int i = 0; i < node->mNumMeshes; ++ i) {
 					std::cout << "Processing buffer " << i << std::endl;
-					const aiMesh* abuffer = scene->mMeshes[node->mMeshes[i]];
+					const aiMesh* abuffer = ascene->mMeshes[node->mMeshes[i]];
 
 					irr::scene::SMeshBuffer* ibuffer = new irr::scene::SMeshBuffer();
 					BufferMetadata& dbuffer = output->buffers[i];
@@ -136,6 +164,7 @@ namespace reia {
 					dbuffer.numVerts = abuffer->mNumVertices;
 					dbuffer.verts = new VertexMetadata[dbuffer.numVerts];
 					std::cout << "Begin copying vertexes..." << std::endl;
+					std::cout << "Vertex count " << abuffer->mNumVertices << std::endl;
 					for(unsigned int j = 0; j < abuffer->mNumVertices; ++ j) {
 						const aiVector3D& avert = abuffer->mVertices[j];
 						const aiVector3D& anormal = abuffer->mNormals[j];
@@ -154,15 +183,15 @@ namespace reia {
 					std::cout << "End copying vertexes." << std::endl;
 
 					if(abuffer->HasBones()) {
-						std::cout << "Buffer has bones." << std::endl;
 						dbuffer.numBones = abuffer->mNumBones;
-						dbuffer.bones = new BoneData[dbuffer.numBones];
+						dbuffer.usedBones = new BoneMetadata[dbuffer.numBones];
 
-						std::cout << "Begin copying bones..." << std::endl;
+						std::cout << "Begin copying buffer bone groups..." << std::endl;
+						std::cout << "Bones used " << abuffer->mNumBones << std::endl;
 						for(unsigned int j = 0; j < abuffer->mNumBones; ++ j) {
 							const aiBone* abone = abuffer->mBones[j];
 
-                            BoneData& dbone = dbuffer.bones[j];
+                            BoneMetadata& dbone = dbuffer.usedBones[j];
                             dbone.boneName = abone->mName.C_Str();
                             const aiMatrix4x4& aoffsetMatrix = abone->mOffsetMatrix;
                             irr::core::matrix4& doffsetMatrix = dbone.offsetMatrix;
@@ -209,11 +238,17 @@ namespace reia {
                                 }
 							}
 						}
+
+						std::cout << "End copying buffer bone groups." << std::endl;
 					}
+
 
 					ibuffer->Indices.reallocate(abuffer->mNumFaces * 3);
 					ibuffer->Indices.set_used(abuffer->mNumFaces * 3);
+					std::cout << "Begin copying triangles..." << std::endl;
+					std::cout << "Triangle count " << abuffer->mNumFaces << std::endl;
 					for(unsigned int j = 0; j < abuffer->mNumFaces; ++ j) {
+
 						const aiFace& aface = abuffer->mFaces[j];
 
 						unsigned int A = aface.mIndices[0];
@@ -224,11 +259,13 @@ namespace reia {
 						ibuffer->Indices[j * 3 + 1] = C;
 						ibuffer->Indices[j * 3 + 2] = B;
 					}
+					std::cout << "End copying triangles..." << std::endl;
 
+					std::cout << "Recalculating bounding box..." << std::endl;
 					ibuffer->recalculateBoundingBox();
 
 					// Copy material
-					const aiMaterial* amaterial = scene->mMaterials[abuffer->mMaterialIndex];
+					const aiMaterial* amaterial = ascene->mMaterials[abuffer->mMaterialIndex];
 
 					aiColor3D adiffuse(1.0f, 1.0f, 1.0f);
 					amaterial->Get(AI_MATKEY_COLOR_DIFFUSE, adiffuse);
@@ -244,15 +281,34 @@ namespace reia {
 					ibuffer = 0;
 				}
 
-				return output;
+				// Copying bone structure
+				std::cout << "Begin copying bone structure." << std::endl;
+				const aiNode* armatureRoot = rootNode->FindNode("ROOT");
+				if(armatureRoot) {
+					std::cout << "Root bone found." << std::endl;
+                    output->numBones = recursiveFindTreeSize(armatureRoot);
+					std::cout << "Total bone count: " << output->numBones << std::endl;
 
-				break;
+                    if(output->numBones > 0) {
+						output->bones = new Bone[output->numBones];
+
+						irr::u32 persistentIndex = 0;
+						std::cout << "Generating bone structure." << std::endl;
+						recursiveBuildBoneStructure(output->bones, persistentIndex, 0, true, armatureRoot);
+                    }
+				}
+
+				// Copying Animations
+				std::cout << "Begin copying animation data." << std::endl;
+				for(unsigned int i = 0; i < ascene->mNumAnimations; ++ i) {
+
+				}
+
+				return output;
 			}
 		}
 
-
-
-
+		return 0;
 	}
 
 }
