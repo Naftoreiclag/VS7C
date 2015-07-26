@@ -1540,9 +1540,11 @@ int main() {
 	// Test
 	//irr::scene::SMeshBuffer* buff = reia::loadUsingAssimp(smgr, "content/standard/advanced_mesh/advMesh.dae");
 	reia::ComplexMeshData* foobar = reia::loadUsingAssimp(smgr, "assets_editor/testAnim3.dae");
+	//reia::ComplexMeshData* foobar = reia::loadUsingAssimp(smgr, "example_media/models-nonbsd/MD5/Bob.md5mesh");
 
 	// ultimate foobar
-	reia::ComplexMeshSceneNode* baz = reia::qux(smgr, foobar, gui);
+	reia::ComplexMeshSceneNode* baz = reia::qux(smgr, foobar, font);
+	reia::potato(baz, 0);
 
 	// Main loop
 	while(device->run()) {

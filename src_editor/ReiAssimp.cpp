@@ -69,6 +69,15 @@ namespace reia {
         }
 
 	}
+
+	void printThis(const irr::core::matrix4& doffsetMatrix) {
+
+		std::cout << doffsetMatrix[ 0] << " | " << doffsetMatrix[ 1] << " | " << doffsetMatrix[ 2] << " | " << doffsetMatrix[ 3] << " | " << std::endl;
+		std::cout << doffsetMatrix[ 4] << " | " << doffsetMatrix[ 5] << " | " << doffsetMatrix[ 6] << " | " << doffsetMatrix[ 7] << " | " << std::endl;
+		std::cout << doffsetMatrix[ 8] << " | " << doffsetMatrix[ 9] << " | " << doffsetMatrix[10] << " | " << doffsetMatrix[11] << " | " << std::endl;
+		std::cout << doffsetMatrix[12] << " | " << doffsetMatrix[13] << " | " << doffsetMatrix[14] << " | " << doffsetMatrix[15] << " | " << std::endl;
+	}
+
 	void convertTransform(const aiMatrix4x4& aoffsetMatrix, irr::core::matrix4& doffsetMatrix) {
 
 		doffsetMatrix[ 0] = aoffsetMatrix.a1;
@@ -101,6 +110,11 @@ namespace reia {
 
 		return retVal;
 	}
+
+	void inline printThis(irr::core::vector3df vec) {
+		std::cout << "[" << vec.X << ", " << vec.Y << ", " << vec.Z << "]" << std::endl;
+	}
+
 	void recursiveBuildBoneStructure(Bone* boneArray, irr::u32& currIndex, irr::u32 parentId, bool isRoot, const aiNode* copyFrom) {
 		irr::u32 myId = currIndex;
 		Bone& dbone = boneArray[myId];
@@ -110,7 +124,16 @@ namespace reia {
 
 		dbone.name = copyFrom->mName.C_Str();
 		dbone.numChildren = copyFrom->mNumChildren;
+		//dbone.trans = copyFrom->mTransformation;
 		convertTransform(copyFrom->mTransformation, dbone.trans);
+
+
+		/*
+		std::cout << "Translation: ";
+		printThis(dbone.trans.getTranslation());
+		std::cout << "Rotation: ";
+		printThis(dbone.trans.getRotationDegrees());
+		*/
 
         for(unsigned int h = 0; h < copyFrom->mNumChildren; ++ h) {
 			++ currIndex;
@@ -168,6 +191,23 @@ namespace reia {
 				// Begin copying this data
 				ComplexMeshData* output = new ComplexMeshData();
 
+				// Copying bone structure
+				std::cout << "Begin copying bone structure..." << std::endl;
+				const aiNode* armatureRoot = rootNode->FindNode("ROOT");
+				if(armatureRoot) {
+                    output->numBones = recursiveFindTreeSize(armatureRoot);
+					std::cout << "Total bone count: " << output->numBones << std::endl;
+
+                    if(output->numBones > 0) {
+						output->bones = new Bone[output->numBones];
+
+						irr::u32 persistentIndex = 0;
+						std::cout << "Generating bone structure." << std::endl;
+						recursiveBuildBoneStructure(output->bones, persistentIndex, 0, true, armatureRoot);
+                    }
+				}
+				std::cout << "End copying bone structure." << std::endl;
+
 				output->mesh = new irr::scene::SMesh();
 				output->numBuffers = node->mNumMeshes;
 				output->buffers = new BufferMetadata[output->numBuffers];
@@ -196,8 +236,8 @@ namespace reia {
 
 						irr::video::S3DVertex& ivert = ibuffer->Vertices[j];
 
-						ivert.Pos.set(avert.x, avert.z, avert.y);
-						ivert.Normal.set(anormal.x, anormal.z, anormal.y);
+						ivert.Pos.set(avert.x, avert.y, avert.z);
+						ivert.Normal.set(anormal.x, anormal.y, anormal.z);
 						//ivert.Color.set(acolor->a, acolor->r, acolor->g, acolor->b);
 						ivert.Color.set(0, 0, 0, 0);
 
@@ -216,11 +256,24 @@ namespace reia {
 							std::cout << "Bone #" << j << std::endl;
 							const aiBone* abone = abuffer->mBones[j];
 
-                            BoneMetadata& dbone = dbuffer.usedBones[j];
-                            dbone.boneName = abone->mName.C_Str();
-							convertTransform(abone->mOffsetMatrix, dbone.offsetMatrix);
+                            BoneMetadata& dbonem = dbuffer.usedBones[j];
+                            std::string boneName = abone->mName.C_Str();
+							std::cout << "Processing bone " << boneName << std::endl;
 
-							std::cout << "Processing bone " << dbone.boneName << std::endl;
+                            for(unsigned int k = 0; k < output->numBones; ++ k) {
+								Bone& dbone = output->bones[k];
+
+								if(dbone.name == boneName) {
+									std::cout << "Match found" << std::endl;
+									dbonem.boneId = k;
+
+
+									//dbone.offsetMatrix = abone->mOffsetMatrix;
+									convertTransform(abone->mOffsetMatrix, dbone.offsetMatrix);
+
+								}
+                            }
+
 							for(unsigned int k = 0; k < abone->mNumWeights; ++ k) {
 								const aiVertexWeight& aweight = abone->mWeights[k];
 								VertexMetadata& dvert = dbuffer.verts[aweight.mVertexId];
@@ -260,8 +313,8 @@ namespace reia {
 						unsigned int C = aface.mIndices[2];
 
 						ibuffer->Indices[j * 3    ] = A;
-						ibuffer->Indices[j * 3 + 1] = C;
-						ibuffer->Indices[j * 3 + 2] = B;
+						ibuffer->Indices[j * 3 + 1] = B;
+						ibuffer->Indices[j * 3 + 2] = C;
 					}
 					std::cout << "End copying triangles..." << std::endl;
 
@@ -284,23 +337,6 @@ namespace reia {
 					ibuffer->drop();
 					ibuffer = 0;
 				}
-
-				// Copying bone structure
-				std::cout << "Begin copying bone structure..." << std::endl;
-				const aiNode* armatureRoot = rootNode->FindNode("ROOT");
-				if(armatureRoot) {
-                    output->numBones = recursiveFindTreeSize(armatureRoot);
-					std::cout << "Total bone count: " << output->numBones << std::endl;
-
-                    if(output->numBones > 0) {
-						output->bones = new Bone[output->numBones];
-
-						irr::u32 persistentIndex = 0;
-						std::cout << "Generating bone structure." << std::endl;
-						recursiveBuildBoneStructure(output->bones, persistentIndex, 0, true, armatureRoot);
-                    }
-				}
-				std::cout << "End copying bone structure." << std::endl;
 
 				// Copying Animations
 				std::cout << "Begin copying animation data..." << std::endl;
@@ -369,7 +405,7 @@ namespace reia {
 				}
 				std::cout << "End copying animation data." << std::endl;
 
-				assimp.FreeScene();
+				//assimp.FreeScene();
 
 				return output;
 			}
@@ -383,7 +419,7 @@ namespace reia {
 		return ws.c_str();
 	}
 
-	ComplexMeshSceneNode* qux(irr::scene::ISceneManager* smgr, const ComplexMeshData* data, irr::gui::IGUIEnvironment* gui) {
+	ComplexMeshSceneNode* qux(irr::scene::ISceneManager* smgr, const ComplexMeshData* data, irr::gui::IGUIFont* fnt) {
 		ComplexMeshSceneNode* retVal = new ComplexMeshSceneNode();
 		retVal->node = smgr->addMeshSceneNode(data->mesh);
 		retVal->data = data;
@@ -394,22 +430,69 @@ namespace reia {
 
 
 			if(bone.isRoot) {
-				retVal->boneNodes[i] = smgr->addTextSceneNode(gui->getBuiltInFont(), toText(bone.name), irr::video::SColor(255, 255, 255, 255), retVal->node);
+				retVal->boneNodes[i] = smgr->addTextSceneNode(fnt, toText(bone.name), irr::video::SColor(255, 255, 255, 255), retVal->node);
 				//retVal->boneNodes[i] = smgr->addEmptySceneNode(retVal->node);
 
 			}
 			else {
-				retVal->boneNodes[i] = smgr->addTextSceneNode(gui->getBuiltInFont(), toText(bone.name), irr::video::SColor(255, 255, 255, 255), retVal->boneNodes[bone.parentId]);
+				retVal->boneNodes[i] = smgr->addTextSceneNode(fnt, toText(bone.name), irr::video::SColor(255, 255, 255, 255), retVal->boneNodes[bone.parentId]);
 				//retVal->boneNodes[i] = smgr->addEmptySceneNode(retVal->boneNodes[bone.parentId]);
 			}
 
-			retVal->boneNodes[i]->setPosition(bone.trans.getTranslation());
-			retVal->boneNodes[i]->setPosition(irr::core::vector3df(0, 5, 0));
-			retVal->boneNodes[i]->setRotation(bone.trans.getRotationDegrees());
-			retVal->boneNodes[i]->setScale(bone.trans.getScale());
+			irr::core::matrix4 finTrans = bone.trans;// * bone.offsetMatrix;
+
+			std::cout << "========" << std::endl;
+			printThis(bone.trans);
+			std::cout << std::endl;
+			printThis(bone.offsetMatrix);
+			std::cout << std::endl;
+			printThis(finTrans);
+			printThis(finTrans.getTranslation());
+
+			retVal->boneNodes[i]->setPosition(finTrans.getTranslation());
+			retVal->boneNodes[i]->setRotation(finTrans.getRotationDegrees());
+			retVal->boneNodes[i]->setScale(finTrans.getScale());
 		}
 
 		return retVal;
 
+	}
+
+	void potato(ComplexMeshSceneNode* node, irr::f32 time) {
+		const ComplexMeshData* data = node->data;
+
+		AnimationData& anim = data->anims[0];
+
+		for(unsigned int i = 0; i < anim.numChannels; ++ i) {
+			ChannelData& channel = anim.channels[i];
+
+			VectorKey pos = channel.positions[0];
+			VectorKey scale = channel.scalings[0];
+			QuaternionKey rot = channel.rotations[0];
+
+			const std::string& boneName = channel.boneName;
+
+			for(unsigned int j = 0; j < data->numBones; ++ j) {
+				Bone& bone = data->bones[j];
+
+				if(bone.name == boneName) {
+
+
+					irr::scene::ISceneNode* boneNode = node->boneNodes[j];
+
+
+
+					boneNode->setPosition(pos.value);
+					//boneNode->setRotation(rot.value);
+					//boneNode->setScale(finTrans.getScale());
+				}
+
+
+			}
+
+			pos.value;
+
+
+		}
 	}
 }

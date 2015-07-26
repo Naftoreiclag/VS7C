@@ -35,8 +35,7 @@ namespace reia {
 
 	// Describes
 	struct BoneMetadata {
-		std::string boneName;
-		irr::core::matrix4 offsetMatrix;
+		irr::u32 boneId;
 	};
 
 	// Extra data for each buffer (group of vertices that has the same material or otherwise differenciated from the rest of the mesh)
@@ -87,6 +86,7 @@ namespace reia {
         irr::u32 numChildren = 0;
 
         irr::core::matrix4 trans;
+		irr::core::matrix4 offsetMatrix;
 	};
 
 	// A single mesh with some number of bones and animations
@@ -130,7 +130,9 @@ namespace reia {
 
 	ComplexMeshData* loadUsingAssimp(irr::scene::ISceneManager* smgr, std::string filename);
 
-	ComplexMeshSceneNode* qux(irr::scene::ISceneManager* smgr, const ComplexMeshData* data, irr::gui::IGUIEnvironment* gui);
+	ComplexMeshSceneNode* qux(irr::scene::ISceneManager* smgr, const ComplexMeshData* data, irr::gui::IGUIFont* fnt);
+
+	void potato(ComplexMeshSceneNode* node, irr::f32 time);
 
 }
 
