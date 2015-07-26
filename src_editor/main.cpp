@@ -1543,7 +1543,10 @@ int main() {
 	//reia::ComplexMeshData* foobar = reia::loadUsingAssimp(smgr, "example_media/models-nonbsd/MD5/Bob.md5mesh");
 
 	// ultimate foobar
-	reia::ComplexMeshSceneNode* baz = reia::qux(smgr, foobar, font);
+	irr::scene::IAnimatedMesh* armatureDecor = smgr->getMesh("assets_editor/bone.obj");
+	armatureDecor->setMaterialFlag(irr::video::EMF_LIGHTING, false);
+	armatureDecor->setMaterialFlag(irr::video::EMF_WIREFRAME, true);
+	reia::ComplexMeshSceneNode* baz = reia::qux(smgr, foobar, font, armatureDecor);
 	reia::potato(baz, 0);
 
 	// Main loop

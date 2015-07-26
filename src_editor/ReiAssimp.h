@@ -130,7 +130,7 @@ namespace reia {
 
 	ComplexMeshData* loadUsingAssimp(irr::scene::ISceneManager* smgr, std::string filename);
 
-	ComplexMeshSceneNode* qux(irr::scene::ISceneManager* smgr, const ComplexMeshData* data, irr::gui::IGUIFont* fnt);
+	ComplexMeshSceneNode* qux(irr::scene::ISceneManager* smgr, const ComplexMeshData* data, irr::gui::IGUIFont* fnt, irr::scene::IAnimatedMesh* boneThing = 0);
 
 	void potato(ComplexMeshSceneNode* node, irr::f32 time);
 

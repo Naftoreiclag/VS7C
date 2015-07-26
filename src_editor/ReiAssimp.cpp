@@ -332,6 +332,8 @@ namespace reia {
 					imaterial.AmbientColor = irr::video::SColor(255, 255, 255, 255);
 					imaterial.ColorMaterial = vertColors ? 1 : 0;
 
+					imaterial.Wireframe = true;
+
 					// Add da buffer
 					output->mesh->addMeshBuffer(ibuffer);
 					ibuffer->drop();
@@ -419,7 +421,7 @@ namespace reia {
 		return ws.c_str();
 	}
 
-	ComplexMeshSceneNode* qux(irr::scene::ISceneManager* smgr, const ComplexMeshData* data, irr::gui::IGUIFont* fnt) {
+	ComplexMeshSceneNode* qux(irr::scene::ISceneManager* smgr, const ComplexMeshData* data, irr::gui::IGUIFont* fnt, irr::scene::IAnimatedMesh* boneThing) {
 		ComplexMeshSceneNode* retVal = new ComplexMeshSceneNode();
 		retVal->node = smgr->addMeshSceneNode(data->mesh);
 		retVal->data = data;
@@ -430,13 +432,20 @@ namespace reia {
 
 
 			if(bone.isRoot) {
-				retVal->boneNodes[i] = smgr->addTextSceneNode(fnt, toText(bone.name), irr::video::SColor(255, 255, 255, 255), retVal->node);
-				//retVal->boneNodes[i] = smgr->addEmptySceneNode(retVal->node);
+				retVal->boneNodes[i] = smgr->addEmptySceneNode(retVal->node);
 
 			}
 			else {
-				retVal->boneNodes[i] = smgr->addTextSceneNode(fnt, toText(bone.name), irr::video::SColor(255, 255, 255, 255), retVal->boneNodes[bone.parentId]);
-				//retVal->boneNodes[i] = smgr->addEmptySceneNode(retVal->boneNodes[bone.parentId]);
+				retVal->boneNodes[i] = smgr->addEmptySceneNode(retVal->boneNodes[bone.parentId]);
+			}
+
+			if(boneThing) {
+				irr::scene::IAnimatedMeshSceneNode* armatureDecor = smgr->addAnimatedMeshSceneNode(boneThing, retVal->boneNodes[i]);
+				irr::scene::ISceneNode* text = smgr->addTextSceneNode(fnt, toText(bone.name), irr::video::SColor(255, 255, 255, 255), retVal->boneNodes[i]);
+
+				text->setPosition(irr::core::vector3df(0.f, 0.5f, 0.f));
+
+
 			}
 
 			irr::core::matrix4 finTrans = bone.trans;// * bone.offsetMatrix;
@@ -466,9 +475,9 @@ namespace reia {
 		for(unsigned int i = 0; i < anim.numChannels; ++ i) {
 			ChannelData& channel = anim.channels[i];
 
-			VectorKey pos = channel.positions[1];
-			VectorKey scale = channel.scalings[1];
-			QuaternionKey rot = channel.rotations[1];
+			VectorKey pos = channel.positions[0];
+			VectorKey scale = channel.scalings[0];
+			QuaternionKey rot = channel.rotations[0];
 
 			const std::string& boneName = channel.boneName;
 
