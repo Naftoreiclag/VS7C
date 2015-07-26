@@ -5,8 +5,8 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.73.0 commit date:2015-01-07, commit time:13:17, hash:b4d8fb5</authoring_tool>
     </contributor>
-    <created>2015-07-26T10:53:51</created>
-    <modified>2015-07-26T10:53:51</modified>
+    <created>2015-07-26T11:07:40</created>
+    <modified>2015-07-26T11:07:40</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -57,7 +57,7 @@
         </technique_common>
       </source>
       <source id="Armature_ROOT_pose_matrix-output">
-        <float_array id="Armature_ROOT_pose_matrix-output-array" count="32">1 0 0 0 0 0 -1 0 0 1 0 0 0 0 0 1 1 0 0 0 0 0 -1 0 0 1 0 0 0 0 0 1</float_array>
+        <float_array id="Armature_ROOT_pose_matrix-output-array" count="32">1 0 0 0 0 0 -1 0 0 1 0 0 0 0 0 1 1 0 0 0 0 0 -1 1.23217 0 1 0 0 0 0 0 1</float_array>
         <technique_common>
           <accessor source="#Armature_ROOT_pose_matrix-output-array" count="2" stride="16">
             <param name="TRANSFORM" type="float4x4"/>
@@ -121,7 +121,7 @@
         </technique_common>
       </source>
       <source id="Armature_Bone2_pose_matrix-output">
-        <float_array id="Armature_Bone2_pose_matrix-output-array" count="32">1 0 0 0 0 1 0 0.9999999 0 0 1 0 0 0 0 1 1 0 0 0 0 0.7071066 -0.7071068 0.9999999 0 0.7071068 0.7071066 0 0 0 0 1</float_array>
+        <float_array id="Armature_Bone2_pose_matrix-output-array" count="32">1 0 0 0 0 1 0 1 0 2.98023e-8 1 1.19209e-7 0 0 0 1 1 0 0 0 0 0.7071066 -0.7071068 1 0 0.7071068 0.7071066 1.19209e-7 0 0 0 1</float_array>
         <technique_common>
           <accessor source="#Armature_Bone2_pose_matrix-output-array" count="2" stride="16">
             <param name="TRANSFORM" type="float4x4"/>

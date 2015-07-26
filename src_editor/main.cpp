@@ -1539,7 +1539,7 @@ int main() {
 
 	// Test
 	//irr::scene::SMeshBuffer* buff = reia::loadUsingAssimp(smgr, "content/standard/advanced_mesh/advMesh.dae");
-	reia::ComplexMeshData* foobar = reia::loadUsingAssimp(smgr, "assets_editor/testAnim3.dae");
+	reia::ComplexMeshData* foobar = reia::loadUsingAssimp(smgr, "assets_editor/cactus.dae");
 	//reia::ComplexMeshData* foobar = reia::loadUsingAssimp(smgr, "example_media/models-nonbsd/MD5/Bob.md5mesh");
 
 	// ultimate foobar

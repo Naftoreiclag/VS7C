@@ -466,9 +466,9 @@ namespace reia {
 		for(unsigned int i = 0; i < anim.numChannels; ++ i) {
 			ChannelData& channel = anim.channels[i];
 
-			VectorKey pos = channel.positions[0];
-			VectorKey scale = channel.scalings[0];
-			QuaternionKey rot = channel.rotations[0];
+			VectorKey pos = channel.positions[1];
+			VectorKey scale = channel.scalings[1];
+			QuaternionKey rot = channel.rotations[1];
 
 			const std::string& boneName = channel.boneName;
 
@@ -481,18 +481,18 @@ namespace reia {
 					irr::scene::ISceneNode* boneNode = node->boneNodes[j];
 
 
-
 					boneNode->setPosition(pos.value);
-					//boneNode->setRotation(rot.value);
-					//boneNode->setScale(finTrans.getScale());
+
+					irr::core::vector3df rotation;
+					rot.value.toEuler(rotation);
+					rotation *= 180.f / 3.14159265f;
+					boneNode->setRotation(rotation);
+
+					boneNode->setScale(scale.value);
 				}
 
 
 			}
-
-			pos.value;
-
-
 		}
 	}
 }
