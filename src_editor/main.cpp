@@ -1546,8 +1546,8 @@ int main() {
 	irr::scene::IAnimatedMesh* armatureDecor = smgr->getMesh("assets_editor/bone.obj");
 	armatureDecor->setMaterialFlag(irr::video::EMF_LIGHTING, false);
 	armatureDecor->setMaterialFlag(irr::video::EMF_WIREFRAME, true);
-	reia::ComplexMeshSceneNode* baz = reia::qux(smgr, foobar, font, armatureDecor);
-	reia::potato(baz, 0);
+	reia::ComplexMeshSceneNode* baz = reia::addNodeFromMesh(smgr, foobar, font, armatureDecor);
+	reia::poseNode(baz, 0);
 
 	// Main loop
 	while(device->run()) {
