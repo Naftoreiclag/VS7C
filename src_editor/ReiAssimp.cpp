@@ -497,7 +497,7 @@ namespace reia {
 							// The key to the right (Forward in time)
 							VectorKey& after = channel.positions[j];
 							// How close the current time is to the "after" time (Expressed as a fraction of the total time between those keyframes)
-							irr::f32 progress = (after.time - tNow) / (after.time - before.time);
+							irr::f32 progress = (tNow - before.time) / (after.time - before.time);
 
 							irr::core::vector3df displ = after.value - before.value;
                             timePosition = before.value + (displ * progress);
@@ -521,7 +521,7 @@ namespace reia {
 						if(tNow < channel.rotations[j].time) {
 							QuaternionKey& before = channel.rotations[j - 1];
 							QuaternionKey& after = channel.rotations[j];
-							irr::f32 progress = (after.time - tNow) / (after.time - before.time);
+							irr::f32 progress = (tNow - before.time) / (after.time - before.time);
 
 							timeRotations.slerp(before.value, after.value, progress);
 						}
@@ -544,7 +544,7 @@ namespace reia {
 						if(tNow < channel.scalings[j].time) {
 							VectorKey& before = channel.scalings[j - 1];
 							VectorKey& after = channel.scalings[j];
-							irr::f32 progress = (after.time - tNow) / (after.time - before.time);
+							irr::f32 progress = (tNow - before.time) / (after.time - before.time);
 
 							irr::core::vector3df displ = after.value - before.value;
                             timeScale = before.value + (displ * progress);
