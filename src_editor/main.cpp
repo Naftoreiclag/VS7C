@@ -1547,7 +1547,8 @@ int main() {
 	armatureDecor->setMaterialFlag(irr::video::EMF_LIGHTING, false);
 	armatureDecor->setMaterialFlag(irr::video::EMF_WIREFRAME, true);
 	reia::ComplexMeshSceneNode* baz = reia::addNodeFromMesh(smgr, foobar, font, armatureDecor);
-	reia::poseNode(baz, 0);
+
+	irr::f32 testTime = 0;
 
 	// Main loop
 	while(device->run()) {
@@ -1561,6 +1562,11 @@ int main() {
         then = now;
 
 		ts->time += tpf;
+		testTime += tpf;
+		if(testTime > 3.f) {
+			testTime -= 3.f;
+		}
+		reia::poseNode(baz, testTime);
 
 		/*
 		for(irr::u32 i = 0; i < buff->Vertices.size(); ++ i) {

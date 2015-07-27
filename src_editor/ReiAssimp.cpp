@@ -475,10 +475,8 @@ namespace reia {
 		for(unsigned int i = 0; i < anim.numChannels; ++ i) {
 			ChannelData& channel = anim.channels[i];
 
-
-
 			irr::core::vector3df timePosition(0.f, 0.f, 0.f);
-			irr::core::quaternion timeRotation(0.f, 0.f, 0.f, 0.f);
+			irr::core::quaternion timeRotations(0.f, 0.f, 0.f, 0.f);
 			irr::core::vector3df timeScale(1.f, 1.f, 1.f);
 
 			if(channel.numPositions == 1) {
@@ -486,14 +484,14 @@ namespace reia {
 			}
 			else {
                 if(tNow < channel.positions[0].time) {
-                    timePosition = channel.positions[0].value
+                    timePosition = channel.positions[0].value;
                 }
                 else if(channel.positions[channel.numPositions - 1].time < tNow) {
 					timePosition = channel.positions[channel.numPositions - 1].value;
                 }
                 else {
 					for(unsigned int j = 1; j < channel.numPositions; ++ j) {
-						if(tNow < channel.positions[j].value) {
+						if(tNow < channel.positions[j].time) {
 							// The key to the left (Backward in time)
 							VectorKey& before = channel.positions[j - 1];
 							// The key to the right (Forward in time)
@@ -513,19 +511,19 @@ namespace reia {
 			}
 			else {
                 if(tNow < channel.rotations[0].time) {
-                    timeRotations = channel.rotations[0].value
+                    timeRotations = channel.rotations[0].value;
                 }
                 else if(channel.rotations[channel.numRotations - 1].time < tNow) {
 					timeRotations = channel.rotations[channel.numRotations - 1].value;
                 }
                 else {
 					for(unsigned int j = 1; j < channel.numRotations; ++ j) {
-						if(tNow < channel.rotations[j].value) {
+						if(tNow < channel.rotations[j].time) {
 							QuaternionKey& before = channel.rotations[j - 1];
 							QuaternionKey& after = channel.rotations[j];
 							irr::f32 progress = (after.time - tNow) / (after.time - before.time);
-\
-							timeRotation.slerp(before.value, after.value, progress);
+
+							timeRotations.slerp(before.value, after.value, progress);
 						}
 					}
                 }
@@ -536,14 +534,14 @@ namespace reia {
 			}
 			else {
                 if(tNow < channel.scalings[0].time) {
-                    timeScale = channel.scalings[0].value
+                    timeScale = channel.scalings[0].value;
                 }
                 else if(channel.scalings[channel.numScalings - 1].time < tNow) {
 					timeScale = channel.scalings[channel.numScalings - 1].value;
                 }
                 else {
 					for(unsigned int j = 1; j < channel.numScalings; ++ j) {
-						if(tNow < channel.scalings[j].value) {
+						if(tNow < channel.scalings[j].time) {
 							VectorKey& before = channel.scalings[j - 1];
 							VectorKey& after = channel.scalings[j];
 							irr::f32 progress = (after.time - tNow) / (after.time - before.time);
@@ -555,9 +553,11 @@ namespace reia {
                 }
 			}
 
+/*
 			VectorKey pos = channel.positions[0];
 			VectorKey scale = channel.scalings[0];
 			QuaternionKey rot = channel.rotations[0];
+			*/
 
 			const std::string& boneName = channel.boneName;
 
@@ -570,14 +570,14 @@ namespace reia {
 					irr::scene::ISceneNode* boneNode = node->boneNodes[j];
 
 
-					boneNode->setPosition(pos.value);
+					boneNode->setPosition(timePosition);
 
 					irr::core::vector3df rotation;
-					rot.value.toEuler(rotation);
+					timeRotations.toEuler(rotation);
 					rotation *= 180.f / 3.14159265f;
 					boneNode->setRotation(rotation);
 
-					boneNode->setScale(scale.value);
+					boneNode->setScale(timeScale);
 				}
 
 
