@@ -406,7 +406,7 @@ namespace reia {
 							aiVector3D& avalue = akey.mValue;
 
 							dkey.time = akey.mTime;
-							dkey.value = irr::core::vector3df(-avalue.x, avalue.y, avalue.z);
+							dkey.value = irr::core::vector3df(avalue.z, avalue.y, avalue.x);
                         }
 						std::cout << "End copying position keys." << std::endl;
 
@@ -420,7 +420,7 @@ namespace reia {
 							aiQuaternion& avalue = akey.mValue;
 
 							dkey.time = akey.mTime;
-							dkey.value.set(-avalue.x, avalue.y, avalue.z, -avalue.w);
+							dkey.value.set(avalue.z, avalue.y, avalue.x, -avalue.w);
                         }
 						std::cout << "End copying rotation keys." << std::endl;
 
