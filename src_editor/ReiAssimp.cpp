@@ -10,6 +10,48 @@
 
 namespace reia {
 
+
+	irr::scene::SMesh* meshClone(const irr::scene::SMesh* imesh) {
+        irr::scene::SMesh* omesh = new irr::scene::SMesh();
+
+        irr::u32 ibuffCount = imesh->getMeshBufferCount();
+
+        for(irr::u32 i = 0; i < ibuffCount; ++ i) {
+            irr::scene::SMeshBuffer* ibuffer = (irr::scene::SMeshBuffer*) imesh->getMeshBuffer(i);
+			irr::scene::SMeshBuffer* obuffer = new irr::scene::SMeshBuffer();
+
+			irr::u32 vertCount = ibuffer->getVertexCount();
+			obuffer->Vertices.reallocate(vertCount);
+			obuffer->Vertices.set_used(vertCount);
+            for(irr::u32 j = 0; j < vertCount; ++ j) {
+				const irr::video::S3DVertex& ivert = ibuffer->Vertices[j];
+				irr::video::S3DVertex& overt = obuffer->Vertices[j];
+
+				overt.Normal.set(ivert.Normal);
+				overt.Color.set(ivert.Color.getAlpha(), ivert.Color.getRed(), ivert.Color.getGreen(), ivert.Color.getBlue());
+				overt.Pos.set(ivert.Pos);
+            }
+
+            irr::u32 indexCount = ibuffer->getIndexCount();
+            obuffer->Indices.reallocate(indexCount);
+            obuffer->Indices.set_used(indexCount);
+            for(irr::u32 j = 0; j < indexCount; ++ j) {
+				obuffer->Indices[j] = ibuffer->Indices[j];
+            }
+
+            obuffer->recalculateBoundingBox();
+
+            obuffer->Material = ibuffer->Material;
+
+            omesh->addMeshBuffer(obuffer);
+            obuffer->drop();
+            obuffer = 0;
+        }
+
+
+        return omesh;
+	}
+
 	void debugAiNode(const aiScene* scene, const aiNode* node, unsigned int depth) {
 
 		for(int c = 0; c < depth; ++ c) {
@@ -272,8 +314,8 @@ namespace reia {
 
 						irr::video::S3DVertex& ivert = ibuffer->Vertices[j];
 
-						ivert.Pos.set(avert.x, avert.y, avert.z);
-						ivert.Normal.set(anormal.x, anormal.y, anormal.z);
+						ivert.Pos.set(-avert.y, avert.z, avert.x);
+						ivert.Normal.set(-anormal.y, anormal.z, anormal.x);
 						//ivert.Color.set(acolor->a, acolor->r, acolor->g, acolor->b);
 						ivert.Color.set(0, 0, 0, 0);
 
@@ -350,8 +392,8 @@ namespace reia {
 						unsigned int C = aface.mIndices[2];
 
 						ibuffer->Indices[j * 3    ] = A;
-						ibuffer->Indices[j * 3 + 1] = B;
-						ibuffer->Indices[j * 3 + 2] = C;
+						ibuffer->Indices[j * 3 + 1] = C;
+						ibuffer->Indices[j * 3 + 2] = B;
 					}
 					std::cout << "End copying triangles..." << std::endl;
 
@@ -458,7 +500,8 @@ namespace reia {
 
 	ComplexMeshSceneNode* addNodeFromMesh(irr::scene::ISceneManager* smgr, const ComplexMeshData* data, irr::gui::IGUIFont* fnt, irr::scene::IAnimatedMesh* boneThing) {
 		ComplexMeshSceneNode* retVal = new ComplexMeshSceneNode();
-		retVal->node = smgr->addMeshSceneNode(data->mesh);
+		retVal->instancedMesh = meshClone(data->mesh);
+		retVal->node = smgr->addMeshSceneNode(retVal->instancedMesh);
 		retVal->data = data;
 
 		retVal->boneNodes = new irr::scene::ISceneNode*[data->numBones];
@@ -478,7 +521,7 @@ namespace reia {
 				irr::scene::IAnimatedMeshSceneNode* armatureDecor = smgr->addAnimatedMeshSceneNode(boneThing, retVal->boneNodes[i]);
 				irr::scene::ISceneNode* text = smgr->addTextSceneNode(fnt, toText(bone.name), irr::video::SColor(255, 255, 255, 255), retVal->boneNodes[i]);
 
-				text->setPosition(irr::core::vector3df(0.f, 0.5f, 0.f));
+				text->setPosition(irr::core::vector3df(-0.5f, 0.f, 0.f));
 			}
 
 			irr::core::matrix4 finTrans = bone.trans;// * bone.offsetMatrix;
@@ -599,6 +642,21 @@ namespace reia {
 					boneNode->setScale(timeScale);
 				}
 			}
+		}
+
+
+		// Apply vertexes
+		for(irr::u32 i = 0; i < data->numBuffers; ++ i) {
+			irr::scene::SMeshBuffer* qbuffer = (irr::scene::SMeshBuffer*) node->data->mesh->getMeshBuffer(i);
+			irr::scene::SMeshBuffer* ibuffer = (irr::scene::SMeshBuffer*) node->instancedMesh->getMeshBuffer(i);
+			const BufferMetadata& dbuffer = data->buffers[i];
+
+			for(irr::u32 j = 0; j < dbuffer.numVerts; ++ j) {
+				irr::video::S3DVertex& qvert = qbuffer->Vertices[j];
+				irr::video::S3DVertex& ivert = ibuffer->Vertices[j];
+				ivert.Pos = qvert.Pos * 2;
+			}
+
 		}
 	}
 }

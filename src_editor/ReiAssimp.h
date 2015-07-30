@@ -107,6 +107,7 @@ namespace reia {
 	struct ComplexMeshSceneNode {
 		irr::scene::IMeshSceneNode* node = 0;
         const ComplexMeshData* data = 0;
+        irr::scene::SMesh* instancedMesh = 0;
 
         irr::scene::ISceneNode** boneNodes;
 	};
@@ -120,6 +121,8 @@ namespace reia {
 		virtual bool isALoadableFileExtension(const irr::io::path& filename);
 
 	};
+
+	irr::scene::SMesh* meshClone(const irr::scene::SMesh* mesh);
 
 	void debugAiNode(const aiScene* scene, const aiNode* node, unsigned int depth);
 
