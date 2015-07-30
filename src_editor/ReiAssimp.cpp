@@ -116,6 +116,7 @@ namespace reia {
 	}
 
 	void recursiveBuildBoneStructure(Bone* boneArray, irr::u32& currIndex, irr::u32 parentId, bool isRoot, const aiNode* copyFrom) {
+
 		irr::u32 myId = currIndex;
 		Bone& dbone = boneArray[myId];
 
@@ -141,7 +142,38 @@ namespace reia {
         }
 	}
 
+	/*
+	Converting from dae:
+	model.x <- -dae.y
+	model.y <- dae.z
+	model.z <- dae.x
+
+	 0 -1  0  0
+	 0  0  1  0
+	 1  0  0  0
+	 0  0  0  1
+
+	 0  1  2  3
+	 4  5  6  7
+	 8  9 10 11
+	12 13 14 15
+
+	*/
+
 	ComplexMeshData* loadUsingAssimp(irr::scene::ISceneManager* smgr, std::string filename) {
+
+		irr::core::matrix4 modification;
+		for(int i = 0; i < 16; ++ i) {
+			modification[i] = 0;
+		}
+
+		modification[1] = -1;
+		modification[6] = 1;
+		modification[8] = 1;
+		modification[15] = 1;
+
+		modification.makeIdentity();
+
 		Assimp::Importer assimp;
 		const aiScene* ascene = assimp.ReadFile(filename, aiProcessPreset_TargetRealtime_Fast);
 
@@ -204,6 +236,10 @@ namespace reia {
 						irr::u32 persistentIndex = 0;
 						std::cout << "Generating bone structure." << std::endl;
 						recursiveBuildBoneStructure(output->bones, persistentIndex, 0, true, armatureRoot);
+                    }
+                    for(unsigned int i = 0; i < output->numBones; ++ i) {
+						Bone& boney = output->bones[i];
+						boney.trans = boney.trans * modification;
                     }
 				}
 				std::cout << "End copying bone structure." << std::endl;
@@ -270,6 +306,7 @@ namespace reia {
 
 									//dbone.offsetMatrix = abone->mOffsetMatrix;
 									convertTransform(abone->mOffsetMatrix, dbone.offsetMatrix);
+									dbone.offsetMatrix = dbone.offsetMatrix * modification;
 
 								}
                             }
@@ -332,8 +369,6 @@ namespace reia {
 					imaterial.AmbientColor = irr::video::SColor(255, 255, 255, 255);
 					imaterial.ColorMaterial = vertColors ? 1 : 0;
 
-					imaterial.Wireframe = true;
-
 					// Add da buffer
 					output->mesh->addMeshBuffer(ibuffer);
 					ibuffer->drop();
@@ -371,7 +406,7 @@ namespace reia {
 							aiVector3D& avalue = akey.mValue;
 
 							dkey.time = akey.mTime;
-							dkey.value = irr::core::vector3df(avalue.x, avalue.y, avalue.z);
+							dkey.value = irr::core::vector3df(-avalue.x, avalue.y, avalue.z);
                         }
 						std::cout << "End copying position keys." << std::endl;
 
@@ -385,7 +420,7 @@ namespace reia {
 							aiQuaternion& avalue = akey.mValue;
 
 							dkey.time = akey.mTime;
-							dkey.value.set(avalue.x, avalue.y, avalue.z, avalue.w);
+							dkey.value.set(-avalue.x, avalue.y, avalue.z, -avalue.w);
                         }
 						std::cout << "End copying rotation keys." << std::endl;
 
@@ -444,19 +479,9 @@ namespace reia {
 				irr::scene::ISceneNode* text = smgr->addTextSceneNode(fnt, toText(bone.name), irr::video::SColor(255, 255, 255, 255), retVal->boneNodes[i]);
 
 				text->setPosition(irr::core::vector3df(0.f, 0.5f, 0.f));
-
-
 			}
 
 			irr::core::matrix4 finTrans = bone.trans;// * bone.offsetMatrix;
-
-			std::cout << "========" << std::endl;
-			printThis(bone.trans);
-			std::cout << std::endl;
-			printThis(bone.offsetMatrix);
-			std::cout << std::endl;
-			printThis(finTrans);
-			printThis(finTrans.getTranslation());
 
 			retVal->boneNodes[i]->setPosition(finTrans.getTranslation());
 			retVal->boneNodes[i]->setRotation(finTrans.getRotationDegrees());
@@ -468,6 +493,9 @@ namespace reia {
 	}
 
 	void poseNode(ComplexMeshSceneNode* node, irr::f32 tNow) {
+
+		//node->node->setRotation(irr::core::vector3df(-90.f, 0.f, 0.f));
+
 		const ComplexMeshData* data = node->data;
 
 		AnimationData& anim = data->anims[0];
@@ -553,22 +581,13 @@ namespace reia {
                 }
 			}
 
-/*
-			VectorKey pos = channel.positions[0];
-			VectorKey scale = channel.scalings[0];
-			QuaternionKey rot = channel.rotations[0];
-			*/
-
 			const std::string& boneName = channel.boneName;
 
 			for(unsigned int j = 0; j < data->numBones; ++ j) {
 				Bone& bone = data->bones[j];
 
 				if(bone.name == boneName) {
-
-
 					irr::scene::ISceneNode* boneNode = node->boneNodes[j];
-
 
 					boneNode->setPosition(timePosition);
 
@@ -579,8 +598,6 @@ namespace reia {
 
 					boneNode->setScale(timeScale);
 				}
-
-
 			}
 		}
 	}
