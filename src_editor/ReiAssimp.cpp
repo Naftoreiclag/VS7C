@@ -654,7 +654,48 @@ namespace reia {
 			for(irr::u32 j = 0; j < dbuffer.numVerts; ++ j) {
 				irr::video::S3DVertex& qvert = qbuffer->Vertices[j];
 				irr::video::S3DVertex& ivert = ibuffer->Vertices[j];
-				ivert.Pos = qvert.Pos * 2;
+				const VertexMetadata& dvert = dbuffer.verts[j];
+
+				irr::core::vector3df pos;
+
+				if(dvert.boneW != 255) {
+
+					const Bone& dboneW = data->bones[dbuffer.usedBones[dvert.boneW].boneId];
+
+					irr::core::vector3df output;
+					dboneW.offsetMatrix.transformVect(output, qvert.Pos);
+					output *= dvert.weightW;
+
+					pos = output;
+
+					if(dvert.boneX != 255) {
+						const Bone& dboneX = data->bones[dbuffer.usedBones[dvert.boneX].boneId];
+						dboneX.offsetMatrix.transformVect(output, qvert.Pos);
+						output *= dvert.weightX;
+
+						pos += output;
+
+						if(dvert.boneY != 255) {
+							const Bone& dboneY = data->bones[dbuffer.usedBones[dvert.boneY].boneId];
+							dboneY.offsetMatrix.transformVect(output, qvert.Pos);
+							output *= dvert.weightY;
+
+							pos += output;
+
+							if(dvert.boneZ != 255) {
+								const Bone& dboneZ = data->bones[dbuffer.usedBones[dvert.boneZ].boneId];
+								dboneZ.offsetMatrix.transformVect(output, qvert.Pos);
+								output *= dvert.weightZ;
+
+								pos += output;
+							}
+						}
+					}
+				} else {
+					pos = qvert.Pos;
+				}
+
+				ivert.Pos = pos;
 			}
 
 		}

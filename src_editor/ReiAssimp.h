@@ -85,6 +85,7 @@ namespace reia {
         irr::u32* childrenIds = 0;
         irr::u32 numChildren = 0;
 
+		// CMatrix4< f32 >
         irr::core::matrix4 trans;
 		irr::core::matrix4 offsetMatrix;
 	};
