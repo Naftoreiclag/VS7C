@@ -659,35 +659,42 @@ namespace reia {
 				irr::core::vector3df pos;
 
 				if(dvert.boneW != 255) {
+					irr::u32 boneId = dbuffer.usedBones[dvert.boneW].boneId;
 
-					const Bone& dboneW = data->bones[dbuffer.usedBones[dvert.boneW].boneId];
+					irr::core::vector3df passOne;
+					irr::core::vector3df passTwo;
+					data->bones[boneId].offsetMatrix.transformVect(passOne, qvert.Pos);
+					node->boneNodes[boneId]->getAbsoluteTransformation().transformVect(passTwo, passOne);
 
-					irr::core::vector3df output;
-					dboneW.offsetMatrix.transformVect(output, qvert.Pos);
-					output *= dvert.weightW;
-
-					pos = output;
+					passTwo *= dvert.weightW;
+					pos = passTwo;
 
 					if(dvert.boneX != 255) {
-						const Bone& dboneX = data->bones[dbuffer.usedBones[dvert.boneX].boneId];
-						dboneX.offsetMatrix.transformVect(output, qvert.Pos);
-						output *= dvert.weightX;
+						boneId = dbuffer.usedBones[dvert.boneX].boneId;
 
-						pos += output;
+						data->bones[boneId].offsetMatrix.transformVect(passOne, qvert.Pos);
+						node->boneNodes[boneId]->getAbsoluteTransformation().transformVect(passTwo, passOne);
+
+						passTwo *= dvert.weightX;
+						pos += passTwo;
 
 						if(dvert.boneY != 255) {
-							const Bone& dboneY = data->bones[dbuffer.usedBones[dvert.boneY].boneId];
-							dboneY.offsetMatrix.transformVect(output, qvert.Pos);
-							output *= dvert.weightY;
+							boneId = dbuffer.usedBones[dvert.boneY].boneId;
 
-							pos += output;
+							data->bones[boneId].offsetMatrix.transformVect(passOne, qvert.Pos);
+							node->boneNodes[boneId]->getAbsoluteTransformation().transformVect(passTwo, passOne);
+
+							passTwo *= dvert.weightY;
+							pos += passTwo;
 
 							if(dvert.boneZ != 255) {
-								const Bone& dboneZ = data->bones[dbuffer.usedBones[dvert.boneZ].boneId];
-								dboneZ.offsetMatrix.transformVect(output, qvert.Pos);
-								output *= dvert.weightZ;
+								boneId = dbuffer.usedBones[dvert.boneZ].boneId;
 
-								pos += output;
+								data->bones[boneId].offsetMatrix.transformVect(passOne, qvert.Pos);
+								node->boneNodes[boneId]->getAbsoluteTransformation().transformVect(passTwo, passOne);
+
+								passTwo *= dvert.weightZ;
+								pos += passTwo;
 							}
 						}
 					}
