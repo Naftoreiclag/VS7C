@@ -368,7 +368,7 @@ namespace reia {
 									dvert.weightY = aweight.mWeight;
                                 } else if(dvert.boneZ == 255) {
 									dvert.boneZ = j;
-									dvert.weightW = aweight.mWeight;
+									dvert.weightZ = aweight.mWeight;
                                 } else {
 									std::cout << "Warning: Vertex " << aweight.mVertexId << " has more than 4 influences." << std::endl;
                                 }
@@ -383,15 +383,19 @@ namespace reia {
 						const VertexMetadata& dvert = dbuffer.verts[j];
 
 						if(dvert.boneW != 255) {
+							int numBones = 1;
 							irr::f32 totalInf = dvert.weightW;
 
 							if(dvert.boneX != 255) {
+								++ numBones;
 								totalInf += dvert.weightX;
 
 								if(dvert.boneY != 255) {
+									++ numBones;
 									totalInf += dvert.weightY;
 
 									if(dvert.boneZ != 255) {
+										++ numBones;
 										totalInf += dvert.weightZ;
 									}
 								}
@@ -404,7 +408,19 @@ namespace reia {
 							}
 
 							if(error > 0.1) {
-								std::cout << "Warning: Vertex " << j << " has total influence of " << totalInf << "." << std::endl;
+								std::cout << "Warning: Vertex " << j << " has total influence of " << totalInf << " from " << numBones << " bones." << std::endl;
+
+								std::cout << "Bone W: " << dvert.weightW << std::endl;
+								if(numBones > 1) {
+									std::cout << "Bone X: " << dvert.weightX << std::endl;
+								if(numBones > 2) {
+									std::cout << "Bone Y: " << dvert.weightY << std::endl;
+								if(numBones > 3) {
+									std::cout << "Bone Z: " << dvert.weightZ << std::endl;
+								}
+								}
+								}
+
 							}
 						}
 						else {
