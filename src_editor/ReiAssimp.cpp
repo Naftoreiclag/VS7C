@@ -213,8 +213,8 @@ namespace reia {
 		modification[6] = 1;
 		modification[8] = 1;
 		modification[15] = 1;
-
 		modification.makeIdentity();
+
 
 		Assimp::Importer assimp;
 		const aiScene* ascene = assimp.ReadFile(filename, aiProcessPreset_TargetRealtime_Fast);
@@ -314,8 +314,8 @@ namespace reia {
 
 						irr::video::S3DVertex& ivert = ibuffer->Vertices[j];
 
-						ivert.Pos.set(-avert.y, avert.z, avert.x);
-						ivert.Normal.set(-anormal.y, anormal.z, anormal.x);
+						ivert.Pos.set(avert.x, avert.y, avert.z);
+						ivert.Normal.set(anormal.x, anormal.y, anormal.z);
 						//ivert.Color.set(acolor->a, acolor->r, acolor->g, acolor->b);
 						ivert.Color.set(0, 0, 0, 0);
 
@@ -348,8 +348,8 @@ namespace reia {
 
 									//dbone.offsetMatrix = abone->mOffsetMatrix;
 									convertTransform(abone->mOffsetMatrix, dbone.offsetMatrix);
-									dbone.offsetMatrix = dbone.offsetMatrix * modification;
-
+									//dbone.offsetMatrix = dbone.offsetMatrix * modification;
+									dbone.offsetMatrix.makeInverse();
 								}
                             }
 
@@ -378,6 +378,41 @@ namespace reia {
 						std::cout << "End copying buffer bone groups." << std::endl;
 					}
 
+					// Debugging only
+					for(unsigned int j = 0; j < dbuffer.numVerts; ++ j) {
+						const VertexMetadata& dvert = dbuffer.verts[j];
+
+						if(dvert.boneW != 255) {
+							irr::f32 totalInf = dvert.weightW;
+
+							if(dvert.boneX != 255) {
+								totalInf += dvert.weightX;
+
+								if(dvert.boneY != 255) {
+									totalInf += dvert.weightY;
+
+									if(dvert.boneZ != 255) {
+										totalInf += dvert.weightZ;
+									}
+								}
+							}
+
+							irr::f32 error = totalInf - 1;
+
+							if(error < 0) {
+								error *= -1;
+							}
+
+							if(error > 0.1) {
+								std::cout << "Warning: Vertex " << j << " has total influence of " << totalInf << "." << std::endl;
+							}
+						}
+						else {
+
+						}
+
+					}
+
 
 					ibuffer->Indices.reallocate(abuffer->mNumFaces * 3);
 					ibuffer->Indices.set_used(abuffer->mNumFaces * 3);
@@ -392,8 +427,8 @@ namespace reia {
 						unsigned int C = aface.mIndices[2];
 
 						ibuffer->Indices[j * 3    ] = A;
-						ibuffer->Indices[j * 3 + 1] = C;
-						ibuffer->Indices[j * 3 + 2] = B;
+						ibuffer->Indices[j * 3 + 1] = B;
+						ibuffer->Indices[j * 3 + 2] = C;
 					}
 					std::cout << "End copying triangles..." << std::endl;
 
@@ -448,7 +483,8 @@ namespace reia {
 							aiVector3D& avalue = akey.mValue;
 
 							dkey.time = akey.mTime;
-							dkey.value = irr::core::vector3df(-avalue.y, avalue.z, avalue.x);
+							//dkey.value = irr::core::vector3df(-avalue.y, avalue.z, avalue.x);
+							dkey.value = irr::core::vector3df(avalue.x, avalue.y, avalue.z);
                         }
 						std::cout << "End copying position keys." << std::endl;
 
@@ -462,7 +498,8 @@ namespace reia {
 							aiQuaternion& avalue = akey.mValue;
 
 							dkey.time = akey.mTime;
-							dkey.value.set(-avalue.y, avalue.z, avalue.x, -avalue.w);
+							//dkey.value.set(-avalue.y, avalue.z, avalue.x, -avalue.w);
+							dkey.value.set(avalue.x, avalue.y, avalue.z, avalue.w);
                         }
 						std::cout << "End copying rotation keys." << std::endl;
 
