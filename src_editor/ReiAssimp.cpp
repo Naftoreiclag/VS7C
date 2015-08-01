@@ -594,6 +594,10 @@ namespace reia {
 
 		const ComplexMeshData* data = node->data;
 
+		if(data->numAnims == 0) {
+			return;
+		}
+
 		AnimationData& anim = data->anims[0];
 
 		for(unsigned int i = 0; i < anim.numChannels; ++ i) {

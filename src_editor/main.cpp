@@ -1550,7 +1550,7 @@ int main() {
 	reia::ComplexMeshSceneNode* baz = reia::addNodeFromMesh(smgr, foobar, font, armatureDecor);
 	baz->node->getMaterial(0).Wireframe = true;
 
-	irr::f32 testTime = 0;
+	irr::f32 testTime = 4;
 
 	// Main loop
 	while(device->run()) {
@@ -1567,6 +1567,7 @@ int main() {
 		testTime += tpf;
 		if(testTime > 3.f) {
 			testTime -= 3.f;
+			std::cout << "pose" << std::endl;
 		}
 		reia::poseNode(baz, testTime);
 
