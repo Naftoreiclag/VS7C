@@ -581,11 +581,9 @@ namespace reia {
 			Bone& dbone = data->bones[i];
 			irr::scene::ISceneNode* boneNode = retVal->boneNodes[i];
 
-			/*
 			dbone.bindPose = boneNode->getAbsoluteTransformation();
 			dbone.inverseBindPose = dbone.bindPose;
 			dbone.inverseBindPose.makeInverse();
-			*/
 		}
 
 		return retVal;
@@ -722,8 +720,16 @@ namespace reia {
 
 				irr::core::vector3df pos;
 
-				irr::core::vector3df passOne;
-				irr::core::vector3df passTwo;
+				irr::core::matrix4 matA;
+				irr::core::matrix4 matB;
+
+				irr::core::matrix4 inverseBindPose;
+				irr::core::matrix4 bindPose;
+				irr::core::matrix4 disTrans;
+
+				irr::core::vector3df passA;
+				irr::core::vector3df passB;
+				irr::core::vector3df passF;
 				for(irr::u32 k = 0; k < 4; ++ k) {
 					if(dvert.boneIds[k] == 255) {
 						if(k == 0) {
@@ -734,16 +740,28 @@ namespace reia {
 					else {
 						irr::u32 boneId = dbuffer.usedBones[dvert.boneIds[k]].boneId;
 
-						data->bones[boneId].inverseBindPose.transformVect(passOne, qvert.Pos);
-						//data->bones[boneId].bindPose.transformVect(passTwo, passOne);
-						node->boneNodes[boneId]->getAbsoluteTransformation().transformVect(passTwo, passOne);
-						passTwo *= dvert.weights[k];
+						bindPose = data->bones[boneId].bindPose;
+						inverseBindPose = data->bones[boneId].inverseBindPose;
+						disTrans = node->boneNodes[boneId]->getAbsoluteTransformation();
+
+						//data->bones[boneId].inverseBindPose.transformVect(passA, qvert.Pos);
+						//data->bones[boneId].bindPose.transformVect(passB, passA);
+						//node->boneNodes[boneId]->getAbsoluteTransformation().transformVect(passB, passA);
+						//passB *= dvert.weights[k];
+
+						//inverseBindPose.transformVect(passA, qvert.Pos);
+						//disTrans.transformVect(passF, passA);
+
+						matA = inverseBindPose;
+						matA.transformVect(passF, qvert.Pos);
+
+						passF *= dvert.weights[k];
 
 						if(k == 0) {
-							pos = passTwo;
+							pos = passF;
 						}
 						else {
-							pos += passTwo;
+							pos += passF;
 						}
 					}
 				}
