@@ -22,15 +22,14 @@ namespace reia {
 	// Extra per-vertex data
 	struct VertexMetadata {
 		// These numbers are indices in the usedBones[] array
-		irr::u8 boneW = 255;
-		irr::u8 boneX = 255;
-		irr::u8 boneY = 255;
-		irr::u8 boneZ = 255;
-
-		irr::f32 weightW;
-		irr::f32 weightX;
-		irr::f32 weightY;
-		irr::f32 weightZ;
+		irr::u8 boneIds[4];
+		irr::f32 weights[4];
+		VertexMetadata() {
+			boneIds[0] = 255;
+			boneIds[1] = 255;
+			boneIds[2] = 255;
+			boneIds[3] = 255;
+		}
 	};
 
 	// Describes

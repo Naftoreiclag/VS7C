@@ -358,21 +358,16 @@ namespace reia {
 								const aiVertexWeight& aweight = abone->mWeights[k];
 								VertexMetadata& dvert = dbuffer.verts[aweight.mVertexId];
 
-                                if(dvert.boneW == 255) {
-									dvert.boneW = j;
-									dvert.weightW = aweight.mWeight;
-                                } else if(dvert.boneX == 255) {
-									dvert.boneX = j;
-									dvert.weightX = aweight.mWeight;
-                                } else if(dvert.boneY == 255) {
-									dvert.boneY = j;
-									dvert.weightY = aweight.mWeight;
-                                } else if(dvert.boneZ == 255) {
-									dvert.boneZ = j;
-									dvert.weightZ = aweight.mWeight;
-                                } else {
-									std::cout << "Warning: Vertex " << aweight.mVertexId << " has more than 4 influences." << std::endl;
-                                }
+								for(unsigned int l = 0; l <= 4; ++ l) {
+									if(l == 4) {
+										std::cout << "Warning: Vertex " << aweight.mVertexId << " has more than 4 influences." << std::endl;
+									}
+									else if(dvert.boneIds[l] == 255) {
+										dvert.boneIds[l] = j;
+										dvert.weights[l] = aweight.mWeight;
+										break;
+									}
+								}
 							}
 						}
 
@@ -380,6 +375,7 @@ namespace reia {
 					}
 
 					// Debugging only
+					/*
 					for(unsigned int j = 0; j < dbuffer.numVerts; ++ j) {
 						const VertexMetadata& dvert = dbuffer.verts[j];
 
@@ -429,6 +425,7 @@ namespace reia {
 						}
 
 					}
+					*/
 
 
 					ibuffer->Indices.reallocate(abuffer->mNumFaces * 3);
@@ -725,49 +722,30 @@ namespace reia {
 
 				irr::core::vector3df pos;
 
-				if(dvert.boneW != 255) {
-					irr::u32 boneId = dbuffer.usedBones[dvert.boneW].boneId;
-
-					irr::core::vector3df passOne;
-					irr::core::vector3df passTwo;
-					data->bones[boneId].inverseBindPose.transformVect(passOne, qvert.Pos);
-					node->boneNodes[boneId]->getAbsoluteTransformation().transformVect(passTwo, passOne);
-
-
-					passTwo *= dvert.weightW;
-					pos = passTwo;
-
-					if(dvert.boneX != 255) {
-						boneId = dbuffer.usedBones[dvert.boneX].boneId;
+				irr::core::vector3df passOne;
+				irr::core::vector3df passTwo;
+				for(irr::u32 k = 0; k < 4; ++ k) {
+					if(dvert.boneIds[k] == 255) {
+						if(k == 0) {
+							pos = qvert.Pos;
+						}
+						break;
+					}
+					else {
+						irr::u32 boneId = dbuffer.usedBones[dvert.boneIds[k]].boneId;
 
 						data->bones[boneId].inverseBindPose.transformVect(passOne, qvert.Pos);
+						//data->bones[boneId].bindPose.transformVect(passTwo, passOne);
 						node->boneNodes[boneId]->getAbsoluteTransformation().transformVect(passTwo, passOne);
+						passTwo *= dvert.weights[k];
 
-						passTwo *= dvert.weightX;
-						pos += passTwo;
-
-						if(dvert.boneY != 255) {
-							boneId = dbuffer.usedBones[dvert.boneY].boneId;
-
-							data->bones[boneId].inverseBindPose.transformVect(passOne, qvert.Pos);
-							node->boneNodes[boneId]->getAbsoluteTransformation().transformVect(passTwo, passOne);
-
-							passTwo *= dvert.weightY;
+						if(k == 0) {
+							pos = passTwo;
+						}
+						else {
 							pos += passTwo;
-
-							if(dvert.boneZ != 255) {
-								boneId = dbuffer.usedBones[dvert.boneZ].boneId;
-
-								data->bones[boneId].inverseBindPose.transformVect(passOne, qvert.Pos);
-								node->boneNodes[boneId]->getAbsoluteTransformation().transformVect(passTwo, passOne);
-
-								passTwo *= dvert.weightZ;
-								pos += passTwo;
-							}
 						}
 					}
-				} else {
-					pos = qvert.Pos;
 				}
 
 				ivert.Pos = pos;
