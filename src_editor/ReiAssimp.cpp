@@ -314,7 +314,7 @@ namespace reia {
 
 						irr::video::S3DVertex& ivert = ibuffer->Vertices[j];
 
-						ivert.Pos.set(avert.x, avert.y, avert.z);
+						ivert.Pos.set(-avert.y, avert.z, avert.x);
 						ivert.Normal.set(anormal.x, anormal.y, anormal.z);
 						//ivert.Color.set(acolor->a, acolor->r, acolor->g, acolor->b);
 						ivert.Color.set(0, 0, 0, 0);
@@ -441,8 +441,8 @@ namespace reia {
 						unsigned int C = aface.mIndices[2];
 
 						ibuffer->Indices[j * 3    ] = A;
-						ibuffer->Indices[j * 3 + 1] = B;
-						ibuffer->Indices[j * 3 + 2] = C;
+						ibuffer->Indices[j * 3 + 1] = C;
+						ibuffer->Indices[j * 3 + 2] = B;
 					}
 					std::cout << "End copying triangles..." << std::endl;
 
@@ -497,8 +497,8 @@ namespace reia {
 							aiVector3D& avalue = akey.mValue;
 
 							dkey.time = akey.mTime;
-							//dkey.value = irr::core::vector3df(-avalue.y, avalue.z, avalue.x);
-							dkey.value = irr::core::vector3df(avalue.x, avalue.y, avalue.z);
+							dkey.value = irr::core::vector3df(-avalue.y, avalue.z, avalue.x);
+							//dkey.value = irr::core::vector3df(avalue.x, avalue.y, avalue.z);
                         }
 						std::cout << "End copying position keys." << std::endl;
 
@@ -512,8 +512,8 @@ namespace reia {
 							aiQuaternion& avalue = akey.mValue;
 
 							dkey.time = akey.mTime;
-							//dkey.value.set(-avalue.y, avalue.z, avalue.x, -avalue.w);
-							dkey.value.set(avalue.x, avalue.y, avalue.z, avalue.w);
+							dkey.value.set(-avalue.y, avalue.z, avalue.x, -avalue.w);
+							//dkey.value.set(avalue.x, avalue.y, avalue.z, avalue.w);
                         }
 						std::cout << "End copying rotation keys." << std::endl;
 
