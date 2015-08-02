@@ -52,7 +52,7 @@ namespace reia {
         return omesh;
 	}
 
-	void debugAiNode(const aiScene* scene, const aiNode* node, unsigned int depth) {
+	void debugAiNode(const aiScene* scene, const aiNode* node, irr::u32 depth) {
 
 		for(int c = 0; c < depth; ++ c) {
             std::cout << "  ";
@@ -60,13 +60,13 @@ namespace reia {
 
         std::cout << node->mName.C_Str();
 
-        unsigned int numMeshes = node->mNumMeshes;
+        irr::u32 numMeshes = node->mNumMeshes;
 
         if(numMeshes > 0) {
 			std::cout << " ";
 			std::cout << numMeshes;
 			std::cout << ":[";
-			for(unsigned int i = 0; i < numMeshes; ++ i) {
+			for(irr::u32 i = 0; i < numMeshes; ++ i) {
 
 				aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 
@@ -81,7 +81,7 @@ namespace reia {
 					std::cout << ":[";
 
 
-					for(unsigned int j = 0; j < material->mNumProperties; ++ j) {
+					for(irr::u32 j = 0; j < material->mNumProperties; ++ j) {
 						aiMaterialProperty* property = material->mProperties[j];
 
 						aiPropertyTypeInfo* info = property->mType;
@@ -104,9 +104,9 @@ namespace reia {
         }
         std::cout << std::endl;
 
-        unsigned int numChildren = node->mNumChildren;
+        irr::u32 numChildren = node->mNumChildren;
 
-        for(unsigned int i = 0; i < numChildren; ++ i) {
+        for(irr::u32 i = 0; i < numChildren; ++ i) {
 			debugAiNode(scene, node->mChildren[i], depth + 1);
         }
 
@@ -146,7 +146,7 @@ namespace reia {
 	irr::u32 recursiveFindTreeSize(const aiNode* rootNode) {
 		irr::u32 retVal = 1;
 
-        for(unsigned int i = 0; i < rootNode->mNumChildren; ++ i) {
+        for(irr::u32 i = 0; i < rootNode->mNumChildren; ++ i) {
 			retVal += recursiveFindTreeSize(rootNode->mChildren[i]);
         }
 
@@ -167,18 +167,8 @@ namespace reia {
 
 		dbone.name = copyFrom->mName.C_Str();
 		dbone.numChildren = copyFrom->mNumChildren;
-		//dbone.trans = copyFrom->mTransformation;
-		convertTransform(copyFrom->mTransformation, dbone.trans);
 
-
-		/*
-		std::cout << "Translation: ";
-		printThis(dbone.trans.getTranslation());
-		std::cout << "Rotation: ";
-		printThis(dbone.trans.getRotationDegrees());
-		*/
-
-        for(unsigned int h = 0; h < copyFrom->mNumChildren; ++ h) {
+        for(irr::u32 h = 0; h < copyFrom->mNumChildren; ++ h) {
 			++ currIndex;
 			recursiveBuildBoneStructure(boneArray, currIndex, myId, false, copyFrom->mChildren[h]);
         }
@@ -189,73 +179,16 @@ namespace reia {
 	model.x <- -dae.y
 	model.y <- dae.z
 	model.z <- dae.x
-
-	 0 -1  0  0
-	 0  0  1  0
-	 1  0  0  0
-	 0  0  0  1
-
-	 0  1  2  3
-	 4  5  6  7
-	 8  9 10 11
-	12 13 14 15
-
 	*/
 
 	ComplexMeshData* loadUsingAssimp(irr::scene::ISceneManager* smgr, std::string filename) {
-
-		irr::core::matrix4 modification;
-		for(int i = 0; i < 16; ++ i) {
-			modification[i] = 0;
-		}
-
-		modification[1] = -1;
-		modification[6] = 1;
-		modification[8] = 1;
-		modification[15] = 1;
-		modification.makeIdentity();
-
 
 		Assimp::Importer assimp;
 		const aiScene* ascene = assimp.ReadFile(filename, aiProcessPreset_TargetRealtime_Fast);
 
 		const aiNode* rootNode = ascene->mRootNode;
 
-		debugAiNode(ascene, rootNode, 0);
-
-		unsigned int numAnim = ascene->mNumAnimations;
-
-		std::cout << "numAnim = " << numAnim << std::endl;
-
-		for(int i = 0; i < numAnim; ++ i) {
-			aiAnimation* anim = ascene->mAnimations[i];
-
-			std::cout << "anim = " << anim->mName.C_Str() << std::endl;
-
-			unsigned int numChannels = anim->mNumChannels;
-
-            for(unsigned int j = 0; j < numChannels; ++ j) {
-
-                aiNodeAnim* nodeAnim = anim->mChannels[j];
-                std::cout << "Channel " << j << " ";
-                std::cout << nodeAnim->mNodeName.C_Str();
-                std::cout << std::endl;
-
-                unsigned int numKeys = nodeAnim->mNumPositionKeys;
-
-				// K for key
-                for(unsigned int k = 0; k < numKeys; ++ k) {
-					const aiVectorKey& key = nodeAnim->mPositionKeys[k];
-
-					std::cout << "  ";
-					std::cout << key.mTime << std::endl;
-
-                }
-
-            }
-		}
-
-		for(unsigned int h = 0; h < rootNode->mNumChildren; ++ h) {
+		for(irr::u32 h = 0; h < rootNode->mNumChildren; ++ h) {
 			const aiNode* node = rootNode->mChildren[h];
 
 			// If this node is the one with the mesh(es)
@@ -279,10 +212,6 @@ namespace reia {
 						std::cout << "Generating bone structure." << std::endl;
 						recursiveBuildBoneStructure(output->bones, persistentIndex, 0, true, armatureRoot);
                     }
-                    for(unsigned int i = 0; i < output->numBones; ++ i) {
-						Bone& boney = output->bones[i];
-						boney.trans = boney.trans * modification;
-                    }
 				}
 				std::cout << "End copying bone structure." << std::endl;
 
@@ -292,7 +221,7 @@ namespace reia {
 
 				std::cout << "Begin copying buffers..." << std::endl;
 				std::cout << "Buffer count " << node->mNumMeshes << std::endl;
-				for(unsigned int i = 0; i < node->mNumMeshes; ++ i) {
+				for(irr::u32 i = 0; i < node->mNumMeshes; ++ i) {
 					std::cout << "Buffer #" << i << std::endl;
 					const aiMesh* abuffer = ascene->mMeshes[node->mMeshes[i]];
 
@@ -307,7 +236,7 @@ namespace reia {
 					dbuffer.verts = new VertexMetadata[dbuffer.numVerts];
 					std::cout << "Begin copying vertexes..." << std::endl;
 					std::cout << "Vertex count " << abuffer->mNumVertices << std::endl;
-					for(unsigned int j = 0; j < abuffer->mNumVertices; ++ j) {
+					for(irr::u32 j = 0; j < abuffer->mNumVertices; ++ j) {
 						const aiVector3D& avert = abuffer->mVertices[j];
 						const aiVector3D& anormal = abuffer->mNormals[j];
 						const aiColor4D* acolor = abuffer->mColors[j];
@@ -330,7 +259,7 @@ namespace reia {
 
 						std::cout << "Begin copying buffer bone groups..." << std::endl;
 						std::cout << "Bones used " << abuffer->mNumBones << std::endl;
-						for(unsigned int j = 0; j < abuffer->mNumBones; ++ j) {
+						for(irr::u32 j = 0; j < abuffer->mNumBones; ++ j) {
 							std::cout << "Bone #" << j << std::endl;
 							const aiBone* abone = abuffer->mBones[j];
 
@@ -338,7 +267,7 @@ namespace reia {
                             std::string boneName = abone->mName.C_Str();
 							std::cout << "Processing bone " << boneName << std::endl;
 
-                            for(unsigned int k = 0; k < output->numBones; ++ k) {
+                            for(irr::u32 k = 0; k < output->numBones; ++ k) {
 								Bone& dbone = output->bones[k];
 
 								if(dbone.name == boneName) {
@@ -354,11 +283,11 @@ namespace reia {
 								}
                             }
 
-							for(unsigned int k = 0; k < abone->mNumWeights; ++ k) {
+							for(irr::u32 k = 0; k < abone->mNumWeights; ++ k) {
 								const aiVertexWeight& aweight = abone->mWeights[k];
 								VertexMetadata& dvert = dbuffer.verts[aweight.mVertexId];
 
-								for(unsigned int l = 0; l <= 4; ++ l) {
+								for(irr::u32 l = 0; l <= 4; ++ l) {
 									if(l == 4) {
 										std::cout << "Warning: Vertex " << aweight.mVertexId << " has more than 4 influences." << std::endl;
 									}
@@ -374,71 +303,17 @@ namespace reia {
 						std::cout << "End copying buffer bone groups." << std::endl;
 					}
 
-					// Debugging only
-					/*
-					for(unsigned int j = 0; j < dbuffer.numVerts; ++ j) {
-						const VertexMetadata& dvert = dbuffer.verts[j];
-
-						if(dvert.boneW != 255) {
-							int numBones = 1;
-							irr::f32 totalInf = dvert.weightW;
-
-							if(dvert.boneX != 255) {
-								++ numBones;
-								totalInf += dvert.weightX;
-
-								if(dvert.boneY != 255) {
-									++ numBones;
-									totalInf += dvert.weightY;
-
-									if(dvert.boneZ != 255) {
-										++ numBones;
-										totalInf += dvert.weightZ;
-									}
-								}
-							}
-
-							irr::f32 error = totalInf - 1;
-
-							if(error < 0) {
-								error *= -1;
-							}
-
-							if(error > 0.1) {
-								std::cout << "Warning: Vertex " << j << " has total influence of " << totalInf << " from " << numBones << " bones." << std::endl;
-
-								std::cout << "Bone W: " << dvert.weightW << std::endl;
-								if(numBones > 1) {
-									std::cout << "Bone X: " << dvert.weightX << std::endl;
-								if(numBones > 2) {
-									std::cout << "Bone Y: " << dvert.weightY << std::endl;
-								if(numBones > 3) {
-									std::cout << "Bone Z: " << dvert.weightZ << std::endl;
-								}
-								}
-								}
-
-							}
-						}
-						else {
-
-						}
-
-					}
-					*/
-
-
 					ibuffer->Indices.reallocate(abuffer->mNumFaces * 3);
 					ibuffer->Indices.set_used(abuffer->mNumFaces * 3);
 					std::cout << "Begin copying triangles..." << std::endl;
 					std::cout << "Triangle count " << abuffer->mNumFaces << std::endl;
-					for(unsigned int j = 0; j < abuffer->mNumFaces; ++ j) {
+					for(irr::u32 j = 0; j < abuffer->mNumFaces; ++ j) {
 
 						const aiFace& aface = abuffer->mFaces[j];
 
-						unsigned int A = aface.mIndices[0];
-						unsigned int B = aface.mIndices[1];
-						unsigned int C = aface.mIndices[2];
+						irr::u16 A = aface.mIndices[0];
+						irr::u16 B = aface.mIndices[1];
+						irr::u16 C = aface.mIndices[2];
 
 						ibuffer->Indices[j * 3    ] = A;
 						ibuffer->Indices[j * 3 + 1] = C;
@@ -471,7 +346,7 @@ namespace reia {
 				output->numAnims = ascene->mNumAnimations;
 				output->anims = new AnimationData[output->numAnims];
 				std::cout << "Animation count: " << ascene->mNumAnimations << std::endl;
-				for(unsigned int i = 0; i < ascene->mNumAnimations; ++ i) {
+				for(irr::u32 i = 0; i < ascene->mNumAnimations; ++ i) {
 					std::cout << "Animation #" << i << std::endl;
                     const aiAnimation* aanim = ascene->mAnimations[i];
                     AnimationData& danim = output->anims[i];
@@ -480,7 +355,7 @@ namespace reia {
 					danim.numChannels = aanim->mNumChannels;
 					danim.channels = new ChannelData[danim.numChannels];
 					std::cout << "Channel count: " << aanim->mNumChannels << std::endl;
-                    for(unsigned int j = 0; j < aanim->mNumChannels; ++ j) {
+                    for(irr::u32 j = 0; j < aanim->mNumChannels; ++ j) {
 						std::cout << "Channel #" << j << std::endl;
                         const aiNodeAnim* achannel = aanim->mChannels[j];
                         ChannelData& dchannel = danim.channels[j];
@@ -490,7 +365,7 @@ namespace reia {
 						std::cout << "Begin copying position keys..." << std::endl;
 						dchannel.numPositions = achannel->mNumPositionKeys;
 						dchannel.positions = new VectorKey[dchannel.numPositions];
-                        for(unsigned int k = 0; k < achannel->mNumPositionKeys; ++ k) {
+                        for(irr::u32 k = 0; k < achannel->mNumPositionKeys; ++ k) {
 							aiVectorKey& akey = achannel->mPositionKeys[k];
                             VectorKey& dkey = dchannel.positions[k];
 
@@ -498,14 +373,13 @@ namespace reia {
 
 							dkey.time = akey.mTime;
 							dkey.value = irr::core::vector3df(-avalue.y, avalue.z, avalue.x);
-							//dkey.value = irr::core::vector3df(avalue.x, avalue.y, avalue.z);
                         }
 						std::cout << "End copying position keys." << std::endl;
 
 						std::cout << "Begin copying rotation keys..." << std::endl;
 						dchannel.numRotations = achannel->mNumRotationKeys;
 						dchannel.rotations = new QuaternionKey[dchannel.numRotations];
-                        for(unsigned int k = 0; k < achannel->mNumRotationKeys; ++ k) {
+                        for(irr::u32 k = 0; k < achannel->mNumRotationKeys; ++ k) {
 							aiQuatKey& akey = achannel->mRotationKeys[k];
                             QuaternionKey& dkey = dchannel.rotations[k];
 
@@ -513,14 +387,13 @@ namespace reia {
 
 							dkey.time = akey.mTime;
 							dkey.value.set(-avalue.y, avalue.z, avalue.x, -avalue.w);
-							//dkey.value.set(avalue.x, avalue.y, avalue.z, avalue.w);
                         }
 						std::cout << "End copying rotation keys." << std::endl;
 
 						std::cout << "Begin copying scale keys..." << std::endl;
 						dchannel.numScalings = achannel->mNumScalingKeys;
 						dchannel.scalings = new VectorKey[dchannel.numScalings];
-                        for(unsigned int k = 0; k < achannel->mNumScalingKeys; ++ k) {
+                        for(irr::u32 k = 0; k < achannel->mNumScalingKeys; ++ k) {
 							aiVectorKey& akey = achannel->mScalingKeys[k];
                             VectorKey& dkey = dchannel.scalings[k];
 
@@ -577,7 +450,7 @@ namespace reia {
 		}
 
 		poseBones(retVal, 0);
-		for(unsigned int i = 0; i < data->numBones; ++ i) {
+		for(irr::u32 i = 0; i < data->numBones; ++ i) {
 			Bone& dbone = data->bones[i];
 			irr::scene::ISceneNode* boneNode = retVal->boneNodes[i];
 			boneNode->updateAbsolutePosition();
@@ -603,7 +476,7 @@ namespace reia {
 
 		AnimationData& anim = data->anims[0];
 
-		for(unsigned int i = 0; i < anim.numChannels; ++ i) {
+		for(irr::u32 i = 0; i < anim.numChannels; ++ i) {
 			ChannelData& channel = anim.channels[i];
 
 			irr::core::vector3df timePosition(0.f, 0.f, 0.f);
@@ -621,7 +494,7 @@ namespace reia {
 					timePosition = channel.positions[channel.numPositions - 1].value;
                 }
                 else {
-					for(unsigned int j = 1; j < channel.numPositions; ++ j) {
+					for(irr::u32 j = 1; j < channel.numPositions; ++ j) {
 						if(tNow < channel.positions[j].time) {
 							// The key to the left (Backward in time)
 							VectorKey& before = channel.positions[j - 1];
@@ -648,7 +521,7 @@ namespace reia {
 					timeRotations = channel.rotations[channel.numRotations - 1].value;
                 }
                 else {
-					for(unsigned int j = 1; j < channel.numRotations; ++ j) {
+					for(irr::u32 j = 1; j < channel.numRotations; ++ j) {
 						if(tNow < channel.rotations[j].time) {
 							QuaternionKey& before = channel.rotations[j - 1];
 							QuaternionKey& after = channel.rotations[j];
@@ -671,7 +544,7 @@ namespace reia {
 					timeScale = channel.scalings[channel.numScalings - 1].value;
                 }
                 else {
-					for(unsigned int j = 1; j < channel.numScalings; ++ j) {
+					for(irr::u32 j = 1; j < channel.numScalings; ++ j) {
 						if(tNow < channel.scalings[j].time) {
 							VectorKey& before = channel.scalings[j - 1];
 							VectorKey& after = channel.scalings[j];
@@ -686,7 +559,7 @@ namespace reia {
 
 			const std::string& boneName = channel.boneName;
 
-			for(unsigned int j = 0; j < data->numBones; ++ j) {
+			for(irr::u32 j = 0; j < data->numBones; ++ j) {
 				Bone& bone = data->bones[j];
 
 				if(bone.name == boneName) {

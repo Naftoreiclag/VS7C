@@ -85,7 +85,6 @@ namespace reia {
         irr::u32 numChildren = 0;
 
 		// CMatrix4< f32 >
-        irr::core::matrix4 trans;
 		irr::core::matrix4 inverseBindPose;
 		irr::core::matrix4 bindPose;
 	};
@@ -125,7 +124,7 @@ namespace reia {
 
 	irr::scene::SMesh* meshClone(const irr::scene::SMesh* mesh);
 
-	void debugAiNode(const aiScene* scene, const aiNode* node, unsigned int depth);
+	void debugAiNode(const aiScene* scene, const aiNode* node, irr::u32 depth);
 
 	void convertTransform(const aiMatrix4x4& aoffsetMatrix, irr::core::matrix4& doffsetMatrix);
 
