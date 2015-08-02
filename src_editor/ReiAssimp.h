@@ -87,7 +87,8 @@ namespace reia {
 
 		// CMatrix4< f32 >
         irr::core::matrix4 trans;
-		irr::core::matrix4 offsetMatrix;
+		irr::core::matrix4 inverseBindPose;
+		irr::core::matrix4 bindPose;
 	};
 
 	// A single mesh with some number of bones and animations
@@ -134,7 +135,7 @@ namespace reia {
 
 	ComplexMeshData* loadUsingAssimp(irr::scene::ISceneManager* smgr, std::string filename);
 
-	ComplexMeshSceneNode* addNodeFromMesh(irr::scene::ISceneManager* smgr, const ComplexMeshData* data, irr::gui::IGUIFont* fnt, irr::scene::IAnimatedMesh* boneThing = 0);
+	ComplexMeshSceneNode* addNodeFromMesh(irr::scene::ISceneManager* smgr, ComplexMeshData* data, irr::gui::IGUIFont* fnt, irr::scene::IAnimatedMesh* boneThing = 0);
 
 	void poseNode(ComplexMeshSceneNode* node, irr::f32 time);
 

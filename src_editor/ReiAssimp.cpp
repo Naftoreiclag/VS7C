@@ -345,11 +345,15 @@ namespace reia {
 									std::cout << "Match found" << std::endl;
 									dbonem.boneId = k;
 
+									/*
+									convertTransform(abone->mOffsetMatrix, dbone.bindPose);
 
-									//dbone.offsetMatrix = abone->mOffsetMatrix;
-									convertTransform(abone->mOffsetMatrix, dbone.offsetMatrix);
+
 									//dbone.offsetMatrix = dbone.offsetMatrix * modification;
-									dbone.offsetMatrix.makeInverse();
+									dbone.inverseBindPose = dbone.bindPose;
+									dbone.inverseBindPose.makeInverse();
+									*/
+
 								}
                             }
 
@@ -551,7 +555,7 @@ namespace reia {
 		return ws.c_str();
 	}
 
-	ComplexMeshSceneNode* addNodeFromMesh(irr::scene::ISceneManager* smgr, const ComplexMeshData* data, irr::gui::IGUIFont* fnt, irr::scene::IAnimatedMesh* boneThing) {
+	ComplexMeshSceneNode* addNodeFromMesh(irr::scene::ISceneManager* smgr, ComplexMeshData* data, irr::gui::IGUIFont* fnt, irr::scene::IAnimatedMesh* boneThing) {
 		ComplexMeshSceneNode* retVal = new ComplexMeshSceneNode();
 		retVal->instancedMesh = meshClone(data->mesh);
 		retVal->node = smgr->addMeshSceneNode(retVal->instancedMesh);
@@ -582,6 +586,55 @@ namespace reia {
 			retVal->boneNodes[i]->setPosition(finTrans.getTranslation());
 			retVal->boneNodes[i]->setRotation(finTrans.getRotationDegrees());
 			retVal->boneNodes[i]->setScale(finTrans.getScale());
+		}
+
+		if(data->numAnims > 0) {
+			AnimationData& anim = data->anims[0];
+			for(unsigned int i = 0; i < anim.numChannels; ++ i) {
+				ChannelData& channel = anim.channels[i];
+
+				irr::core::vector3df timePosition(0.f, 0.f, 0.f);
+				irr::core::quaternion timeRotations(0.f, 0.f, 0.f, 0.f);
+				irr::core::vector3df timeScale(1.f, 1.f, 1.f);
+
+				if(channel.numPositions > 0) {
+					timePosition = channel.positions[0].value;
+				}
+				if(channel.numRotations > 0) {
+					timeRotations = channel.rotations[0].value;
+				}
+				if(channel.numScalings > 0) {
+					timeScale = channel.scalings[0].value;
+				}
+
+				const std::string& boneName = channel.boneName;
+
+				for(unsigned int j = 0; j < data->numBones; ++ j) {
+					Bone& bone = data->bones[j];
+
+					if(bone.name == boneName) {
+						irr::scene::ISceneNode* boneNode = retVal->boneNodes[j];
+
+						boneNode->setPosition(timePosition);
+
+						irr::core::vector3df rotation;
+						timeRotations.toEuler(rotation);
+						rotation *= 180.f / 3.14159265f;
+						boneNode->setRotation(rotation);
+
+						boneNode->setScale(timeScale);
+					}
+				}
+			}
+
+			for(unsigned int i = 0; i < data->numBones; ++ i) {
+				Bone& dbone = data->bones[i];
+				irr::scene::ISceneNode* iboney = retVal->boneNodes[i];
+
+				dbone.bindPose = iboney->getAbsoluteTransformation();
+				dbone.inverseBindPose = dbone.bindPose;
+				dbone.inverseBindPose.makeInverse();
+			}
 		}
 
 		return retVal;
@@ -720,8 +773,9 @@ namespace reia {
 
 					irr::core::vector3df passOne;
 					irr::core::vector3df passTwo;
-					data->bones[boneId].offsetMatrix.transformVect(passOne, qvert.Pos);
+					data->bones[boneId].inverseBindPose.transformVect(passOne, qvert.Pos);
 					node->boneNodes[boneId]->getAbsoluteTransformation().transformVect(passTwo, passOne);
+
 
 					passTwo *= dvert.weightW;
 					pos = passTwo;
@@ -729,7 +783,7 @@ namespace reia {
 					if(dvert.boneX != 255) {
 						boneId = dbuffer.usedBones[dvert.boneX].boneId;
 
-						data->bones[boneId].offsetMatrix.transformVect(passOne, qvert.Pos);
+						data->bones[boneId].inverseBindPose.transformVect(passOne, qvert.Pos);
 						node->boneNodes[boneId]->getAbsoluteTransformation().transformVect(passTwo, passOne);
 
 						passTwo *= dvert.weightX;
@@ -738,7 +792,7 @@ namespace reia {
 						if(dvert.boneY != 255) {
 							boneId = dbuffer.usedBones[dvert.boneY].boneId;
 
-							data->bones[boneId].offsetMatrix.transformVect(passOne, qvert.Pos);
+							data->bones[boneId].inverseBindPose.transformVect(passOne, qvert.Pos);
 							node->boneNodes[boneId]->getAbsoluteTransformation().transformVect(passTwo, passOne);
 
 							passTwo *= dvert.weightY;
@@ -747,7 +801,7 @@ namespace reia {
 							if(dvert.boneZ != 255) {
 								boneId = dbuffer.usedBones[dvert.boneZ].boneId;
 
-								data->bones[boneId].offsetMatrix.transformVect(passOne, qvert.Pos);
+								data->bones[boneId].inverseBindPose.transformVect(passOne, qvert.Pos);
 								node->boneNodes[boneId]->getAbsoluteTransformation().transformVect(passTwo, passOne);
 
 								passTwo *= dvert.weightZ;

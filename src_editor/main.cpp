@@ -1547,7 +1547,7 @@ int main() {
 	irr::scene::IAnimatedMesh* armatureDecor = smgr->getMesh("assets_editor/bone.obj");
 	armatureDecor->setMaterialFlag(irr::video::EMF_LIGHTING, false);
 	armatureDecor->setMaterialFlag(irr::video::EMF_WIREFRAME, true);
-	reia::ComplexMeshSceneNode* baz = reia::addNodeFromMesh(smgr, foobar, font, armatureDecor);
+ 	reia::ComplexMeshSceneNode* baz = reia::addNodeFromMesh(smgr, foobar, font, armatureDecor);
 	baz->node->getMaterial(0).Wireframe = true;
 
 	irr::f32 testTime = 4;
@@ -1569,7 +1569,7 @@ int main() {
 			testTime -= 3.f;
 			std::cout << "pose" << std::endl;
 		}
-		reia::poseNode(baz, testTime);
+		//reia::poseNode(baz, testTime);
 
 		/*
 		for(irr::u32 i = 0; i < buff->Vertices.size(); ++ i) {
