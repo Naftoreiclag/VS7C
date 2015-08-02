@@ -273,13 +273,6 @@ namespace reia {
 								if(dbone.name == boneName) {
 									std::cout << "Match found" << std::endl;
 									dbonem.boneId = k;
-
-									convertTransform(abone->mOffsetMatrix, dbone.bindPose);
-
-
-									dbone.inverseBindPose = dbone.bindPose;
-									dbone.inverseBindPose.makeInverse();
-
 								}
                             }
 
@@ -292,7 +285,7 @@ namespace reia {
 										std::cout << "Warning: Vertex " << aweight.mVertexId << " has more than 4 influences." << std::endl;
 									}
 									else if(dvert.boneIds[l] == 255) {
-										dvert.boneIds[l] = j;
+										dvert.boneIds[l] = dbuffer.usedBones[j].boneId;
 										dvert.weights[l] = aweight.mWeight;
 										break;
 									}
