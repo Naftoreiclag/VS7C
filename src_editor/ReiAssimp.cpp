@@ -580,10 +580,14 @@ namespace reia {
 		for(unsigned int i = 0; i < data->numBones; ++ i) {
 			Bone& dbone = data->bones[i];
 			irr::scene::ISceneNode* boneNode = retVal->boneNodes[i];
+			boneNode->updateAbsolutePosition();
 
 			dbone.bindPose = boneNode->getAbsoluteTransformation();
 			dbone.inverseBindPose = dbone.bindPose;
 			dbone.inverseBindPose.makeInverse();
+
+			std::cout << "bindPose = " << std::endl;
+			printThis(dbone.bindPose);
 		}
 
 		return retVal;
@@ -752,7 +756,7 @@ namespace reia {
 						//inverseBindPose.transformVect(passA, qvert.Pos);
 						//disTrans.transformVect(passF, passA);
 
-						matA = inverseBindPose;
+						matA = disTrans * inverseBindPose;
 						matA.transformVect(passF, qvert.Pos);
 
 						passF *= dvert.weights[k];
