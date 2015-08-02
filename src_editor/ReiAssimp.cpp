@@ -595,55 +595,37 @@ namespace reia {
 				irr::video::S3DVertex& ivert = ibuffer->Vertices[j];
 				const VertexMetadata& dvert = dbuffer.verts[j];
 
-				irr::core::vector3df pos;
-
-				irr::core::matrix4 matA;
-				irr::core::matrix4 matB;
-
-				irr::core::matrix4 inverseBindPose;
-				irr::core::matrix4 bindPose;
-				irr::core::matrix4 disTrans;
-
-				irr::core::vector3df passA;
-				irr::core::vector3df passB;
-				irr::core::vector3df passF;
 				for(irr::u32 k = 0; k < 4; ++ k) {
 					if(dvert.boneIds[k] == 255) {
 						if(k == 0) {
-							pos = qvert.Pos;
+							ivert.Pos = qvert.Pos;
+							//ivert.Normal = qvert.Normal;
 						}
 						break;
 					}
 					else {
 						irr::u32 boneId = dbuffer.usedBones[dvert.boneIds[k]].boneId;
+						irr::core::matrix4 combinedMatrix = node->boneNodes[boneId]->getAbsoluteTransformation() * data->bones[boneId].inverseBindPose;
 
-						bindPose = data->bones[boneId].bindPose;
-						inverseBindPose = data->bones[boneId].inverseBindPose;
-						disTrans = node->boneNodes[boneId]->getAbsoluteTransformation();
+						irr::core::vector3df passPosition;
+						//irr::core::vector3df passNormal;
 
-						//data->bones[boneId].inverseBindPose.transformVect(passA, qvert.Pos);
-						//data->bones[boneId].bindPose.transformVect(passB, passA);
-						//node->boneNodes[boneId]->getAbsoluteTransformation().transformVect(passB, passA);
-						//passB *= dvert.weights[k];
+						combinedMatrix.transformVect(passPosition, qvert.Pos);
+						//combinedMatrix.transformVect(passNormal, qvert.Normal);
 
-						//inverseBindPose.transformVect(passA, qvert.Pos);
-						//disTrans.transformVect(passF, passA);
-
-						matA = disTrans * inverseBindPose;
-						matA.transformVect(passF, qvert.Pos);
-
-						passF *= dvert.weights[k];
+						passPosition *= dvert.weights[k];
+						//passNormal *= dvert.weights[k];
 
 						if(k == 0) {
-							pos = passF;
+							ivert.Pos = passPosition;
+							//ivert.Normal = passNormal;
 						}
 						else {
-							pos += passF;
+							ivert.Pos += passPosition;
+							//ivert.Normal += passNormal;
 						}
 					}
 				}
-
-				ivert.Pos = pos;
 			}
 
 		}

@@ -1548,7 +1548,6 @@ int main() {
 	armatureDecor->setMaterialFlag(irr::video::EMF_LIGHTING, false);
 	armatureDecor->setMaterialFlag(irr::video::EMF_WIREFRAME, true);
  	reia::ComplexMeshSceneNode* baz = reia::addNodeFromMesh(smgr, foobar, font, armatureDecor);
-	baz->node->getMaterial(0).Wireframe = true;
 
 	irr::f32 testTime = 4;
 

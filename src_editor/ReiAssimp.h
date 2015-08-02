@@ -128,14 +128,22 @@ namespace reia {
 
 	void convertTransform(const aiMatrix4x4& aoffsetMatrix, irr::core::matrix4& doffsetMatrix);
 
+	// Finds how large an aiNode tree is
 	irr::u32 recursiveFindTreeSize(const aiNode* rootNode);
+
+	// Figure out the bone structure recursively
 	void recursiveBuildBoneStructure(Bone* boneArray, irr::u32& currIndex, irr::u32 parentIndex, bool isRoot, const aiNode* copyFrom);
 
+	// Load using assimp
 	ComplexMeshData* loadUsingAssimp(irr::scene::ISceneManager* smgr, std::string filename);
 
+	// Build the scenenode structure for the given mesh data
 	ComplexMeshSceneNode* addNodeFromMesh(irr::scene::ISceneManager* smgr, ComplexMeshData* data, irr::gui::IGUIFont* fnt, irr::scene::IAnimatedMesh* boneThing = 0);
 
+	// Set all the relative transforms of the bone nodes
 	void poseBones(ComplexMeshSceneNode* node, irr::f32 time);
+
+	// Modify the vertex buffers of a node given the absolute transformations of the bones
 	void poseNode(ComplexMeshSceneNode* node, irr::f32 time);
 
 }
