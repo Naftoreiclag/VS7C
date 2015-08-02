@@ -1,5 +1,5 @@
 // Bone transforms
-uniform mat4 bones[60];
+uniform mat4 bones[64];
 
 // Bones that affect this vertex
 attribute vec4 boneIndices;
