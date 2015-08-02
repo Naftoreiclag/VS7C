@@ -137,6 +137,7 @@ namespace reia {
 
 	ComplexMeshSceneNode* addNodeFromMesh(irr::scene::ISceneManager* smgr, ComplexMeshData* data, irr::gui::IGUIFont* fnt, irr::scene::IAnimatedMesh* boneThing = 0);
 
+	void poseBones(ComplexMeshSceneNode* node, irr::f32 time);
 	void poseNode(ComplexMeshSceneNode* node, irr::f32 time);
 
 }

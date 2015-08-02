@@ -345,14 +345,11 @@ namespace reia {
 									std::cout << "Match found" << std::endl;
 									dbonem.boneId = k;
 
-									/*
 									convertTransform(abone->mOffsetMatrix, dbone.bindPose);
 
 
-									//dbone.offsetMatrix = dbone.offsetMatrix * modification;
 									dbone.inverseBindPose = dbone.bindPose;
 									dbone.inverseBindPose.makeInverse();
-									*/
 
 								}
                             }
@@ -580,70 +577,24 @@ namespace reia {
 
 				text->setPosition(irr::core::vector3df(-0.5f, 0.f, 0.f));
 			}
-
-			irr::core::matrix4 finTrans = bone.trans;// * bone.offsetMatrix;
-
-			retVal->boneNodes[i]->setPosition(finTrans.getTranslation());
-			retVal->boneNodes[i]->setRotation(finTrans.getRotationDegrees());
-			retVal->boneNodes[i]->setScale(finTrans.getScale());
 		}
 
-		if(data->numAnims > 0) {
-			AnimationData& anim = data->anims[0];
-			for(unsigned int i = 0; i < anim.numChannels; ++ i) {
-				ChannelData& channel = anim.channels[i];
+		poseBones(retVal, 0);
+		for(unsigned int i = 0; i < data->numBones; ++ i) {
+			Bone& dbone = data->bones[i];
+			irr::scene::ISceneNode* boneNode = retVal->boneNodes[i];
 
-				irr::core::vector3df timePosition(0.f, 0.f, 0.f);
-				irr::core::quaternion timeRotations(0.f, 0.f, 0.f, 0.f);
-				irr::core::vector3df timeScale(1.f, 1.f, 1.f);
-
-				if(channel.numPositions > 0) {
-					timePosition = channel.positions[0].value;
-				}
-				if(channel.numRotations > 0) {
-					timeRotations = channel.rotations[0].value;
-				}
-				if(channel.numScalings > 0) {
-					timeScale = channel.scalings[0].value;
-				}
-
-				const std::string& boneName = channel.boneName;
-
-				for(unsigned int j = 0; j < data->numBones; ++ j) {
-					Bone& bone = data->bones[j];
-
-					if(bone.name == boneName) {
-						irr::scene::ISceneNode* boneNode = retVal->boneNodes[j];
-
-						boneNode->setPosition(timePosition);
-
-						irr::core::vector3df rotation;
-						timeRotations.toEuler(rotation);
-						rotation *= 180.f / 3.14159265f;
-						boneNode->setRotation(rotation);
-
-						boneNode->setScale(timeScale);
-					}
-				}
-			}
-
-			for(unsigned int i = 0; i < data->numBones; ++ i) {
-				Bone& dbone = data->bones[i];
-				irr::scene::ISceneNode* iboney = retVal->boneNodes[i];
-
-				dbone.bindPose = iboney->getAbsoluteTransformation();
-				dbone.inverseBindPose = dbone.bindPose;
-				dbone.inverseBindPose.makeInverse();
-			}
+			/*
+			dbone.bindPose = boneNode->getAbsoluteTransformation();
+			dbone.inverseBindPose = dbone.bindPose;
+			dbone.inverseBindPose.makeInverse();
+			*/
 		}
 
 		return retVal;
 
 	}
-
-	void poseNode(ComplexMeshSceneNode* node, irr::f32 tNow) {
-
-		//node->node->setRotation(irr::core::vector3df(-90.f, 0.f, 0.f));
+	void poseBones(ComplexMeshSceneNode* node, irr::f32 tNow) {
 
 		const ComplexMeshData* data = node->data;
 
@@ -753,7 +704,13 @@ namespace reia {
 				}
 			}
 		}
+	}
 
+	void poseNode(ComplexMeshSceneNode* node, irr::f32 tNow) {
+
+		poseBones(node, tNow);
+
+		const ComplexMeshData* data = node->data;
 
 		// Apply vertexes
 		for(irr::u32 i = 0; i < data->numBuffers; ++ i) {

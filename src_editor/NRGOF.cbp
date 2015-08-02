@@ -59,7 +59,6 @@
 		</Compiler>
 		<Linker>
 			<Add library="Irrlicht" />
-			<Add library="liblua53" />
 			<Add library="libBulletDynamics.dll.a" />
 			<Add library="libBulletCollision.dll.a" />
 			<Add library="libLinearMath.dll.a" />
@@ -70,9 +69,6 @@
 			<Add library="libBullet3Geometry.dll.a" />
 			<Add library="libBullet3OpenCL_clew.dll.a" />
 			<Add library="libBulletSoftBody.dll.a" />
-			<Add library="sfml-system" />
-			<Add library="sfml-network" />
-			<Add library="sfml-audio" />
 			<Add library="libjsoncpp" />
 			<Add library="libassimp" />
 			<Add library="libzlibstatic" />

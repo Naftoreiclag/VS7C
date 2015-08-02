@@ -1539,7 +1539,7 @@ int main() {
 
 	// Test
 	//irr::scene::SMeshBuffer* buff = reia::loadUsingAssimp(smgr, "content/standard/advanced_mesh/advMesh.dae");
-	reia::ComplexMeshData* foobar = reia::loadUsingAssimp(smgr, "assets_editor/worm.dae");
+	reia::ComplexMeshData* foobar = reia::loadUsingAssimp(smgr, "assets_editor/cactus2.dae");
 	//reia::ComplexMeshData* foobar = reia::loadUsingAssimp(smgr, "assets_editor/testcube.dae");
 	//reia::ComplexMeshData* foobar = reia::loadUsingAssimp(smgr, "example_media/models-nonbsd/MD5/Bob.md5mesh");
 
@@ -1563,13 +1563,13 @@ int main() {
         const irr::f32 tpf = (irr::f32)(now - then) / 1000.f;
         then = now;
 
-		ts->time += tpf;
-		testTime += tpf;
-		if(testTime > 3.f) {
-			testTime -= 3.f;
-			std::cout << "pose" << std::endl;
+		//ts->time += tpf;
+		testTime += tpf / 2;
+		if(testTime > 2.f) {
+			testTime -= 2.f;
+			std::cout << "pose" << testTime << std::endl;
 		}
-		//reia::poseNode(baz, testTime);
+		reia::poseNode(baz, testTime);
 
 		/*
 		for(irr::u32 i = 0; i < buff->Vertices.size(); ++ i) {
