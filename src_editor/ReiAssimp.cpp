@@ -254,8 +254,7 @@ namespace reia {
 					std::cout << "End copying vertexes." << std::endl;
 
 					if(abuffer->HasBones()) {
-						dbuffer.numBones = abuffer->mNumBones;
-						dbuffer.usedBones = new BoneMetadata[dbuffer.numBones];
+						irr::u32 boneMapping[abuffer->mNumBones];
 
 						std::cout << "Begin copying buffer bone groups..." << std::endl;
 						std::cout << "Bones used " << abuffer->mNumBones << std::endl;
@@ -263,16 +262,15 @@ namespace reia {
 							std::cout << "Bone #" << j << std::endl;
 							const aiBone* abone = abuffer->mBones[j];
 
-                            BoneMetadata& dbonem = dbuffer.usedBones[j];
                             std::string boneName = abone->mName.C_Str();
 							std::cout << "Processing bone " << boneName << std::endl;
 
+							// Find the matching bone in the global array of bones
                             for(irr::u32 k = 0; k < output->numBones; ++ k) {
 								Bone& dbone = output->bones[k];
-
 								if(dbone.name == boneName) {
-									std::cout << "Match found" << std::endl;
-									dbonem.boneId = k;
+									// Match found; remember what the real id is so we can set it up later
+									boneMapping[j] = k;
 								}
                             }
 
@@ -285,7 +283,8 @@ namespace reia {
 										std::cout << "Warning: Vertex " << aweight.mVertexId << " has more than 4 influences." << std::endl;
 									}
 									else if(dvert.boneIds[l] == 255) {
-										dvert.boneIds[l] = dbuffer.usedBones[j].boneId;
+										// For some reason, each buffer has its own set of ids for the bones. boneMapping[] maps the local bone ids to the global bone ids
+										dvert.boneIds[l] = boneMapping[j];
 										dvert.weights[l] = aweight.mWeight;
 										break;
 									}
@@ -597,7 +596,7 @@ namespace reia {
 						break;
 					}
 					else {
-						irr::u32 boneId = dbuffer.usedBones[dvert.boneIds[k]].boneId;
+						irr::u32 boneId = dvert.boneIds[k];
 						irr::core::matrix4 combinedMatrix = node->boneNodes[boneId]->getAbsoluteTransformation() * data->bones[boneId].inverseBindPose;
 
 						irr::core::vector3df passPosition;

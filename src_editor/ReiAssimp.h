@@ -32,17 +32,8 @@ namespace reia {
 		}
 	};
 
-	// Describes
-	struct BoneMetadata {
-		irr::u32 boneId;
-	};
-
 	// Extra data for each buffer (group of vertices that has the same material or otherwise differenciated from the rest of the mesh)
 	struct BufferMetadata {
-		// Bones that influences this group of vertices
-		BoneMetadata* usedBones = 0;
-		irr::u32 numBones;
-
 		// The metadata to apply to each vertex
 		VertexMetadata* verts = 0;
 		irr::u32 numVerts;
