@@ -765,7 +765,7 @@ void openAndRenderModel(std::string filename) {
 	irr::video::SMaterial& mat = openedObject->sceneNode->getMaterial(0);
 
 	mat.AmbientColor = irr::video::SColor(255, 255, 255, 255);
-	mat.MaterialType = shaderMatType;
+	//mat.MaterialType = shaderMatType;
 
 	std::cout << "============" << std::endl;
 	debugMaterial(mat);
@@ -1539,21 +1539,17 @@ int main() {
 	loadPack("content/standard/content-pack.json");
 
 	// Test
-	//irr::scene::SMeshBuffer* buff = reia::loadUsingAssimp(smgr, "content/standard/advanced_mesh/advMesh.dae");
+	/*
 	reia::ComplexMeshData* foobar = reia::loadUsingAssimp(smgr, "assets_editor/cactus2.dae");
-	//reia::ComplexMeshData* foobar = reia::loadUsingAssimp(smgr, "assets_editor/testcube.dae");
-	//reia::ComplexMeshData* foobar = reia::loadUsingAssimp(smgr, "example_media/models-nonbsd/MD5/Bob.md5mesh");
-
-	// ultimate foobar
 	irr::scene::IAnimatedMesh* armatureDecor = smgr->getMesh("assets_editor/bone.obj");
 	armatureDecor->setMaterialFlag(irr::video::EMF_LIGHTING, false);
 	armatureDecor->setMaterialFlag(irr::video::EMF_WIREFRAME, true);
  	reia::ComplexMeshSceneNode* baz = reia::addNodeFromMesh(smgr, foobar, font, armatureDecor);
-	irr::f32 testTime = 4;
 
 	//
-	ReiIO::writeToFile("model.bin", *foobar);
-
+	ReiIO::writeToFile("model.yam", *foobar);
+*/
+	irr::f32 testTime = 4;
 	// Main loop
 	while(device->run()) {
 		if(!device->isWindowActive()) {
@@ -1571,18 +1567,7 @@ int main() {
 			testTime -= 2.f;
 			std::cout << "pose" << testTime << std::endl;
 		}
-		reia::poseNode(baz, testTime);
-
-		/*
-		for(irr::u32 i = 0; i < buff->Vertices.size(); ++ i) {
-			irr::video::S3DVertex& vert = buff->Vertices[i];
-
-			irr::core::vector3df oldLoc = vert.Pos;
-			vert.Pos.set(oldLoc.X, oldLoc.Y + tpf, oldLoc.Z + tpf);
-
-		}
-		buff->recalculateBoundingBox();
-		*/
+		//reia::poseNode(baz, testTime);
 
 		// Clear buffers before rendering
 		driver->beginScene(true, true, irr::video::SColor(0, 140, 140, 140));
