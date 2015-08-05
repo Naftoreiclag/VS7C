@@ -166,7 +166,6 @@ namespace reia {
 		dbone.isRoot = isRoot;
 
 		dbone.name = copyFrom->mName.C_Str();
-		dbone.numChildren = copyFrom->mNumChildren;
 
         for(irr::u32 h = 0; h < copyFrom->mNumChildren; ++ h) {
 			++ currIndex;
@@ -228,8 +227,6 @@ namespace reia {
 					irr::scene::SMeshBuffer* ibuffer = new irr::scene::SMeshBuffer();
 					BufferMetadata& dbuffer = output->buffers[i];
 
-					bool vertColors = false;
-					bool texCoords = false;
 					ibuffer->Vertices.reallocate(abuffer->mNumVertices);
 					ibuffer->Vertices.set_used(abuffer->mNumVertices);
 					dbuffer.numVerts = abuffer->mNumVertices;
@@ -248,12 +245,13 @@ namespace reia {
 						//ivert.Color.set(acolor->a, acolor->r, acolor->g, acolor->b);
 						ivert.Color.set(0, 0, 0, 0);
 
-						vertColors = vertColors | abuffer->HasVertexColors(j);
-						texCoords = texCoords | abuffer->HasTextureCoords(j);
+						dbuffer.useColor = dbuffer.useColor | abuffer->HasVertexColors(j);
+						dbuffer.useTexture = dbuffer.useTexture | abuffer->HasTextureCoords(j);
 					}
 					std::cout << "End copying vertexes." << std::endl;
 
-					if(abuffer->HasBones()) {
+                    dbuffer.useBone = abuffer->HasBones();
+					if(dbuffer.useBone) {
 						irr::u32 boneMapping[abuffer->mNumBones];
 
 						std::cout << "Begin copying buffer bone groups..." << std::endl;
@@ -325,7 +323,7 @@ namespace reia {
 					irr::video::SMaterial& imaterial = ibuffer->getMaterial();
 					imaterial.DiffuseColor = irr::video::SColor(255, adiffuse.r * 255.f, adiffuse.g * 255.f, adiffuse.b * 255.f);
 					imaterial.AmbientColor = irr::video::SColor(255, 255, 255, 255);
-					imaterial.ColorMaterial = vertColors ? 1 : 0;
+					imaterial.ColorMaterial = dbuffer.useColor ? 1 : 0;
 
 					// Add da buffer
 					output->mesh->addMeshBuffer(ibuffer);
@@ -352,7 +350,17 @@ namespace reia {
                         const aiNodeAnim* achannel = aanim->mChannels[j];
                         ChannelData& dchannel = danim.channels[j];
 
-						dchannel.boneName = achannel->mNodeName.C_Str();
+						// dchannel.boneName = achannel->mNodeName.C_Str();
+						std::string boneName = achannel->mNodeName.C_Str();
+
+						// Find the matching bone in the global array of bones
+                        for(irr::u32 k = 0; k < output->numBones; ++ k) {
+                            Bone& dbone = output->bones[k];
+                            if(dbone.name == boneName) {
+                                // Match found; remember what the real id is so we can set it up later
+                                dchannel.boneId = k;
+                            }
+                        }
 
 						std::cout << "Begin copying position keys..." << std::endl;
 						dchannel.numPositions = achannel->mNumPositionKeys;
@@ -549,24 +557,16 @@ namespace reia {
                 }
 			}
 
-			const std::string& boneName = channel.boneName;
+            irr::scene::ISceneNode* boneNode = node->boneNodes[channel.boneId];
 
-			for(irr::u32 j = 0; j < data->numBones; ++ j) {
-				Bone& bone = data->bones[j];
+            boneNode->setPosition(timePosition);
 
-				if(bone.name == boneName) {
-					irr::scene::ISceneNode* boneNode = node->boneNodes[j];
+            irr::core::vector3df rotation;
+            timeRotations.toEuler(rotation);
+            rotation *= 180.f / 3.14159265f;
+            boneNode->setRotation(rotation);
 
-					boneNode->setPosition(timePosition);
-
-					irr::core::vector3df rotation;
-					timeRotations.toEuler(rotation);
-					rotation *= 180.f / 3.14159265f;
-					boneNode->setRotation(rotation);
-
-					boneNode->setScale(timeScale);
-				}
-			}
+            boneNode->setScale(timeScale);
 		}
 	}
 

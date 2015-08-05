@@ -82,6 +82,8 @@
 		<Unit filename="ReiAssimp.h" />
 		<Unit filename="ReiBullet.cpp" />
 		<Unit filename="ReiBullet.h" />
+		<Unit filename="ReiIO.cpp" />
+		<Unit filename="ReiIO.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

@@ -37,6 +37,12 @@ namespace reia {
 		// The metadata to apply to each vertex
 		VertexMetadata* verts = 0;
 		irr::u32 numVerts;
+
+		bool usePos = true;
+		bool useNorm = true;
+		bool useBone = false;
+		bool useColor = false;
+		bool useTexture = false;
 	};
 	struct VectorKey {
 		irr::core::vector3df value;
@@ -47,7 +53,7 @@ namespace reia {
 		irr::f32 time;
 	};
 	struct ChannelData {
-		std::string boneName;
+		irr::u32 boneId;
 
         VectorKey* positions;
         irr::u32 numPositions = 0;
@@ -72,8 +78,6 @@ namespace reia {
 
         bool isRoot = false;
         irr::u32 parentId;
-        irr::u32* childrenIds = 0;
-        irr::u32 numChildren = 0;
 
 		// CMatrix4< f32 >
 		irr::core::matrix4 inverseBindPose;

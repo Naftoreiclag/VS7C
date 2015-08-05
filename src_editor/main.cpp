@@ -19,6 +19,7 @@
 
 #include "ReiBullet.h"
 #include "ReiAssimp.h"
+#include "ReiIO.h"
 
 irr::IrrlichtDevice* device;
 irr::video::IVideoDriver* driver;
@@ -1548,8 +1549,10 @@ int main() {
 	armatureDecor->setMaterialFlag(irr::video::EMF_LIGHTING, false);
 	armatureDecor->setMaterialFlag(irr::video::EMF_WIREFRAME, true);
  	reia::ComplexMeshSceneNode* baz = reia::addNodeFromMesh(smgr, foobar, font, armatureDecor);
-
 	irr::f32 testTime = 4;
+
+	//
+	ReiIO::writeToFile("model.bin", *foobar);
 
 	// Main loop
 	while(device->run()) {
