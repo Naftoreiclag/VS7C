@@ -17,6 +17,7 @@
 				<Compiler>
 					<Add option="-g" />
 					<Add option="-D_IRR_STATIC_LIB_" />
+					<Add directory="include" />
 				</Compiler>
 				<Linker>
 					<Add library="Xxf86vm" />
@@ -35,6 +36,7 @@
 				<Option use_console_runner="0" />
 				<Compiler>
 					<Add option="-g" />
+					<Add directory="include" />
 				</Compiler>
 				<Linker>
 					<Add directory="../thirdparty/irrlicht-1.8.1/lib/Win32-gcc" />
@@ -84,7 +86,9 @@
 		<Unit filename="ReiBullet.h" />
 		<Unit filename="ReiIO.cpp" />
 		<Unit filename="ReiIO.h" />
+		<Unit filename="include/ProjectCompiler.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="src/ProjectCompiler.cpp" />
 		<Extensions>
 			<code_completion />
 			<debugger />

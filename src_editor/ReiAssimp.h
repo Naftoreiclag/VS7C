@@ -105,6 +105,10 @@ namespace reia {
         irr::scene::SMesh* instancedMesh = 0;
 
         irr::scene::ISceneNode** boneNodes;
+
+        void remove() {
+            node->remove();
+        }
 	};
 
 	class AssimpMeshLoader : public irr::scene::IMeshLoader {
@@ -133,7 +137,7 @@ namespace reia {
 	ComplexMeshData* loadUsingAssimp(irr::scene::ISceneManager* smgr, std::string filename);
 
 	// Build the scenenode structure for the given mesh data
-	ComplexMeshSceneNode* addNodeFromMesh(irr::scene::ISceneManager* smgr, ComplexMeshData* data, irr::gui::IGUIFont* fnt, irr::scene::IAnimatedMesh* boneThing = 0);
+	ComplexMeshSceneNode* addNodeFromMesh(irr::scene::ISceneManager* smgr, ComplexMeshData* data, irr::gui::IGUIFont* fnt = 0, irr::scene::IAnimatedMesh* boneThing = 0);
 
 	// Set all the relative transforms of the bone nodes
 	void poseBones(ComplexMeshSceneNode* node, irr::f32 time);

@@ -8,6 +8,8 @@
 
 #include <fstream>
 
+#include "ProjectCompiler.h"
+
 namespace ReiIO {
 
     void writeU32(std::ofstream& output, const irr::u32 value) {
@@ -54,12 +56,16 @@ namespace ReiIO {
         }
     }
 
+    void writeMagic(std::ofstream& output) {
+		writeU32(output, 0x4E414654);
+		writeU32(output, 0x4F524549);
+    }
+
 	void writeToFile(std::string filename, const reia::ComplexMeshData& data) {
 		std::ofstream ostream;
         ostream.open(filename, std::ios_base::binary);
 
-		writeU32(ostream, 0x4E414654);
-		writeU32(ostream, 0x4F524549);
+		writeMagic(ostream);
 
         writeU16(ostream, 1);
         writeU16(ostream, 1);
@@ -164,6 +170,54 @@ namespace ReiIO {
 
 		// (Stream closed on destruction)
 	}
+
+    void writePhysics(std::string filename, const ProjectCompiler::FPhysics& data) {
+		std::ofstream ostream;
+        ostream.open(filename, std::ios_base::binary);
+
+		writeMagic(ostream);
+
+        irr::u8 bType;
+        switch(data.type) {
+            case ProjectCompiler::SPHERE: {
+                bType = 1;
+                break;
+            }
+            case ProjectCompiler::BOX: {
+                bType = 2;
+                break;
+            }
+            case ProjectCompiler::CYLINDER: {
+                bType = 3;
+                break;
+            }
+            case ProjectCompiler::CAPSULE: {
+                bType = 4;
+                break;
+            }
+            case ProjectCompiler::CONE: {
+                bType = 5;
+                break;
+            }
+            case ProjectCompiler::MULTI_SPHERE: {
+                bType = 6;
+                break;
+            }
+            case ProjectCompiler::CONCAVE_TRIANGLE_MESH: {
+                bType = 7;
+                break;
+            }
+            case ProjectCompiler::ARBITRARY_TRIANGLE_MESH: {
+                bType = 8;
+                break;
+            }
+            default: {
+                bType = 0;
+                break;
+            }
+        }
+        writeU8(ostream, bType);
+    }
 }
 
 

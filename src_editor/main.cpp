@@ -10,8 +10,6 @@
 #include <string>
 #include <sstream>
 
-#include "assimp/Importer.hpp"
-
 #include "irrlicht.h"
 #include "driverChoice.h"
 #include "json/json.h"
@@ -20,6 +18,8 @@
 #include "ReiBullet.h"
 #include "ReiAssimp.h"
 #include "ReiIO.h"
+
+#include "ProjectCompiler.h"
 
 irr::IrrlichtDevice* device;
 irr::video::IVideoDriver* driver;
@@ -53,6 +53,7 @@ enum {
 	GUI_FILE_OPEN,
 	GUI_FILE_SAVE,
 	GUI_FILE_SAVE_AS,
+	GUI_FILE_PACKAGE,
 
 	GUI_DIALOG_RESOURCES,
 	GUI_DIALOG_OBJECTS,
@@ -131,16 +132,15 @@ irr::video::E_MATERIAL_TYPE shaderMatType;
 irr::core::position2di screenCenter;
 irr::s32 appState = STATE_EDIT;
 
+std::string contentPackageRoot = "content-packs";
+
 // Represents a typical physics shape
-struct PhysicsShape {
+struct F_Physics {
 	// Is this file modified, does not apply for non-json files
 	bool modified = false;
+	std::string filename = "null";
 
-	// Original json file, if applicable
-	Json::Value jVal = Json::nullValue;
-
-	// Where is the file located
-	std::string filename = "";
+	Json::Value jVal = Json::nullValue; // Original json file, if applicable
 
 	// Type
 	irr::s32 type = PHYS_EMPTY;
@@ -154,21 +154,17 @@ struct PhysicsShape {
 };
 
 // Represents a typical object.json file pointed to by content-pack.json
-struct Gobject {
-	// Is this file modified
-	bool modified = false;
+struct F_Object {
 
-	// Original json file
-	Json::Value jVal = Json::nullValue;
-
-	// Where is the file located
+	bool modified = false; // Is this file modified
 	std::string filename = "null";
 
-	// Unique id
-	std::string id = "null";
+	Json::Value jVal = Json::nullValue; // Original json file
 
-	// Offset from the origin
-	btVector3 physicsOffset = btVector3(0, 0, 0);
+	std::string id = "null"; // Unique string id
+
+
+	btVector3 physicsOffset = btVector3(0, 0, 0); // Offset from the origin
 
 	//
 	bool modelFileExists = true;
@@ -178,21 +174,19 @@ struct Gobject {
 	std::string modelFile = "null";
 
 	// The shape as described by physicsFile
-	PhysicsShape physicsShape;
-
-	//
-	std::vector<irr::s32> shaders;
+	F_Physics physicsShape;
 
 	// For rendering only
 	btCollisionShape* collShape = 0;
 	btCollisionObject* collObj = 0;
-	irr::scene::ISceneNode* sceneNode = 0;
 	irr::scene::IAnimatedMesh* bulletTriMesh = 0;
-	irr::scene::IAnimatedMesh* sceneMesh = 0;
+
+	reia::ComplexMeshData* meshData;
+	reia::ComplexMeshSceneNode* meshSceneNode;
 };
 
 // Represents the content-pack.json file located at root of content pack
-struct Cpack {
+struct F_Pack {
 	// Is this file modified
 	bool modified = false;
 
@@ -205,11 +199,11 @@ struct Cpack {
 	std::string nmsp = "null";
 	std::string desc = "null";
 
-	std::vector<Gobject*> gobjectFiles;
+	std::vector<F_Object*> gobjectFiles;
 };
 
-Cpack* loadedPack;
-Gobject* openedObject;
+F_Pack* loadedPack;
+F_Object* openedObject;
 
 // UTILITY
 // =======
@@ -332,7 +326,7 @@ void debugMaterial(irr::video::SMaterial material) {
 
 // 3D DATA MANIPULATION
 // ====================
-btCollisionShape* newShape(PhysicsShape shape) {
+btCollisionShape* newShape(F_Physics shape) {
     switch(shape.type) {
 		case PHYS_SPHERE: {
 			return new btSphereShape(shape.radius);
@@ -353,7 +347,7 @@ btCollisionShape* newShape(PhysicsShape shape) {
 		}
     }
 }
-void physicsGrow(PhysicsShape& physShape, btDouble amount) {
+void physicsGrow(F_Physics& physShape, btDouble amount) {
 	irr::s32 physType = openedObject->physicsShape.type;
 
 	if(physType == PHYS_BOX || physType == PHYS_CYLINDER) {
@@ -401,8 +395,8 @@ void updateObjectsDialogOnReload() {
 
 	listbox->clear();
 
-	for(std::vector<Gobject*>::iterator it = loadedPack->gobjectFiles.begin(); it != loadedPack->gobjectFiles.end(); ++ it) {
-		Gobject* obj = *it;
+	for(std::vector<F_Object*>::iterator it = loadedPack->gobjectFiles.begin(); it != loadedPack->gobjectFiles.end(); ++ it) {
+		F_Object* obj = *it;
 		listbox->addItem(toText(obj->id));
 	}
 
@@ -468,7 +462,7 @@ void updatePhysicsDialog() {
 	removeAllChildren(dialog);
 
 	irr::s32 physType = openedObject->physicsShape.type;
-	PhysicsShape physShape = openedObject->physicsShape;
+	F_Physics physShape = openedObject->physicsShape;
 
 	if(physType != PHYS_EMPTY && physType != PHYS_TRIANGLE_MESH) {
 		gui->addButton(GuiBox(5, 130, 80, 20), dialog, GUI_BUTTON_PHYSICS_SETBB, L"Auto-size", L"Automatically scales shape.");
@@ -572,7 +566,7 @@ void updatePhysicsRendering() {
 // IO NOT THE MOON
 // ===============
 
-std::string parseFilename(std::string filename, Gobject* context = 0) {
+std::string parseFilename(std::string filename, F_Object* context = 0) {
 	std::ifstream test1(filename);
 	if(test1.is_open()) {
 		return filename;
@@ -676,7 +670,7 @@ void openAndRenderPhysicsShape(std::string filename) {
 	filename = parseFilename(filename);
 	std::cout << filename << std::endl;
 
-	PhysicsShape& physShape = openedObject->physicsShape;
+	F_Physics& physShape = openedObject->physicsShape;
 
 	std::string extension = getExtension(filename);
 	if(extension == "json") {
@@ -759,10 +753,10 @@ void openAndRenderPhysicsShape(std::string filename) {
 }
 void openAndRenderModel(std::string filename) {
 	filename = parseFilename(filename);
-	irr::io::path path(filename.c_str());
-	openedObject->sceneMesh = smgr->getMesh(path);
-	openedObject->sceneNode = smgr->addAnimatedMeshSceneNode(openedObject->sceneMesh, rootNode);
-	irr::video::SMaterial& mat = openedObject->sceneNode->getMaterial(0);
+
+	openedObject->meshData = reia::loadUsingAssimp(smgr, filename);
+	openedObject->meshSceneNode = reia::addNodeFromMesh(smgr, openedObject->meshData);
+	irr::video::SMaterial& mat = openedObject->meshSceneNode->node->getMaterial(0);
 
 	mat.AmbientColor = irr::video::SColor(255, 255, 255, 255);
 	//mat.MaterialType = shaderMatType;
@@ -789,20 +783,20 @@ void closeObject() {
 		delete openedObject->collShape;
 		openedObject->collShape = 0;
 	}
-	if(openedObject->sceneNode) {
+	if(openedObject->meshSceneNode) {
 		std::cout << "Remove scene node" << std::endl;
-		openedObject->sceneNode->remove();
-		openedObject->sceneNode = 0;
+		openedObject->meshSceneNode->remove();
+		openedObject->meshSceneNode = 0;
 	}
 	openedObject = 0;
 }
-void openObject(Gobject* gobject) {
+void openObject(F_Object* gobject) {
 	closeObject();
 	openedObject = gobject;
 	openAndRenderModel(gobject->modelFile);
 	openAndRenderPhysicsShape(gobject->physicsFile);
 }
-void saveObject(Gobject* gobj) {
+void saveObject(F_Object* gobj) {
 	if(gobj->modified) {
 		std::cout << "Saving object: " << parseFilename(gobj->filename) << std::endl;
 		gobj->jVal["id"] = gobj->id;
@@ -831,7 +825,7 @@ void saveObject(Gobject* gobj) {
 
 	if(gobj->physicsShape.modified) {
 		std::cout << "Saving shape: " << parseFilename(gobj->physicsFile, gobj) << std::endl;
-		PhysicsShape& shape = gobj->physicsShape;
+		F_Physics& shape = gobj->physicsShape;
 
 		Json::Value& jtype = shape.jVal["type"];
 		switch(shape.type) {
@@ -881,9 +875,9 @@ void saveObject(Gobject* gobj) {
 		gobj->physicsShape.modified = false;
 	}
 }
-Gobject* loadObject(std::string filename) {
+F_Object* loadObject(std::string filename) {
 	filename = parseFilename(filename);
-	Gobject* retVal = new Gobject();
+	F_Object* retVal = new F_Object();
 
 	retVal->filename = filename;
 
@@ -909,7 +903,7 @@ void loadPack(std::string filename) {
 	}
 
 	// Open this new pack
-	loadedPack = new Cpack();
+	loadedPack = new F_Pack();
 	loadedPack->root = getDirectory(filename);
 
 	// Begin streaming file
@@ -926,7 +920,7 @@ void loadPack(std::string filename) {
 	if(jGobjs.isArray()) {
 		for(Json::Value::iterator it = jGobjs.begin(); it != jGobjs.end(); ++ it) {
 			Json::Value& jGobjFilename = *it;
-			Gobject* objData = loadObject(jGobjFilename.asString());
+			F_Object* objData = loadObject(jGobjFilename.asString());
 			loadedPack->gobjectFiles.push_back(objData);
 		}
 	}
@@ -944,11 +938,46 @@ void saveAll() {
 		std::ofstream packFile(loadedPack->root + "/content-pack.json");
 		packFile << loadedPack->jVal;
 	}
-	for(std::vector<Gobject*>::iterator it = loadedPack->gobjectFiles.begin(); it != loadedPack->gobjectFiles.end(); ++ it) {
-		Gobject* gobj = *it;
+	for(std::vector<F_Object*>::iterator it = loadedPack->gobjectFiles.begin(); it != loadedPack->gobjectFiles.end(); ++ it) {
+		F_Object* gobj = *it;
 
 		saveObject(gobj);
 	}
+}
+std::string fixName(std::string name) {
+    std::stringstream ss;
+
+    for(std::size_t i = 0; i < name.length(); ++ i) {
+        const char& originalChar = name.at(i);
+
+        if(originalChar == ' ') {
+            ss << '-';
+        }
+        else {
+            ss << originalChar;
+        }
+    }
+
+}
+void packageAll() {
+    if(!loadedPack) {
+        return;
+    }
+
+    std::cout << "Compiling package..." << std::endl;
+    std::cout << "Cannot clean package directory!"
+        << "Or even detect if that directory exists!"
+        << "Delete it (if it exists) manually before compiling!" << std::endl;
+
+    Json::Value packageData;
+    packageData["test"] = "foobar";
+
+
+    std::ofstream packFile(contentPackageRoot + "/" + fixName(loadedPack->name) + "/content-pack.json");
+    packFile << packageData;
+
+
+
 }
 
 // APPEVENTRECEIVER
@@ -1036,6 +1065,11 @@ public:
 						case GUI_FILE_SAVE: {
 							saveAll();
 							return true;
+						}
+						case GUI_FILE_PACKAGE: {
+							saveAll();
+                            packageAll();
+                            return true;
 						}
 						default: {
 							break;
@@ -1151,7 +1185,7 @@ public:
 							irr::s32 selectedIndex = listbox->getSelected();
 
 							if(selectedIndex != -1) {
-								Gobject* selected = loadedPack->gobjectFiles[selectedIndex];
+								F_Object* selected = loadedPack->gobjectFiles[selectedIndex];
 
 								openObject(selected);
 
@@ -1199,7 +1233,7 @@ public:
                             if(!openedObject) {
 								break;
                             }
-							irr::core::aabbox3df bb = openedObject->sceneNode->getBoundingBox();
+							irr::core::aabbox3df bb = openedObject->meshSceneNode->node->getBoundingBox();
 
 							openedObject->physicsOffset = toBullet(bb.getCenter());
 							irr::s32 physType = openedObject->physicsShape.type;
@@ -1305,7 +1339,7 @@ public:
 							std::string model = toString(editModel->getText());
 							std::string phys  = toString(editPhys->getText());
 
-							Gobject* newObj = new Gobject();
+							F_Object* newObj = new F_Object();
 
 							std::cout << "New Object: " << std::endl;
 							std::cout << "id: " << id << std::endl;
@@ -1375,8 +1409,8 @@ public:
 
 int main() {
 
-	loadedPack = new Cpack();
-	openedObject = new Gobject();
+	loadedPack = new F_Pack();
+	openedObject = new F_Object();
 
 	// Get the preferred driver type
 	irr::video::E_DRIVER_TYPE driverType = irr::video::EDT_OPENGL; // driverChoiceConsole(); //
@@ -1444,6 +1478,7 @@ int main() {
 		submenu->addItem(L"Save", GUI_FILE_SAVE);
 		submenu->addItem(L"Save as...", GUI_FILE_SAVE_AS);
 		submenu->addSeparator();
+		submenu->addItem(L"Package", GUI_FILE_PACKAGE);
 	}
 
 	{
@@ -1538,6 +1573,9 @@ int main() {
 	// Test
 	loadPack("content/standard/content-pack.json");
 
+    //Test
+    ProjectCompiler::compileProject("content/standard");
+
 	// Test
 	/*
 	reia::ComplexMeshData* foobar = reia::loadUsingAssimp(smgr, "assets_editor/cactus2.dae");
@@ -1549,6 +1587,8 @@ int main() {
 	//
 	ReiIO::writeToFile("model.yam", *foobar);
 */
+
+
 	irr::f32 testTime = 4;
 	// Main loop
 	while(device->run()) {

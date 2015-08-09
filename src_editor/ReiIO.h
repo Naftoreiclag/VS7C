@@ -7,12 +7,16 @@
 #ifndef REIIO_H
 #define REIIO_H
 
+#include <fstream>
 #include <string>
 #include "ReiAssimp.h"
+#include "ProjectCompiler.h"
 
 namespace ReiIO {
 
 	void writeToFile(std::string filename, const reia::ComplexMeshData& data);
+
+	void writePhysics(std::string filename, const ProjectCompiler::FPhysics& data);
 }
 
 #endif // REIIO_H

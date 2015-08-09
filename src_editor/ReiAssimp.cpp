@@ -443,6 +443,9 @@ namespace reia {
 
 			if(boneThing) {
 				irr::scene::IAnimatedMeshSceneNode* armatureDecor = smgr->addAnimatedMeshSceneNode(boneThing, retVal->boneNodes[i]);
+			}
+			if(fnt) {
+
 				irr::scene::ISceneNode* text = smgr->addTextSceneNode(fnt, toText(bone.name), irr::video::SColor(255, 255, 255, 255), retVal->boneNodes[i]);
 
 				text->setPosition(irr::core::vector3df(-0.5f, 0.f, 0.f));
