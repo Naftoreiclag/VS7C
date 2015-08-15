@@ -8,6 +8,7 @@
 #include "json/json.h"
 
 #include "ReiIO.h"
+#include "ReiAssimp.h"
 
 namespace ProjectCompiler {
 
@@ -137,9 +138,7 @@ qualifiedName(qualify(absPath)) {
 }
 
 
-
-
-void compileProject(Path rootPath) {
+void compileProject(Path rootPath, irr::scene::ISceneManager* smgr) {
 
     pRoot = rootPath;
 
@@ -320,17 +319,9 @@ void compileProject(Path rootPath) {
         for(std::vector<FResource>::iterator it = fResources.begin(); it != fResources.end(); ++ it) {
             const FResource& fResource = *it;
 
-            std::ifstream rResource(pRoot + "/" + fResource.refSelf.absPath);
-            if(!rResource.is_open()) {
-                std::cout << "Aborted! Could not read " << fResource.refSelf.absPath << "!" << std::endl;
-                return;
-            }
 
-            std::ofstream wResource(pOutputRoot + "/" + fMain.name + "/" + fResource.refSelf.qualifiedName);
-            if(!wResource.is_open()) {
-                std::cout << "Aborted! Could not write to " << fResource.refSelf.qualifiedName << "!" << std::endl;
-                return;
-            }
+
+            Path output = pOutputRoot + "/" + fMain.name + "/" + fResource.refSelf.qualifiedName;
 
             switch(fResource.type) {
                 /*
@@ -338,6 +329,11 @@ void compileProject(Path rootPath) {
                 }
                 */
                 case PHYSICS: {
+                    std::ifstream rResource(pRoot + "/" + fResource.refSelf.absPath);
+                    if(!rResource.is_open()) {
+                        std::cout << "Aborted! Could not read " << fResource.refSelf.absPath << "!" << std::endl;
+                        return;
+                    }
                     std::string extension = getExtension(fResource.refSelf.absPath);
 
                     FPhysics physShape;
@@ -374,16 +370,26 @@ void compileProject(Path rootPath) {
 
                     }
 
-                    wResource.close();
-                    Path output = pOutputRoot + "/" + fMain.name + "/" + fResource.refSelf.qualifiedName;
                     output = shaveExtension(output);
-                    ReiIO::writePhysics(output + ".bin", physShape);
+                    ReiIO::savePhysics(output + ".physics", physShape);
 
                     break;
                 }
-                default: {
-                    wResource << rResource.rdbuf();
+                case MODEL: {
+
+                    reia::ComplexMeshData* meshData = reia::loadUsingAssimp(smgr, pRoot + "/" + fResource.refSelf.absPath);
+
+                    reia::ComplexMeshSceneNode* meshNode = reia::addNodeFromMesh(smgr, meshData);
+                    delete meshNode;
+
+                    output = shaveExtension(output);
+                    ReiIO::saveComplexMesh(output + ".model", *meshData);
+                    delete meshData;
                     break;
+                }
+
+                default: {
+
                 }
             }
         }

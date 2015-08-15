@@ -14,9 +14,9 @@
 
 namespace ReiIO {
 
-	void writeToFile(std::string filename, const reia::ComplexMeshData& data);
-
-	void writePhysics(std::string filename, const ProjectCompiler::FPhysics& data);
+    void saveMaterial(std::string filename, const reia::MaterialMetadata& data);
+	void saveComplexMesh(std::string filename, const reia::ComplexMeshData& data);
+	void savePhysics(std::string filename, const ProjectCompiler::FPhysics& data);
 }
 
 #endif // REIIO_H

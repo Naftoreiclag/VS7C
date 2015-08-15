@@ -188,10 +188,10 @@ namespace reia {
 		const aiNode* rootNode = ascene->mRootNode;
 
 		for(irr::u32 h = 0; h < rootNode->mNumChildren; ++ h) {
-			const aiNode* node = rootNode->mChildren[h];
+			const aiNode* anode = rootNode->mChildren[h];
 
 			// If this node is the one with the mesh(es)
-			if(node->mNumMeshes > 0) {
+			if(anode->mNumMeshes > 0) {
 				std::cout << "Node with a mesh found." << std::endl;
 
 				// Begin copying this data
@@ -214,15 +214,37 @@ namespace reia {
 				}
 				std::cout << "End copying bone structure." << std::endl;
 
-				output->mesh = new irr::scene::SMesh();
-				output->numBuffers = node->mNumMeshes;
-				output->buffers = new BufferMetadata[output->numBuffers];
+                std::cout << "Begin copying materials..." << std::endl;
+                output->numMaterials = ascene->mNumMaterials;
+                output->materials = new MaterialMetadata[output->numMaterials];
+				for(irr::u32 i = 0; i < output->numMaterials; ++ i) {
+                    const aiMaterial* amaterial = ascene->mMaterials[i];
+				    MaterialMetadata& dmaterial = output->materials[i];
+
+                    aiString aname;
+                    amaterial->Get(AI_MATKEY_NAME, aname);
+                    dmaterial.name = aname.data;
+
+                    if(amaterial->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
+                        aiString apath;
+
+                        if(amaterial->GetTexture(aiTextureType_DIFFUSE, 0, &apath) == AI_SUCCESS) {
+                            std::cout << "Texture path: " << apath.data << std::endl;
+                            dmaterial.diffuseTexturePath = apath.data;
+                            dmaterial.hasDiffuseTexture = true;
+                        }
+					}
+				}
+				std::cout << "End copying materials." << std::endl;
 
 				std::cout << "Begin copying buffers..." << std::endl;
-				std::cout << "Buffer count " << node->mNumMeshes << std::endl;
-				for(irr::u32 i = 0; i < node->mNumMeshes; ++ i) {
+				output->mesh = new irr::scene::SMesh();
+				output->numBuffers = anode->mNumMeshes;
+				output->buffers = new BufferMetadata[output->numBuffers];
+				std::cout << "Buffer count " << anode->mNumMeshes << std::endl;
+				for(irr::u32 i = 0; i < anode->mNumMeshes; ++ i) {
 					std::cout << "Buffer #" << i << std::endl;
-					const aiMesh* abuffer = ascene->mMeshes[node->mMeshes[i]];
+					const aiMesh* abuffer = ascene->mMeshes[anode->mMeshes[i]];
 
 					irr::scene::SMeshBuffer* ibuffer = new irr::scene::SMeshBuffer();
 					BufferMetadata& dbuffer = output->buffers[i];
@@ -315,6 +337,7 @@ namespace reia {
 					ibuffer->recalculateBoundingBox();
 
 					// Copy material
+                    dbuffer.materialIndex = abuffer->mMaterialIndex;
 					const aiMaterial* amaterial = ascene->mMaterials[abuffer->mMaterialIndex];
 
 					aiColor3D adiffuse(1.0f, 1.0f, 1.0f);

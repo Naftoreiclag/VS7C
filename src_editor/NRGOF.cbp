@@ -80,15 +80,15 @@
 			<Add directory="../thirdparty/jsoncpp-0.10.2-p1/lib" />
 			<Add directory="../thirdparty/assimp-3.1.1/lib" />
 		</Linker>
+		<Unit filename="ProjectCompiler.cpp" />
+		<Unit filename="ProjectCompiler.h" />
 		<Unit filename="ReiAssimp.cpp" />
 		<Unit filename="ReiAssimp.h" />
 		<Unit filename="ReiBullet.cpp" />
 		<Unit filename="ReiBullet.h" />
 		<Unit filename="ReiIO.cpp" />
 		<Unit filename="ReiIO.h" />
-		<Unit filename="include/ProjectCompiler.h" />
 		<Unit filename="main.cpp" />
-		<Unit filename="src/ProjectCompiler.cpp" />
 		<Extensions>
 			<code_completion />
 			<debugger />

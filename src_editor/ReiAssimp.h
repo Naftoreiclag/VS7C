@@ -32,17 +32,24 @@ namespace reia {
 		}
 	};
 
-	// Extra data for each buffer (group of vertices that has the same material or otherwise differenciated from the rest of the mesh)
+	// Extra data for each buffer (group of vertices that has the same material or otherwise differentiated from the rest of the mesh)
 	struct BufferMetadata {
 		// The metadata to apply to each vertex
 		VertexMetadata* verts = 0;
 		irr::u32 numVerts;
 
+        // Describes what the vertex data holds
 		bool usePos = true;
 		bool useNorm = true;
 		bool useBone = false;
 		bool useColor = false;
 		bool useTexture = false;
+
+        irr::u8 materialIndex = 255;
+
+		~BufferMetadata() {
+            delete[] verts;
+		}
 	};
 	struct VectorKey {
 		irr::core::vector3df value;
@@ -63,6 +70,12 @@ namespace reia {
 
         VectorKey* scalings;
         irr::u32 numScalings = 0;
+
+        ~ChannelData() {
+            delete[] positions;
+            delete[] rotations;
+            delete[] scalings;
+        }
 	};
 	struct AnimationData {
 		std::string animName;
@@ -84,9 +97,19 @@ namespace reia {
 		irr::core::matrix4 bindPose;
 	};
 
+	struct MaterialMetadata {
+	    std::string name;
+
+        bool hasDiffuseTexture = false;
+        std::string diffuseTexturePath;
+	};
+
 	// A single mesh with some number of bones and animations
 	struct ComplexMeshData {
 		irr::scene::SMesh* mesh = 0;
+
+		MaterialMetadata* materials = 0;
+		irr::u32 numMaterials = 0;
 
 		BufferMetadata* buffers = 0;
 		irr::u32 numBuffers = 0;
@@ -96,6 +119,13 @@ namespace reia {
 
 		Bone* bones = 0;
 		irr::u32 numBones = 0;
+
+		~ComplexMeshData() {
+            delete mesh;
+            delete[] buffers;
+            delete[] anims;
+            delete[] bones;
+		}
 	};
 
 	//
@@ -106,8 +136,9 @@ namespace reia {
 
         irr::scene::ISceneNode** boneNodes;
 
-        void remove() {
+        ~ComplexMeshSceneNode() {
             node->remove();
+            delete instancedMesh;
         }
 	};
 

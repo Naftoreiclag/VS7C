@@ -785,8 +785,7 @@ void closeObject() {
 	}
 	if(openedObject->meshSceneNode) {
 		std::cout << "Remove scene node" << std::endl;
-		openedObject->meshSceneNode->remove();
-		openedObject->meshSceneNode = 0;
+		delete openedObject->meshSceneNode;
 	}
 	openedObject = 0;
 }
@@ -1574,20 +1573,7 @@ int main() {
 	loadPack("content/standard/content-pack.json");
 
     //Test
-    ProjectCompiler::compileProject("content/standard");
-
-	// Test
-	/*
-	reia::ComplexMeshData* foobar = reia::loadUsingAssimp(smgr, "assets_editor/cactus2.dae");
-	irr::scene::IAnimatedMesh* armatureDecor = smgr->getMesh("assets_editor/bone.obj");
-	armatureDecor->setMaterialFlag(irr::video::EMF_LIGHTING, false);
-	armatureDecor->setMaterialFlag(irr::video::EMF_WIREFRAME, true);
- 	reia::ComplexMeshSceneNode* baz = reia::addNodeFromMesh(smgr, foobar, font, armatureDecor);
-
-	//
-	ReiIO::writeToFile("model.yam", *foobar);
-*/
-
+    ProjectCompiler::compileProject("content/standard", smgr);
 
 	irr::f32 testTime = 4;
 	// Main loop

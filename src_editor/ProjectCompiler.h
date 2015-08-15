@@ -77,7 +77,7 @@ struct FMain {
     std::vector<Referen> refObjects;
 };
 
-void compileProject(Path pathToProjectRoot);
+void compileProject(Path pathToProjectRoot, irr::scene::ISceneManager* smgr);
 
 }
 
