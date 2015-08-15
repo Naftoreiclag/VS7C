@@ -10,7 +10,6 @@ lib/*
 logs/*
 *.x
 thirdparty/lu*
-thirdparty/SF*
 
 thirdparty/boost*
 *.blend1
@@ -21,3 +20,4 @@ assets_editor/testAnim2.blend
 assets_editor/testcube.blend
 assets_editor/testcube.blend
 assets_editor/testcube.blend
+content-packs/Standard Content*
