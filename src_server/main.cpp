@@ -19,7 +19,6 @@ int main() {
     sf::Packet chatPacket;
     sf::IpAddress sender;
 
-
     bool runServer = true;
     while(runServer) {
         if(serverSocket.receive(chatPacket, sender, port) != sf::Socket::Done) {
