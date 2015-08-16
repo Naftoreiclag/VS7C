@@ -5,6 +5,13 @@
 #include "SFML/System.hpp"
 #include "SFML/Network.hpp"
 
+#include "Player.h"
+
+sf::Uint64 lastPlayId = 0;
+sf::Uint64 nextId() {
+    return lastPlayId ++;
+}
+
 int main() {
     std::cout << "SK Server" << std::endl;
 
@@ -16,23 +23,54 @@ int main() {
         // Explode
     }
 
-    sf::Packet chatPacket;
-    sf::IpAddress sender;
+
+    std::vector<Player> players;
 
     bool runServer = true;
     while(runServer) {
-        if(serverSocket.receive(chatPacket, sender, port) != sf::Socket::Done) {
+
+        sf::Packet receivedPacket;
+        sf::IpAddress senderAddress;
+        unsigned short senderPort;
+        if(serverSocket.receive(receivedPacket, senderAddress, senderPort) != sf::Socket::Done) {
             // Explode
         }
 
-        std::string message;
-        chatPacket >> message;
 
-        std::cout << sender << ":" << port << std::endl;
-        std::cout << "> " << message << std::endl;
+        sf::Uint8 type;
 
-        if(message == "stop") {
-            runServer = false;
+        receivedPacket >> type;
+
+        if(type == 0) {
+            std::string username;
+            receivedPacket >> username;
+
+            std::cout << username << " joined." << std::endl;
+
+            Player newPlay(username, nextId(), senderAddress, senderPort);
+            players.push_back(newPlay);
+        }
+        else {
+            const Player* playSender = 0;
+            for(std::vector<Player>::iterator it = players.begin(); it != players.end(); ++ it) {
+                const Player& player = *it;
+
+                if(player.address == senderAddress && player.port == senderPort) {
+                    playSender = &player;
+                    break;
+                }
+            }
+
+            if(type == 1) {
+                std::string message;
+                receivedPacket >> message;
+
+                std::cout << playSender->username << ": "  << message << std::endl;
+
+                if(message == "stop") {
+                    runServer = false;
+                }
+            }
         }
     }
 }
