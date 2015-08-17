@@ -7,20 +7,23 @@
 
 #include "InputManager.h"
 #include "StringUtils.h"
+#include "Creature.h"
 
 #include "irrlicht.h"
 #include "SFML/System.hpp"
 #include "SFML/Network.hpp"
 
+using namespace skm;
+
 int main() {
-    skm::Version version(0, 0, 0);
+    Version version(0, 0, 1);
 
     std::cout << "SK Client" << std::endl;
 
     sf::UdpSocket clientSocket;
 
-    unsigned short port = 25566;
-    sf::IpAddress receiver = sf::IpAddress::LocalHost;
+    unsigned short serverPort = 25566;
+    sf::IpAddress serverIp = sf::IpAddress::LocalHost;
 
     sf::Packet connectReq;
     sf::Uint8 packType = 0;
@@ -31,12 +34,12 @@ int main() {
 
     connectReq << packType << username;
 
-    if(clientSocket.send(connectReq, receiver, port) != sf::Socket::Done) {
+    if(clientSocket.send(connectReq, serverIp, serverPort) != sf::Socket::Done) {
         std::cout << "Failed to connect to server!" << std::endl;
         std::system("pause");
     }
 
-    skm::InputManager inputMgr;
+    InputManager inputMgr;
     irr::IrrlichtDevice* device = irr::createDevice(irr::video::EDT_SOFTWARE, irr::core::dimension2d<irr::u32>(640, 480), 16, false, false, false, &inputMgr);
     irr::video::IVideoDriver* driver = device->getVideoDriver();
     irr::scene::ISceneManager* smgr = device->getSceneManager();
@@ -46,7 +49,7 @@ int main() {
 		return 1;
 	}
 
-    const wchar_t* caption = skm::StringUtils::toWideString("SK MMO Client Ver " + version.str());
+    const wchar_t* caption = StringUtils::toWideString("SK MMO Client Ver " + version.str());
 
 	device->setWindowCaption(caption);
 
@@ -62,10 +65,35 @@ int main() {
 
     smgr->addCameraSceneNode(0, irr::core::vector3df(0, 30, -40), irr::core::vector3df(0, 5, 0));
 
+    std::vector<Creature> creatures;
+
+    clientSocket.bind(clientSocket.getLocalPort());
+
+    sf::Packet handlePack;
+    clientSocket.receive(handlePack, serverIp, serverPort);
+    irr::u8 packetType;
+    handlePack >> packetType;
+
+    irr::u32 entityHandle;
+    handlePack >> entityHandle;
+
+    std::cout << "Entityhandle: " << entityHandle << std::endl;
+
     while(device->run()) {
+
 
         if(inputMgr.isKeyDown(irr::KEY_KEY_Q)) {
             std::cout << "QQ" << std::endl;
+
+            sf::Packet chatPacket;
+
+            std::string message = "QQ lol";
+            sf::Uint8 chatType = 1;
+            chatPacket << chatType << message;
+
+            if(clientSocket.send(chatPacket, serverIp, serverPort) != sf::Socket::Done) {
+                // Explode
+            }
 
         }
 

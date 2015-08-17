@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <thread>
 
 #include "irrlicht.h"
 #include "SFML/System.hpp"
@@ -30,9 +31,9 @@ int main() {
     while(runServer) {
 
         sf::Packet receivedPacket;
-        sf::IpAddress senderAddress;
-        unsigned short senderPort;
-        if(serverSocket.receive(receivedPacket, senderAddress, senderPort) != sf::Socket::Done) {
+        sf::IpAddress clientAddress;
+        unsigned short clientPort;
+        if(serverSocket.receive(receivedPacket, clientAddress, clientPort) != sf::Socket::Done) {
             // Explode
         }
 
@@ -46,16 +47,28 @@ int main() {
             receivedPacket >> username;
 
             std::cout << username << " joined." << std::endl;
+            std::cout << clientAddress << ":" << clientPort << std::endl;
 
-            Player newPlay(username, nextId(), senderAddress, senderPort);
+
+            Player newPlay(username, nextId(), clientAddress, clientPort);
             players.push_back(newPlay);
+
+            newPlay.id;
+
+            sf::Packet handlePack;
+            irr::u8 packetType = 4;
+            handlePack << packetType;
+            handlePack << newPlay.id;
+            serverSocket.send(handlePack, clientAddress, clientPort);
+
+            std::cout << "Entityhandle: " << newPlay.id << std::endl;
         }
         else {
             const Player* playSender = 0;
             for(std::vector<Player>::iterator it = players.begin(); it != players.end(); ++ it) {
                 const Player& player = *it;
 
-                if(player.address == senderAddress && player.port == senderPort) {
+                if(player.address == clientAddress && player.port == clientPort) {
                     playSender = &player;
                     break;
                 }

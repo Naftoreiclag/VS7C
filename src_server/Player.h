@@ -9,7 +9,7 @@ public:
     unsigned short port;
     sf::IpAddress address;
     std::string username;
-    sf::Uint64 id;
+    sf::Uint32 id;
 
     Player(std::string username, sf::Uint64 id, sf::IpAddress address, unsigned short port);
     virtual ~Player();
