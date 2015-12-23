@@ -70,8 +70,8 @@ namespace ReiIO {
     }
 
     void writeMagic(std::ofstream& output) {
-		writeU32(output, 0x4E414654);
-		writeU32(output, 0x4F524549);
+        writeU32(output, 0x4E414654);
+        writeU32(output, 0x4F524549);
     }
 
     void saveMaterial(std::string filename, const reia::MaterialMetadata& data) {
@@ -86,11 +86,11 @@ namespace ReiIO {
         ostream << ojson;
     }
 
-	void saveComplexMesh(std::string filename, const reia::ComplexMeshData& data) {
-		std::ofstream ostream;
+    void saveComplexMesh(std::string filename, const reia::ComplexMeshData& data) {
+        std::ofstream ostream;
         ostream.open(filename, std::ios_base::binary);
 
-		writeMagic(ostream);
+        writeMagic(ostream);
 
         writeU16(ostream, 1);
         writeU16(ostream, 1);
@@ -203,14 +203,14 @@ namespace ReiIO {
             }
         }
 
-		// (Stream closed on destruction)
-	}
+        // (Stream closed on destruction)
+    }
 
     void savePhysics(std::string filename, const ProjectCompiler::FPhysics& data) {
-		std::ofstream ostream;
+        std::ofstream ostream;
         ostream.open(filename, std::ios_base::binary);
 
-		writeMagic(ostream);
+        writeMagic(ostream);
 
         switch(data.type) {
             case ProjectCompiler::SPHERE: {

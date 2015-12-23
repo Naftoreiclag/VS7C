@@ -30,31 +30,31 @@ Json::Value toJson(btVector3 vector) {
     return ret;
 }
 btVector3 toBullet(Json::Value& jValue) {
-	if(jValue.isArray()) {
-		btVector3 retVal(0, 0, 0);
+    if(jValue.isArray()) {
+        btVector3 retVal(0, 0, 0);
 
-		Json::Value& jx = jValue[0];
-		Json::Value& jy = jValue[1];
-		Json::Value& jz = jValue[2];
+        Json::Value& jx = jValue[0];
+        Json::Value& jy = jValue[1];
+        Json::Value& jz = jValue[2];
 
-		if(jx.isDouble()) {
-			retVal.setX(jx.asDouble());
-		}
-		if(jy.isDouble()) {
-			retVal.setY(jy.asDouble());
-		}
-		if(jz.isDouble()) {
-			retVal.setZ(jz.asDouble());
-		}
+        if(jx.isDouble()) {
+            retVal.setX(jx.asDouble());
+        }
+        if(jy.isDouble()) {
+            retVal.setY(jy.asDouble());
+        }
+        if(jz.isDouble()) {
+            retVal.setZ(jz.asDouble());
+        }
 
-		return retVal;
-	}
-	if(jValue.isDouble()) {
-		btDouble n = jValue.asDouble();
-		return btVector3(n, n, n);
-	} else {
-		return btVector3(0, 0, 0);
-	}
+        return retVal;
+    }
+    if(jValue.isDouble()) {
+        btDouble n = jValue.asDouble();
+        return btVector3(n, n, n);
+    } else {
+        return btVector3(0, 0, 0);
+    }
 }
 std::string toString(const Json::Value& value, const std::string& defaultVal = pNull) {
     if(value.isNull()) {

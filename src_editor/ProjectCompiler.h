@@ -24,7 +24,7 @@ struct Referen {
 };
 
 enum PhysicsType {
-	EMPTY = 0,
+    EMPTY = 0,
     SPHERE = 1,
     BOX = 2,
     CYLINDER = 3,
@@ -36,14 +36,14 @@ enum PhysicsType {
 };
 
 struct FPhysics {
-	PhysicsType type = EMPTY;
+    PhysicsType type = EMPTY;
 
-	btDouble radius = 0;
-	btVector3 dimensions = btVector3(0, 0, 0);
-	btDouble height = 0;
+    btDouble radius = 0;
+    btVector3 dimensions = btVector3(0, 0, 0);
+    btDouble height = 0;
 
-	std::vector<std::pair<btVector3, btDouble>> locRadi; // MULTI_SPHERE
-	btTriangleMesh* triangles = 0; // ARBITRARY_TRIANGLE_MESH
+    std::vector<std::pair<btVector3, btDouble>> locRadi; // MULTI_SPHERE
+    btTriangleMesh* triangles = 0; // ARBITRARY_TRIANGLE_MESH
 };
 
 enum ResourceType {
